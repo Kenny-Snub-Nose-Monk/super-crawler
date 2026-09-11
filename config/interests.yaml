@@ -1,0 +1,51 @@
+# 你的興趣檔案 —— 這是整個專案唯一需要你親手維護的東西。
+#
+# 推薦準不準，八成取決於這個檔案，不是取決於來源有幾個。
+# 覺得推薦爛的時候，先來改這裡，再考慮加 collector。
+
+profile:
+  base_city: 臺北市
+  # 願意跑多遠。超過這個範圍的活動會被降權，不是排除。
+  max_travel_minutes: 60
+  # 平常有空的時段（用來排掉你根本去不了的場次）
+  available:
+    weekday_evening: true      # 平日 19:00 之後
+    weekend_daytime: true
+    weekend_evening: true
+    weekday_daytime: false
+  budget_per_event_twd: 1500
+
+# 三個使用情境。skill 讀的就是這一段。
+scenarios:
+  challenge:
+    label: 這個月想做點有挑戰的事
+    types: [outdoor_challenge]
+    window: this_month
+    limit: 5
+    prefer_tags: []
+
+  language:
+    label: 這個月想參加三場英文交流
+    types: [language_exchange]
+    require_tags: [lang:en]
+    window: this_month
+    signup_open: true          # 只給還沒截止的
+    limit: 3
+
+  chill:
+    label: 這個週末想 chill
+    types: [music, market, exhibition, food]
+    window: this_weekend
+    limit: 6
+
+# 加權：命中就加分，用來排序而不是過濾。
+boost:
+  keywords: [戶外, 免費, 河濱, 山, live, 獨立, 市集, 手沖]
+  districts: [中山區, 大安區, 信義區, 松山區]
+  free_events: 2.0
+
+# 硬排除：命中就完全不出現。
+exclude:
+  # PRD 裡的稅務／行政內容明確不要
+  types: []
+  keywords: [報稅, 稅務, 居留證, 簽證, 移民署, 健保申辦, 說明會, 招商, 徵才]

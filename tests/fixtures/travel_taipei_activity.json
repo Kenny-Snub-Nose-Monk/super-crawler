@@ -1,0 +1,14 @@
+{"total": 2, "data": [
+ {"id": 12345, "title": "2026 臺北爵士音樂節", "description": "<p>戶外<b>免費</b>演出</p>",
+  "begin": "2026-09-19", "end": "2026-09-21", "posted": "2026-08-01", "modified": "2026-09-01",
+  "url": "https://www.travel.taipei/zh-tw/event/details/12345",
+  "distric": "中山區", "address": "臺北市中山區玉門街1號", "nlat": "25.0705", "elong": "121.5205",
+  "organizer": "臺北市文化局", "co_rganizer": "", "ticket": "免費入場",
+  "files": [{"src": "https://x/a.jpg", "subject": "主視覺", "ext": "jpg"}],
+  "links": [{"src": "https://x/more", "subject": "詳情"}]},
+ {"id": 67890, "title": "English Conversation Corner 英文角", "description": "Weekly meetup",
+  "begin": "2026-09-13 19:00", "end": "2026-09-13 21:00",
+  "url": "", "distric": "", "address": "臺北市大安區羅斯福路四段1號",
+  "organizer": "", "ticket": "報名費 200 元",
+  "links": [{"src": "https://x/english", "subject": "報名"}]}
+]}

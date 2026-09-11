@@ -1,0 +1,14 @@
+# 來源開關。壞掉的來源先關掉，不要刪程式碼。
+sources:
+  travel_taipei:
+    enabled: true
+    days_ahead: 90
+    endpoints: [Activity, Calendar]
+
+  # 還沒實作 —— 需要先在有外網的環境跑一次 --probe 看實際結構
+  trendy_taipei:
+    enabled: false
+    note: 官網活動列表頁，需要解析 HTML
+  meetup:
+    enabled: false
+    note: GraphQL API，需要 OAuth
