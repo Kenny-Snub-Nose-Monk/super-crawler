@@ -103,10 +103,11 @@ TYPE_RULES: list[tuple[str, list[str]]] = [
     ]),
     (EventType.EXHIBITION.value, [
         "展覽", "特展", "個展", "聯展", "藝術展", "攝影展", "美術",
+        "常設展", "珍藏展", "巡迴展", "主題展", "文化展", "檔案展", "雙年展",
         "exhibition", "gallery", "art show", "installation",
     ]),
     (EventType.TALK.value, [
-        "講座", "工作坊", "研習", "課程", "讀書會", "分享會", "論壇",
+        "講座", "講堂", "沙龍", "工作坊", "研習", "課程", "讀書會", "分享會", "論壇",
         "workshop", "seminar", "talk", "lecture", "meetup", "conference",
     ]),
     (EventType.SOCIAL.value, [
@@ -115,13 +116,28 @@ TYPE_RULES: list[tuple[str, list[str]]] = [
 ]
 
 
-def classify(*texts: Optional[str]) -> str:
-    """依關鍵字判斷活動類型。判不出來回 OTHER —— 不要猜。"""
-    blob = " ".join(t.lower() for t in texts if t)
+def _match(blob: str) -> str:
     for type_value, keywords in TYPE_RULES:
         if any(k in blob for k in keywords):
             return type_value
     return EventType.OTHER.value
+
+
+def classify(title: Optional[str], *other_texts: Optional[str]) -> str:
+    """標題優先：先只看標題，判不出來才把描述等其他文字納入。
+
+    2026-09-12 第一次真實抓取證明描述會蓋過標題：
+      「昆蟲的頭等大事特展」   描述提到食物 → 被判成 food
+      「金車文藝講堂」          描述寫「走進一個展覽」→ 被判成 exhibition
+      「日治時期電影娛樂文化展」描述提到音樂 → 被判成 music
+    標題是主辦方對活動的命名，訊號密度遠高於發散的行銷描述。
+
+    判不出來回 OTHER —— 不要猜。
+    """
+    t = _match((title or "").lower())
+    if t != EventType.OTHER.value:
+        return t
+    return _match(" ".join(x.lower() for x in (title, *other_texts) if x))
 
 
 # --- 語言標記 ---------------------------------------------------------
