@@ -15,6 +15,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
+from ..robots import RobotsGate, RobotsDisallowed
 from ..schema import Event
 
 USER_AGENT = "super-crawler/0.1 (personal use; contact via github)"
@@ -61,8 +62,10 @@ class Collector(ABC):
     delay_between_pages: float = 1.0
     max_pages: int = 20
 
-    def __init__(self, session: Optional[requests.Session] = None, **options: Any):
+    def __init__(self, session: Optional[requests.Session] = None,
+                 robots: Optional[RobotsGate] = None, **options: Any):
         self.session = session or make_session()
+        self.robots = robots or RobotsGate()
         self.options = options
 
     @abstractmethod
@@ -84,11 +87,32 @@ class Collector(ABC):
 
     # --- 給子類別用的小工具 ---
 
+    def _check_robots(self, url: str) -> None:
+        """每次請求前問過 robots.txt。
+
+        用機制落實禮貌，而不是靠寫 collector 時記得。被擋下來是明確的
+        「這條不走」，會讓這支 collector 標記失敗而不是默默跳過。
+        """
+        if not self.robots.allowed(url):
+            raise RobotsDisallowed(f"robots.txt 禁止抓取: {url}")
+        delay = self.robots.crawl_delay(url)
+        if delay and delay > self.delay_between_pages:
+            self.delay_between_pages = float(delay)
+
     def get_json(self, url: str, params: Optional[dict] = None,
                  timeout: int = 30) -> Any:
+        self._check_robots(url)
         r = self.session.get(url, params=params, timeout=timeout)
         r.raise_for_status()
         return r.json()
+
+    def get_text(self, url: str, params: Optional[dict] = None,
+                 timeout: int = 30) -> str:
+        self._check_robots(url)
+        r = self.session.get(url, params=params, timeout=timeout)
+        r.raise_for_status()
+        r.encoding = r.encoding or "utf-8"
+        return r.text
 
     @staticmethod
     def unwrap(payload: Any, *candidates: str) -> list[dict]:

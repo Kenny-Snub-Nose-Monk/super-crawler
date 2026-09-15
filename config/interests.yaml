@@ -23,6 +23,9 @@ scenarios:
     window: this_month
     limit: 5
     prefer_tags: []
+    # 拿去搜尋用的字。Accupass 一個關鍵字只回 25 筆且無法翻頁，
+    # 所以是「多組窄關鍵字」而不是「一組廣關鍵字」。
+    search_keywords: [攀岩, 抱石, 登山, 溯溪, 獨木舟, 自由潛水, 越野]
 
   language:
     label: 這個月想參加三場英文交流
@@ -31,12 +34,14 @@ scenarios:
     window: this_month
     signup_open: true          # 只給還沒截止的
     limit: 3
+    search_keywords: [語言交換, English, 英文會話, language exchange, 國際交流]
 
   chill:
     label: 這個週末想 chill
     types: [music, market, exhibition, food]
     window: this_weekend
     limit: 6
+    search_keywords: [市集, live, 音樂, 展覽, 講座, 手沖]
 
 # 加權：命中就加分，用來排序而不是過濾。
 boost:

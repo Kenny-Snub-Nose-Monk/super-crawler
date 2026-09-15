@@ -5,10 +5,16 @@ sources:
     days_ahead: 90
     endpoints: [Activity, Calendar]
 
+  accupass:
+    enabled: true
+    # 關鍵字來自 interests.yaml 的 scenarios[*].search_keywords
+    cities: [臺北市, 新北市]
+    max_events_per_keyword: 25
+
   # 還沒實作 —— 需要先在有外網的環境跑一次 --probe 看實際結構
   trendy_taipei:
     enabled: false
     note: 官網活動列表頁，需要解析 HTML
   meetup:
     enabled: false
-    note: GraphQL API，需要 OAuth
+    note: 官方 API 需付費 Meetup Pro 訂閱（約 US$55/月）且不保證核准；放棄

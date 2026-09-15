@@ -17,15 +17,41 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+import yaml
+
+from crawler.collectors.accupass import AccupassCollector
 from crawler.collectors.base import make_session
 from crawler.collectors.travel_taipei import TravelTaipeiCollector
 from crawler.normalize import now_iso
+from crawler.robots import RobotsGate
 from crawler.store import EventStore
 
 # 加新來源只要在這裡多一行
 COLLECTORS = {
     "travel_taipei": TravelTaipeiCollector,
+    "accupass": AccupassCollector,
 }
+
+CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
+
+
+def load_search_keywords() -> list[str]:
+    """從 interests.yaml 抽出要拿去搜尋的關鍵字。
+
+    Accupass 的分頁壞掉（page=2 回傳跟 page=1 一樣），所以改用
+    「多組窄關鍵字」取代翻頁。副作用是好的：抓回來的東西本來就貼近你的興趣。
+    """
+    path = CONFIG_DIR / "interests.yaml"
+    if not path.exists():
+        return []
+    cfg = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    words: list[str] = []
+    for scenario in (cfg.get("scenarios") or {}).values():
+        words += scenario.get("search_keywords") or []
+    # 刻意不含 boost.keywords —— 那是「排序加分」用的，不是「搜尋」用的。
+    # 「免費」「山」這種字拿去搜會撈回一堆雜訊，兩者用途不同不要混。
+    # 去重但保留順序
+    return list(dict.fromkeys(w for w in words if w))
 
 
 def main() -> int:
@@ -42,6 +68,10 @@ def main() -> int:
     if args.probe:
         return probe(args.probe, session)
 
+    robots = RobotsGate()
+    keywords = load_search_keywords()
+    per_source_options = {"accupass": {"keywords": keywords} if keywords else {}}
+
     names = args.sources or list(COLLECTORS)
     unknown = [n for n in names if n not in COLLECTORS]
     if unknown:
@@ -53,7 +83,8 @@ def main() -> int:
 
     failures = []
     for name in names:
-        collector = COLLECTORS[name](session=session)
+        collector = COLLECTORS[name](session=session, robots=robots,
+                                     **per_source_options.get(name, {}))
         result = collector.run()
         if result.ok:
             stats = store.upsert_many(result.events)

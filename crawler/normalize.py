@@ -162,7 +162,19 @@ def detect_languages(*texts: Optional[str]) -> list[str]:
 # --- 地點 -------------------------------------------------------------
 
 _DISTRICT_RE = re.compile(r"([一-鿿]{2,3}區)")
-_CITY_RE = re.compile(r"(臺北市|台北市|新北市|基隆市|桃園市)")
+_CITY_RE = re.compile(
+    r"(臺北市|台北市|新北市|桃園市|臺中市|台中市|臺南市|台南市|高雄市|"
+    r"基隆市|新竹市|新竹縣|苗栗縣|彰化縣|南投縣|雲林縣|嘉義市|嘉義縣|"
+    r"屏東縣|宜蘭縣|花蓮縣|臺東縣|台東縣)"
+)
+# 國名前綴。不拿掉的話「台灣桃園市中壢區」切完縣市會剩「台灣中壢區」，
+# 然後 {2,3}區 會抓到「灣中壢區」。
+_COUNTRY_RE = re.compile(r"(台灣|臺灣|Taiwan)", re.IGNORECASE)
+
+
+def _normalize_city(name: str) -> str:
+    """台/臺 統一成臺，否則同一個縣市會出現兩種寫法，過濾時會漏。"""
+    return name.replace("台", "臺")
 
 
 def parse_location(address: Optional[str]) -> tuple[Optional[str], Optional[str]]:
@@ -170,9 +182,13 @@ def parse_location(address: Optional[str]) -> tuple[Optional[str], Optional[str]
     if not address:
         return None, None
     city_m = _CITY_RE.search(address)
-    city = city_m.group(1).replace("台北市", "臺北市") if city_m else None
-    # 先把縣市名切掉再找行政區，否則「臺北市中山區」會被抓成「市中山區」
-    rest = address[city_m.end():] if city_m else address
+    city = _normalize_city(city_m.group(1)) if city_m else None
+    # 把「所有」縣市名拿掉再找行政區。
+    # 只切掉第一個不夠 —— Accupass 的真實地址長這樣：
+    #   台灣台北市108臺北市萬華區成都路10巷35-37號
+    # 縣市出現兩次，中間還夾郵遞區號。只切第一個會剩「108臺北市萬華區」，
+    # 然後 {2,3}區 會從「市萬華區」開始匹配，抓到錯的行政區。
+    rest = _CITY_RE.sub("", _COUNTRY_RE.sub("", address))
     dist_m = _DISTRICT_RE.search(rest)
     return city, (dist_m.group(1) if dist_m else None)
 
