@@ -29,6 +29,10 @@ collector 是普通 Python 腳本，跟 Claude 無關。skill 那層才是 Claud
 ```bash
 pip install -r requirements.txt
 
+# Actions 每週會 commit 資料回 main，所以動手前先同步。
+# 設定一次，之後 git pull 就預設 rebase：
+git config pull.rebase true
+
 python3 tests/test_pipeline.py            # 離線測試，不需網路
 python3 scripts/run_collectors.py --dry-run   # 抓但不寫檔
 python3 scripts/run_collectors.py             # 正式跑
