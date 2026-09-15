@@ -68,7 +68,7 @@ def main() -> int:
     if args.probe:
         return probe(args.probe, session)
 
-    robots = RobotsGate()
+    robots = RobotsGate(session=session)
     keywords = load_search_keywords()
     per_source_options = {"accupass": {"keywords": keywords} if keywords else {}}
 

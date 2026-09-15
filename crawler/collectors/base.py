@@ -65,7 +65,9 @@ class Collector(ABC):
     def __init__(self, session: Optional[requests.Session] = None,
                  robots: Optional[RobotsGate] = None, **options: Any):
         self.session = session or make_session()
-        self.robots = robots or RobotsGate()
+        # 共用同一個 session：robots.txt 也要用正常的 User-Agent 去抓，
+        # 否則會被 Cloudflare 擋掉然後誤判成「對方禁止抓取」。
+        self.robots = robots or RobotsGate(session=self.session)
         self.options = options
 
     @abstractmethod

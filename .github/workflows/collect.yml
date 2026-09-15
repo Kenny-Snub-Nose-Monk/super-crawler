@@ -36,6 +36,7 @@ jobs:
 
       - name: 離線測試（程式壞掉就別浪費對方頻寬）
         run: |
+          python tests/test_robots.py
           python tests/test_jsonld.py
           python tests/test_classify.py
           python tests/test_pipeline.py
