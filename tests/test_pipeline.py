@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from crawler.collectors.travel_taipei import TravelTaipeiCollector
 from crawler.normalize import TAIPEI
+from crawler.schema import Event
 from crawler.store import EventStore
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -27,7 +28,7 @@ def main():
     failures = []
 
     def check(label, cond, detail=""):
-        print(f"  {'PASS' if cond else 'FAIL'}  {label}{'  ' + detail if detail else ''}")
+        print(f"  {'PASS' if cond else 'FAIL'}  {label}{'  ' + str(detail) if detail else ''}")
         if not cond:
             failures.append(label)
 
@@ -79,6 +80,36 @@ def main():
     print("5. 標記過 not_my_thing 就不再出現")
     lang[0].feedback = "not_my_thing"
     check("已排除", store3.query(types=["language_exchange"]) == [])
+
+    print("6. 排除規則（用 2026-09-15 真實資料裡的雜訊標題）")
+    noise = EventStore(Path(tempfile.mkdtemp()) / "n.jsonl")
+    future = (now + timedelta(days=5)).isoformat(timespec="seconds")
+    mk2 = lambda i, title, **kw: Event(
+        source_platform="accupass", source_id=str(i), source_url="http://x",
+        title=title, type=kw.pop("type", "language_exchange"),
+        starts_at=future, **kw)
+    noise.upsert_many([
+        mk2(1, "英文線上課程免費體驗－零基礎怎麼學英文？菁英生活英文課程",
+            tags=["online"], venue=None, address=None),
+        mk2(2, "職場英文會話技巧：菁英商用英文會話課程免費體驗",
+            venue=None, address=None),
+        mk2(3, "圓山花博市集招商 - 好享市集", type="market",
+            venue="花博公園", address="臺北市中山區"),
+        mk2(4, "Galaxy 國際英語演講會 Toastmasters",
+            venue="犇亞會議中心", address="臺北市中山區復興北路99號"),
+        mk2(5, "週五小酌英文夜 Toastmasters", venue="Fly Bar",
+            address="臺北市萬華區成都路10巷"),
+    ])
+    noise.refresh_status()
+    cfg = dict(exclude_online=True, require_venue=True,
+               exclude_keywords=["線上課程", "免費體驗", "招商"])
+    kept = [e.source_id for e in noise.query(**cfg)]
+    check("線上活動被排除（有 online 標籤）", "1" not in kept, kept)
+    check("沒有地址的被排除", "2" not in kept, kept)
+    check("招商被關鍵字排除", "3" not in kept, kept)
+    check("真的 Toastmasters 留下來", {"4", "5"} <= set(kept), kept)
+    check("五筆剩兩筆", len(kept) == 2, len(kept))
+    check("不開排除時五筆都在", len(noise.query()) == 5)
 
     print()
     if failures:

@@ -71,7 +71,8 @@ def now_iso() -> str:
 TYPE_RULES: list[tuple[str, list[str]]] = [
     (EventType.OUTDOOR_CHALLENGE.value, [
         "攀岩", "抱石", "攀登", "深水", "dws", "deep water",
-        "溯溪", "越野", "trail run", "縱走", "登山", "百岳", "野營",
+        "溯溪", "越野", "越嶺", "trail run", "縱走", "登山", "百岳", "野營",
+        "健行", "古道", "小百岳",
         "獨木舟", "sup", "衝浪", "潛水", "free dive", "自由潛水",
         "bouldering", "climbing", "hiking", "canyoning", "mountaineering",
     ]),

@@ -155,6 +155,9 @@ class EventStore:
     def query(self, *, types: Optional[Iterable[str]] = None,
               tags: Optional[Iterable[str]] = None,
               city: Optional[str] = None,
+              exclude_keywords: Optional[Iterable[str]] = None,
+              exclude_online: bool = False,
+              require_venue: bool = False,
               start_after: Optional[datetime] = None,
               start_before: Optional[datetime] = None,
               signup_open: bool = False,
@@ -168,12 +171,22 @@ class EventStore:
         tag_set = set(tags) if tags else None
         status_set = set(statuses)
         skip_fb = set(exclude_feedback or ())
+        bad_words = [w.lower() for w in (exclude_keywords or ())]
         out = []
         for ev in self._events.values():
             if ev.status not in status_set:
                 continue
             if ev.feedback in skip_fb:
                 continue
+            # 排除規則在查詢時套用，不在抓取時 —— 資料留著，改規則不用重抓
+            if exclude_online and "online" in ev.tags:
+                continue
+            if require_venue and not (ev.address or ev.venue):
+                continue
+            if bad_words:
+                blob = f"{ev.title} {ev.description or ''}".lower()
+                if any(w in blob for w in bad_words):
+                    continue
             if type_set and ev.type not in type_set:
                 continue
             if tag_set and not tag_set.issubset(set(ev.tags)):
