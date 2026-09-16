@@ -136,6 +136,14 @@ class Collector(ABC):
                     return v
         return []
 
+    def probe(self) -> str:
+        """回傳這個來源第一手的原始回應，用來核對欄位。
+
+        對方改版或欄位對不上時先跑這個，再改對應 ——
+        不要憑猜的改 mapping。子類別覆寫成自己的端點。
+        """
+        raise NotImplementedError(f"{self.name} 還沒實作 probe()")
+
     def sleep(self) -> None:
         if self.delay_between_pages:
             time.sleep(self.delay_between_pages)

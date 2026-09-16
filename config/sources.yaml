@@ -11,6 +11,12 @@ sources:
     cities: [臺北市, 新北市]
     max_events_per_keyword: 25
 
+  taiwan_pathfinder:
+    enabled: true
+    # 戶外挑戰（攀岩／DWS／溪降）。資料源是網站前端自己在讀的
+    # 公開 Google Sheet CSV，有價格與報名狀態 —— 全站最缺的兩個欄位。
+    note: CSV 網址從 /openForBooking/ 的內嵌 script 動態抓取
+
   anncr:
     enabled: true
     # 表演藝術行事曆。/calendar 一個請求拿一整月，但它是全台的，

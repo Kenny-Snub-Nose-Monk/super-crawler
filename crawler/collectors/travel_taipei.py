@@ -39,6 +39,15 @@ class TravelTaipeiCollector(Collector):
         self.days_ahead = days_ahead
         self.endpoints = endpoints
 
+    def probe(self) -> str:
+        import json
+        today = date.today()
+        raw = self.get_json(f"{BASE}/{self.lang}/Events/Activity",
+                            params={"begin": today.isoformat(),
+                                    "end": (today + timedelta(days=30)).isoformat(),
+                                    "page": 1})
+        return json.dumps(raw, ensure_ascii=False, indent=2)[:4000]
+
     def fetch(self) -> Iterator[Event]:
         today = date.today()
         end = today + timedelta(days=self.days_ahead)

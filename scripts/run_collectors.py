@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import yaml
 
 from crawler.collectors.accupass import AccupassCollector
+from crawler.collectors.taiwan_pathfinder import TaiwanPathfinderCollector
 from crawler.collectors.anncr import AnncrCollector
 from crawler.collectors.base import make_session
 from crawler.collectors.travel_taipei import TravelTaipeiCollector
@@ -34,6 +35,7 @@ COLLECTORS = {
     "accupass": AccupassCollector,
     "anncr": AnncrCollector,
     "trendy_taipei": TrendyTaipeiCollector,
+    "taiwan_pathfinder": TaiwanPathfinderCollector,
 }
 
 CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
@@ -117,28 +119,21 @@ def main() -> int:
 
 
 def probe(name: str, session) -> int:
-    """把原始回應印出來。改版時先跑這個，再改對應。"""
+    """把來源第一手的原始回應印出來。改版時先跑這個，再改對應。"""
     if name not in COLLECTORS:
-        print(f"未知的來源: {name}")
+        print(f"未知的來源: {name}，可用: {list(COLLECTORS)}")
         return 2
-    c = COLLECTORS[name](session=session)
+    c = COLLECTORS[name](session=session, robots=RobotsGate(session=session))
     c.max_pages = 1
     try:
-        raw = c.get_json(*_probe_target(c))
-    except Exception as e:
+        print(c.probe())
+    except NotImplementedError as e:
+        print(e)
+        return 2
+    except Exception as e:  # noqa: BLE001
         print(f"抓取失敗: {type(e).__name__}: {e}")
         return 1
-    print(json.dumps(raw, ensure_ascii=False, indent=2)[:4000])
     return 0
-
-
-def _probe_target(c):
-    from datetime import date, timedelta
-    from crawler.collectors.travel_taipei import BASE
-    today = date.today()
-    return (f"{BASE}/{c.lang}/Events/Activity",
-            {"begin": today.isoformat(),
-             "end": (today + timedelta(days=30)).isoformat(), "page": 1})
 
 
 if __name__ == "__main__":
