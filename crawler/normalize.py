@@ -172,6 +172,23 @@ _CITY_RE = re.compile(
 # 然後 {2,3}區 會抓到「灣中壢區」。
 _COUNTRY_RE = re.compile(r"(台灣|臺灣|Taiwan)", re.IGNORECASE)
 
+# 這些「X區」不是行政區，比對時要跳過
+_NOT_DISTRICT_SUFFIX = ("園區", "社區", "校區", "廠區", "營區", "展區",
+                        "專區", "特區", "商區", "街區", "景區", "災區")
+_NOT_DISTRICT = {"市區", "地區", "郊區", "本區", "該區", "全區"}
+
+# 雙北的行政區是固定的 41 個。先用白名單比對，命中就是確定答案；
+# 沒命中才退回通用的「X區」樣式（給其他縣市用）。
+_TAIPEI_DISTRICTS = (
+    "中正區 大同區 中山區 松山區 大安區 萬華區 信義區 士林區 北投區 內湖區 南港區 文山區"
+).split()
+_NEW_TAIPEI_DISTRICTS = (
+    "板橋區 三重區 中和區 永和區 新莊區 新店區 樹林區 鶯歌區 三峽區 淡水區 汐止區 瑞芳區 "
+    "土城區 蘆洲區 五股區 泰山區 林口區 深坑區 石碇區 坪林區 三芝區 石門區 八里區 平溪區 "
+    "雙溪區 貢寮區 金山區 萬里區 烏來區"
+).split()
+_KNOWN_DISTRICTS = tuple(_TAIPEI_DISTRICTS) + tuple(_NEW_TAIPEI_DISTRICTS)
+
 
 def _normalize_city(name: str) -> str:
     """台/臺 統一成臺，否則同一個縣市會出現兩種寫法，過濾時會漏。"""
@@ -189,9 +206,21 @@ def parse_location(address: Optional[str]) -> tuple[Optional[str], Optional[str]
     #   台灣台北市108臺北市萬華區成都路10巷35-37號
     # 縣市出現兩次，中間還夾郵遞區號。只切第一個會剩「108臺北市萬華區」，
     # 然後 {2,3}區 會從「市萬華區」開始匹配，抓到錯的行政區。
+    # 雙北先查白名單 —— 命中就是確定的，不會被「文創園區」這類詞干擾
+    for name in _KNOWN_DISTRICTS:
+        if name in address:
+            return city, name
+
     rest = _CITY_RE.sub("", _COUNTRY_RE.sub("", address))
-    dist_m = _DISTRICT_RE.search(rest)
-    return city, (dist_m.group(1) if dist_m else None)
+    # 其他縣市：掃過所有「X區」，跳過不是行政區的詞。
+    # 真實案例：「松山文創園區 巴洛克花園（臺北市信義區光復南路）」
+    # 第一個命中的是「文創園區」，正確答案是後面的「信義區」。
+    for m in _DISTRICT_RE.finditer(rest):
+        name = m.group(1)
+        if name in _NOT_DISTRICT or any(name.endswith(w) for w in _NOT_DISTRICT_SUFFIX):
+            continue
+        return city, name
+    return city, None
 
 
 # --- 費用 -------------------------------------------------------------

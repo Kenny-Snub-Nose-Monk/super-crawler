@@ -20,8 +20,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import yaml
 
 from crawler.collectors.accupass import AccupassCollector
+from crawler.collectors.anncr import AnncrCollector
 from crawler.collectors.base import make_session
 from crawler.collectors.travel_taipei import TravelTaipeiCollector
+from crawler.collectors.trendy_taipei import TrendyTaipeiCollector
 from crawler.normalize import now_iso
 from crawler.robots import RobotsGate
 from crawler.store import EventStore
@@ -30,6 +32,8 @@ from crawler.store import EventStore
 COLLECTORS = {
     "travel_taipei": TravelTaipeiCollector,
     "accupass": AccupassCollector,
+    "anncr": AnncrCollector,
+    "trendy_taipei": TrendyTaipeiCollector,
 }
 
 CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"

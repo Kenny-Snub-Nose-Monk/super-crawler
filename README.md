@@ -58,7 +58,8 @@ python3 scripts/run_collectors.py --probe travel_taipei   # 看原始回應
 |---|---|---|---|
 | 臺北旅遊網 Open API | 已上線，跑過一次 | API | 25 筆，22 筆是展覽；address/ticket 實際全空 |
 | Accupass | 已實作，待第一次執行 | **第 1 層 JSON-LD** | 偵查完成：robots 允許、搜尋頁 SSR、事件頁有 schema.org Event |
-| 潮臺北 | 未實作 | ? | 需先偵查 |
+| 嚷嚷社 anncr.co | 已實作，待執行 | **第 1 層 ItemList** | 一個請求拿當月 402 筆；全台，靠場地表過濾雙北 |
+| 潮臺北 | 已實作，待執行 | 第 2 層 內部 API | 季節性品牌，全年僅 14 筆且多已結束 |
 | Meetup | **放棄** | — | 官方 API 需付費 Pro 訂閱且不保證核准 |
 
 **第一次真實抓取要在 GitHub Actions 上跑。** 開發環境的對外網路是白名單制，

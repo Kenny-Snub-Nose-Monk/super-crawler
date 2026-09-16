@@ -11,10 +11,18 @@ sources:
     cities: [臺北市, 新北市]
     max_events_per_keyword: 25
 
-  # 還沒實作 —— 需要先在有外網的環境跑一次 --probe 看實際結構
+  anncr:
+    enabled: true
+    # 表演藝術行事曆。/calendar 一個請求拿一整月，但它是全台的，
+    # 縣市靠 crawler/venues.py 的場地對照表過濾。
+    cities: [臺北市, 新北市]
+    keep_unknown_venue: false
+
   trendy_taipei:
-    enabled: false
-    note: 官網活動列表頁，需要解析 HTML
+    enabled: true
+    # 季節性品牌，整年只有十幾筆且集中在 7-9 月。
+    # 留著是為了下一季自動補上，平常不會有東西。
+    note: 內部 API /tw/Event/GetEvents，無 robots.txt
   meetup:
     enabled: false
     note: 官方 API 需付費 Meetup Pro 訂閱（約 US$55/月）且不保證核准；放棄

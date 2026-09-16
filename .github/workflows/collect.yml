@@ -40,6 +40,7 @@ jobs:
           python tests/test_jsonld.py
           python tests/test_classify.py
           python tests/test_pipeline.py
+          python tests/test_new_sources.py
 
       - name: 抓取
         run: python scripts/run_collectors.py

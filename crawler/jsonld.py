@@ -67,6 +67,33 @@ def find_event(html: str) -> Optional[dict]:
     return None
 
 
+def find_events_in_itemlist(html: str) -> list[dict]:
+    """把 ItemList 裡包著的 Event 全部拿出來。
+
+    有些站不是一頁一個活動，而是在列表頁用一個 ItemList 裝一整個月的活動
+    （嚷嚷社的 /calendar 就是，一次 402 筆）。這比「搜尋頁 + N 個詳情頁」
+    省掉 N 個請求，是目前看過最划算的取得方式。
+
+    itemListElement 的每個元素通常是 {"@type":"ListItem","item":{...}}，
+    但也允許直接就是物件，兩種都吃。
+    """
+    events: list[dict] = []
+    for node in iter_jsonld(html):
+        if node.get("@type") != "ItemList":
+            continue
+        for element in node.get("itemListElement") or []:
+            if not isinstance(element, dict):
+                continue
+            item = element.get("item") if "item" in element else element
+            if not isinstance(item, dict):
+                continue
+            t = item.get("@type")
+            types = t if isinstance(t, list) else [t]
+            if any(isinstance(x, str) and x.endswith("Event") for x in types if x):
+                events.append(item)
+    return events
+
+
 def _text(value: Any) -> Optional[str]:
     """schema.org 的欄位可能是字串，也可能是 {"@type":..., "name":...}。"""
     if value in (None, ""):
@@ -147,7 +174,8 @@ def event_from_jsonld(node: dict, *, source_platform: str, source_id: str,
         title=title,
         type=classify(title, description),
         description=description,
-        organizer=_text(node.get("organizer")),
+        # 表演藝術類的站常只填 performer 不填 organizer（嚷嚷社就是）
+        organizer=_text(node.get("organizer")) or _text(node.get("performer")),
         tags=tags,
         starts_at=to_taipei_iso(node.get("startDate")),
         ends_at=to_taipei_iso(node.get("endDate"), end_of_day=True),
