@@ -6,3 +6,6 @@ venv/
 .DS_Store
 data/*.tmp
 logs/
+
+# 工作用的票與草稿。留在本機，不進版控。
+.scratch/

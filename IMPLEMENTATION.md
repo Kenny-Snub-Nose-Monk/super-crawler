@@ -6,7 +6,9 @@
 
 ## 0. 一個先講的環境限制
 
-開發環境（雲端容器和你電腦的 Cowork VM）**對外網路是白名單制**，實測結果：
+### 2026-09-15 的實測（已過時，留著當紀錄）
+
+開發環境（雲端容器和你電腦的 Cowork VM）**對外網路是白名單制**：
 
 | 主機 | 雲端容器 | 你電腦的 VM |
 |---|---|---|
@@ -14,12 +16,28 @@
 | `data.gov.tw` / `trendy.taipei` / `meetup.com` / `accupass.com` / `kktix.cc` | ✗ | ✗ |
 | `github.com` / `pypi.org` | ✓ | ✗ |
 
-**影響**：collector 沒辦法在這裡跑。這不是 bug，是網路政策。
+### 2026-09-21 重測：上表大部分已經不成立
 
-**因此架構上做了兩件事**：
+從桌面版 Claude Code（跑在你的 Mac 上，不是雲端容器）實測：
 
-1. 執行位置定在 **GitHub Actions**（runner 有完整外網）。原本「先用 Cowork 排程起步、之後再搬到 Actions」的建議在這個網路政策下不成立，直接跳過中間步驟。
-2. 所有邏輯都做成**離線可測**。`tests/test_pipeline.py` 用 `tests/fixtures/` 裡錄下來的樣本，把「對應 → 寫入 → upsert → 查詢」整條跑完，不碰網路。
+| 主機 | 結果 |
+|---|---|
+| `data.gov.tw` / `accupass.com` / `kktix.cc` / `meetup.com` | **200** |
+| `trendy.taipei`（不加 `www.`） | **200** |
+| `www.trendy.taipei` | SSL 憑證主體不符 —— 是**憑證**問題，不是網路被擋 |
+| `github.com` / `pypi.org` | 200 |
+| `www.travel.taipei` | **403** —— 換瀏覽器 User-Agent 也一樣，open-api 路徑也一樣 |
+
+**所以偵查現在可以在本機做了。** 不用再為了看一眼回應結構去開一次 Actions。
+只有 travel.taipei 仍然不通，而且那個 403 與 UA 無關，比較像是對方對這個網段的政策。
+
+**但架構上那兩個決定不變，只是理由換了**：
+
+1. 執行位置仍然是 **GitHub Actions**。理由不再是「本機連不到」，而是
+   「排程要自己跑、資料要自動 commit 回 repo」—— 這兩件事本機做不到。
+2. 所有邏輯仍然**離線可測**。`tests/test_pipeline.py` 用 `tests/fixtures/` 裡錄下來的
+   樣本，把「對應 → 寫入 → upsert → 查詢」整條跑完，不碰網路。
+   **本機連得到網路不是放棄這件事的理由** —— CI 不該依賴外站活著。
 
 臺北旅遊網的欄位名稱是從官方 Swagger 文件確認的，不是猜的。但**回應的最外層包裝沒有文件**，所以 `Collector.unwrap()` 會試幾個常見的鍵再退回「找第一個 list of dict」。第一次在 Actions 上跑之前，先跑 `--probe` 看真實結構。
 
@@ -130,7 +148,16 @@ jsonl 一行一筆，diff 乾淨；SQLite 是 binary，diff 完全看不懂。
 
 ## 10. 還沒做的
 
-- **潮臺北 / Meetup collector** —— 需要先在有外網的環境跑 `--probe` 看實際結構。潮臺北要解析 HTML（比 API 脆弱，改版就壞）；Meetup 的 GraphQL 要 OAuth。
+- **Meetup 的第二段** —— 第一段（主題頁的 schema.org JSON-LD，階梯第 1 層）已經實作，
+  見 `crawler/collectors/meetup.py`。**不需要官方 API，也不需要 GraphQL / OAuth** ——
+  上一版這裡寫錯了，害這個來源被擱置。取得路徑與取捨見
+  [ADR 0001](./docs/adr/0001-meetup-robots-whitelist.md)。
+
+  還沒做的是第二段（群組頁的內嵌 JSON，階梯第 2 層）：結束時間、系列、報名人數。
+  以及英中行政區對照 —— 在那之前 Meetup 的行政區幾乎全是「未知」，縣市過濾器
+  實際上不太會作用。剩下的工作切成了七張票，放在本機的 `.scratch/meetup/issues/`
+  （那個目錄不進版控，所以你在 GitHub 上看不到它）。
+  （潮臺北 collector 也已經實作了，見 `crawler/collectors/trendy_taipei.py`。）
 - **`interests.yaml` 還沒被程式讀** —— 目前只是規格。`boost` / `exclude` 的排序邏輯要跟 skill 一起寫。
 - **回饋迴路** —— `feedback` 欄位已經預留並保護好了，但還沒有讓你標記的介面。這是決定「第 8 週你還會不會用」的關鍵，優先度應該高於加來源。
 - **IG / FB / Threads** —— 依你的決定先跳過。附帶一提，Threads 官方 API 只能讀你自己授權帳號的內容，讀別人的公開貼文不在功能範圍內，所以那條路不是「還沒做」，是「官方不給做」。

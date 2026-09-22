@@ -1,4 +1,9 @@
 # 來源開關。壞掉的來源先關掉，不要刪程式碼。
+#
+# ⚠️ 2026-09-22：**這個檔案目前還沒有任何程式在讀它。** enabled 改成 false
+# 不會讓來源停掉 —— 真正決定跑哪些來源的是 scripts/run_collectors.py 的
+# COLLECTORS，以及 --source 參數。要讓這裡的設定真的生效是 issue 03 的工作
+# （它同時要把 type_map 讀進來）。在那之前這裡是規格，不是開關。
 sources:
   travel_taipei:
     enabled: true
@@ -30,5 +35,12 @@ sources:
     # 留著是為了下一季自動補上，平常不會有東西。
     note: 內部 API /tw/Event/GetEvents，無 robots.txt
   meetup:
-    enabled: false
-    note: 官方 API 需付費 Meetup Pro 訂閱（約 US$55/月）且不保證核准；放棄
+    enabled: true
+    # 路徑式的主題頁 /find/tw--taipei/<topic>/：robots 允許，而且列在 Meetup
+    # 自己的 sitemap 裡。一個請求約 30 筆 schema.org Event。**不碰官方 API** ——
+    # 「要付費 Pro 訂閱」講的是另一條取得方式，不是這個來源整個不能用。
+    # 取捨與實測數字見 docs/adr/0001-meetup-robots-whitelist.md
+    topics: [language-exchange]   # issue 03 會改成從情境的活動類型推出來
+    cities: [臺北市, 新北市]
+    # 已知缺口：Meetup 的地址多半是英文，既有的中文解析吃不下，所以現在
+    # 行政區幾乎全是未知、縣市過濾實際上不太會作用。issue 02 補。

@@ -57,14 +57,34 @@ def _flatten(data: Any) -> Iterator[Any]:
             yield from _flatten(data["@graph"])
 
 
+def _is_event(node: dict) -> bool:
+    """@type 可能是字串也可能是陣列，而且有一堆子型別（MusicEvent、
+    SocialEvent…），所以比對結尾而不是相等。"""
+    t = node.get("@type")
+    types = t if isinstance(t, list) else [t]
+    return any(isinstance(x, str) and x.endswith("Event") for x in types if x)
+
+
 def find_event(html: str) -> Optional[dict]:
-    """找出頁面裡的 Event 節點。@type 可能是字串或陣列。"""
+    """找出頁面裡的第一個 Event 節點。用在「一頁一個活動」的詳情頁。"""
     for node in iter_jsonld(html):
-        t = node.get("@type")
-        types = t if isinstance(t, list) else [t]
-        if any(isinstance(x, str) and x.endswith("Event") for x in types if x):
+        if _is_event(node):
             return node
     return None
+
+
+def find_all_events(html: str) -> list[dict]:
+    """把頁面裡所有 Event 節點都拿出來。
+
+    有些站的列表頁不用 ItemList 包，直接放一個 Event 的裸陣列
+    （Meetup 的主題頁就是，一個請求約 30 筆）。iter_jsonld 已經把陣列攤平了，
+    這裡只負責篩。
+
+    跟 find_events_in_itemlist 分開而不是合併，是因為兩者能給的保證不同：
+    ItemList 有外層容器可以認，確定是「這一頁要列的東西」；裸陣列沒有，
+    只能靠 @type 篩，所以頁面上任何一個 Event 都會被撈進來。
+    """
+    return [node for node in iter_jsonld(html) if _is_event(node)]
 
 
 def find_events_in_itemlist(html: str) -> list[dict]:
@@ -87,9 +107,7 @@ def find_events_in_itemlist(html: str) -> list[dict]:
             item = element.get("item") if "item" in element else element
             if not isinstance(item, dict):
                 continue
-            t = item.get("@type")
-            types = t if isinstance(t, list) else [t]
-            if any(isinstance(x, str) and x.endswith("Event") for x in types if x):
+            if _is_event(item):
                 events.append(item)
     return events
 
@@ -108,6 +126,35 @@ def _text(value: Any) -> Optional[str]:
     if isinstance(value, list) and value:
         return _text(value[0])
     return None
+
+
+def _address(value: Any) -> Optional[str]:
+    """地址可能是一個字串，也可能是 schema.org 的 PostalAddress 物件。
+
+    PostalAddress 沒有 name 欄位，所以不能直接丟給 _text() —— 那會回 None，
+    然後 parse_location 拿不到東西，整批活動的縣市與行政區都變成未知。
+    Accupass 給的是字串、Meetup 給的是物件，兩種都要吃。
+
+    去重是因為來源常常把同一個值填兩次（真實樣本：
+    "No. 32, Nanyang St, Zhongzheng District, Taipei City,, Taipei City"）。
+    """
+    if isinstance(value, dict):
+        parts: list[str] = []
+        for key in ("streetAddress", "addressLocality", "postalCode"):
+            v = value.get(key)
+            if not isinstance(v, str) or not v.strip():
+                continue
+            v = v.strip()
+            # 比子字串而不是比片段：addressLocality 幾乎都已經包含在
+            # streetAddress 裡面了（真實樣本 "…Zhongzheng District, Taipei
+            # City,, Taipei City" 的 locality 就是 "Taipei City"）。
+            # 比片段的話一個都去不掉，只會把重複再加一次。
+            if any(v in p for p in parts):
+                continue
+            parts.append(v)
+        if parts:
+            return ", ".join(parts)
+    return _text(value)
 
 
 def _offer_price(node: dict) -> tuple[Optional[bool], Optional[str]]:
@@ -150,7 +197,7 @@ def event_from_jsonld(node: dict, *, source_platform: str, source_id: str,
     if not isinstance(location, dict):
         location = {}
     venue = _text(location.get("name"))
-    address = _text(location.get("address"))
+    address = _address(location.get("address"))
     city, district = parse_location(address)
 
     is_free, price_text = _offer_price(node)

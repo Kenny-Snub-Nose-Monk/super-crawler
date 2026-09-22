@@ -48,9 +48,11 @@ python3 scripts/run_collectors.py --probe travel_taipei   # 看原始回應
 | `crawler/normalize.py` | 時間／分類／地點／費用的共用解析 |
 | `crawler/collectors/` | 一個來源一支 |
 | `config/interests.yaml` | **你要親手維護的檔案** |
-| `config/sources.yaml` | 來源開關 |
+| `config/sources.yaml` | 來源的規格與備註。**目前還沒有程式讀它**，不是開關 |
 | `data/events.jsonl` | 活動表 |
 | `tests/` | 離線測試與錄下的樣本 |
+| `CONTEXT.md` | 領域語彙。詞不確定的時候先查這裡 |
+| `docs/adr/` | 決策紀錄。「為什麼當初這樣做」查這裡 |
 
 ## 目前狀態
 
@@ -61,7 +63,7 @@ python3 scripts/run_collectors.py --probe travel_taipei   # 看原始回應
 | Taiwan Pathfinder | 已實作，待執行 | 第 2 層 公開 CSV | 戶外挑戰；**唯一有價格與報名狀態的來源** |
 | 嚷嚷社 anncr.co | 已實作，待執行 | **第 1 層 ItemList** | 一個請求拿當月 402 筆；全台，靠場地表過濾雙北 |
 | 潮臺北 | 已實作，待執行 | 第 2 層 內部 API | 季節性品牌，全年僅 14 筆且多已結束 |
-| Meetup | **放棄** | — | 官方 API 需付費 Pro 訂閱且不保證核准 |
+| Meetup | 已實作，待第一次執行 | **第 1 層 JSON-LD** | **不需要官方 API**。主題頁一個請求約 30 筆；結束時間與系列要第二段，見 [ADR 0001](./docs/adr/0001-meetup-robots-whitelist.md) |
 
 **第一次真實抓取要在 GitHub Actions 上跑。** 開發環境的對外網路是白名單制，
 台灣的來源全部連不到，只有 github.com 通。詳見 `IMPLEMENTATION.md`。
