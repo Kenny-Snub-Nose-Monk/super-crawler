@@ -75,8 +75,12 @@ function writeForm(params) {
 
 // --- 參數 ↔ 網址（分享連結、重新整理後保留條件）---
 
+const URL_KEYS = ["types", ...TEXT_FIELDS, ...FLAGS];
+
 function paramsToUrl(params) {
-  const sp = new URLSearchParams();
+  // 只改過濾條件自己的欄位；其他參數（例如 relay=1）是別人的，要留著
+  const sp = new URLSearchParams(location.search);
+  for (const k of URL_KEYS) sp.delete(k);
   for (const [k, v] of Object.entries(params)) {
     sp.set(k, Array.isArray(v) ? v.join(",") : v === true ? "1" : v);
   }
