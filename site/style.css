@@ -42,9 +42,21 @@ body {
 /* --- 頁首 --- */
 
 .masthead { padding: 28px 0 12px; }
-.masthead .wrap { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.masthead .wrap { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
 .masthead h1 { margin: 0; font-size: 26px; letter-spacing: 0.02em; }
-.stamp { margin: 0; color: var(--muted); font-size: 13px; }
+.stamp { margin: 0 auto 0 0; color: var(--muted); font-size: 13px; }
+.relay {
+  font: inherit;
+  font-size: 13px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+}
+.relay[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.relay[aria-pressed="true"]::before { content: "● "; }
 
 /* --- 過濾列 --- */
 
@@ -131,7 +143,13 @@ input:focus-visible, select:focus-visible, button:focus-visible, .chip:focus-wit
   gap: 12px;
 }
 
-.card { min-width: 0; }
+.card { min-width: 0; border-radius: var(--radius); }
+/* get_event 被呼叫時標出那張卡片 */
+.card.flash { animation: flash 2.4s ease-out; }
+@keyframes flash {
+  0%, 40% { box-shadow: 0 0 0 3px var(--accent); }
+  100% { box-shadow: 0 0 0 3px transparent; }
+}
 .card-link {
   display: flex;
   flex-direction: column;

@@ -162,7 +162,7 @@ function run(params, { fromAgent = false } = {}) {
   resultsEl.replaceChildren();
   summaryEl.textContent = current.length ? `${current.length} 場活動` : "沒有符合條件的活動";
   agentNote.hidden = !fromAgent;
-  if (fromAgent) agentNote.textContent = "這組條件是 Claude 剛剛透過 WebMCP 查的";
+  if (fromAgent) agentNote.textContent = "這組條件來自 AI 助理的查詢（WebMCP 工具呼叫）";
   renderMore(params);
   paramsToUrl(params);
   return current;

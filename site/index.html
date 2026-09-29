@@ -6,12 +6,24 @@
   <title>雙北活動</title>
   <meta name="description" content="雙北活動搜尋。網頁和 Claude（透過 WebMCP）查的是同一份資料、同一套條件。">
   <link rel="stylesheet" href="style.css">
+  <script>
+    // WebMCP 的頁內傳輸只接受同源訊息（預設是任何來源）
+    window.__webModelContextOptions = {
+      transport: { tabServer: { allowedOrigins: [location.origin] } },
+    };
+  </script>
+  <!-- 版本鎖定、vendor 進 repo：scripts/vendor_mcp_b.sh -->
+  <script src="vendor/mcp-b/global.iife.js"></script>
 </head>
 <body>
   <header class="masthead">
     <div class="wrap">
       <h1>雙北活動</h1>
       <p class="stamp" id="stamp">載入中…</p>
+      <button type="button" class="relay" id="relay" aria-pressed="false"
+              title="把這個頁面的搜尋工具交給本機的 webmcp-local-relay，讓 Claude Code 呼叫">
+        連接本機 AI 助理
+      </button>
     </div>
   </header>
 
@@ -78,5 +90,6 @@
   </template>
 
   <script type="module" src="app.js"></script>
+  <script type="module" src="webmcp.js"></script>
 </body>
 </html>
