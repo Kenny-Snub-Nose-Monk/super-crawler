@@ -155,6 +155,8 @@ class EventStore:
     def query(self, *, types: Optional[Iterable[str]] = None,
               tags: Optional[Iterable[str]] = None,
               city: Optional[str] = None,
+              keyword: Optional[str] = None,
+              free_only: bool = False,
               exclude_keywords: Optional[Iterable[str]] = None,
               exclude_online: bool = False,
               require_venue: bool = False,
@@ -164,9 +166,15 @@ class EventStore:
               exclude_feedback: Iterable[str] = ("not_my_thing",),
               statuses: Iterable[str] = (EventStatus.UPCOMING.value,
                                          EventStatus.ONGOING.value),
+              now: Optional[datetime] = None,
               ) -> list[Event]:
-        """三個使用情境都是這個函式換參數。"""
-        now = datetime.now(TAIPEI)
+        """三個使用情境都是這個函式換參數。
+
+        網站的 JS 有一份同語意的實作（site/query.js），兩邊共用
+        tests/fixtures/query_cases.json。改這裡的行為時，那份案例與 JS 要一起改。
+        """
+        now = now or datetime.now(TAIPEI)
+        needle = (keyword or "").strip().lower()
         type_set = set(types) if types else None
         tag_set = set(tags) if tags else None
         status_set = set(statuses)
@@ -193,6 +201,11 @@ class EventStore:
                 continue
             if city and ev.city != city:
                 continue
+            # is_free 是三態，None（不知道）不算免費
+            if free_only and ev.is_free is not True:
+                continue
+            if needle and needle not in _search_blob(ev):
+                continue
             start = _parse(ev.starts_at)
             if start_after and (start is None or start < start_after):
                 continue
@@ -205,7 +218,18 @@ class EventStore:
                 if deadline and deadline < now:
                     continue
             out.append(ev)
-        return sorted(out, key=lambda e: e.starts_at or "9999")
+        # upcoming 在前：ongoing 裡混著開始於好幾年前的長期活動，
+        # 單純照開始時間排會讓它們擋在最前面
+        return sorted(out, key=lambda e: (_STATUS_RANK.get(e.status, 9),
+                                          e.starts_at or "9999"))
+
+
+_STATUS_RANK = {EventStatus.UPCOMING.value: 0, EventStatus.ONGOING.value: 1}
+
+
+def _search_blob(ev: Event) -> str:
+    parts = [ev.title, ev.title_en, ev.description, ev.venue, ev.organizer, *ev.tags]
+    return " ".join(p for p in parts if p).lower()
 
 
 def _parse(iso: Optional[str]) -> Optional[datetime]:

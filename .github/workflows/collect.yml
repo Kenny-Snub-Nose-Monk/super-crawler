@@ -44,6 +44,7 @@ jobs:
           python tests/test_taiwan_pathfinder.py
           python tests/test_meetup.py
           python tests/test_district.py
+          python tests/test_query_cases.py
 
       - name: 抓取
         run: python scripts/run_collectors.py
