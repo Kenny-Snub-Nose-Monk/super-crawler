@@ -12,6 +12,8 @@ from __future__ import annotations
 
 from typing import Optional
 
+from .normalize import _norm_en
+
 # 場地關鍵字 → (縣市, 行政區)
 VENUE_CITY: dict[str, tuple[str, Optional[str]]] = {
     # 台北 —— 表演場館
@@ -58,6 +60,22 @@ VENUE_CITY: dict[str, tuple[str, Optional[str]]] = {
     "宜蘭": ("宜蘭縣", None),
     "花蓮": ("花蓮縣", None),
     "臺東": ("臺東縣", None),
+
+    # --- 英文地標 ---
+    # Meetup 這種國際平台的場地名是英文的，而且常常是地標而不是地址
+    # （"Taipei Main Station"、"Da An Park Playground / Gym"）。
+    # 地址解析對這種完全無能為力 —— 地標名推行政區需要的是一份表，不是規則。
+    "Taipei Main Station": ("臺北市", "中正區"),
+    "Taipei Railway Station": ("臺北市", "中正區"),
+    "Daan Park": ("臺北市", "大安區"),          # 正規化後涵蓋 Da An / DaAn / Da’an
+    "Daan Forest Park": ("臺北市", "大安區"),
+    "大安森林公園": ("臺北市", "大安區"),
+    "Bailing Rugby": ("臺北市", "士林區"),     # 百齡運動場，通河街上
+    "百齡運動": ("臺北市", "士林區"),
+    "Chiang Kai-Shek Memorial": ("臺北市", "中正區"),
+    "Taipei 101": ("臺北市", "信義區"),
+    "Ximending": ("臺北市", "萬華區"),
+    "Shilin Night Market": ("臺北市", "士林區"),
 }
 
 # 場地名本身就含縣市時直接用（放在對照表之後當退路）
@@ -69,8 +87,12 @@ def lookup(venue: Optional[str]) -> tuple[Optional[str], Optional[str]]:
     """回傳 (縣市, 行政區)。查不到回 (None, None) —— 不要猜。"""
     if not venue:
         return None, None
+    # 比對前兩邊都正規化：拿掉大小寫、空白、句點與引號。中文鍵不受影響，
+    # 英文地標則不用為了 "Da An Park" / "DaAn Park" / "DA AN PARK" 各寫一行。
+    # 用 normalize 那支而不是自己寫一個，否則兩邊的規則會慢慢長歪。
+    norm = _norm_en(venue)
     for key, (city, district) in VENUE_CITY.items():
-        if key in venue:
+        if _norm_en(key) in norm:
             return city, district
     for hint in _CITY_HINTS:
         if hint in venue:

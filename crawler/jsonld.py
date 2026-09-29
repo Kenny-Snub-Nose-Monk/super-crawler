@@ -15,6 +15,7 @@ from typing import Any, Iterator, Optional
 from .normalize import (classify, detect_free, detect_languages,
                         parse_location, strip_html, to_taipei_iso)
 from .schema import Event, EventStatus
+from .venues import lookup as lookup_venue
 
 _LD_RE = re.compile(
     r'<script[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
@@ -199,6 +200,16 @@ def event_from_jsonld(node: dict, *, source_platform: str, source_id: str,
     venue = _text(location.get("name"))
     address = _address(location.get("address"))
     city, district = parse_location(address)
+    # 地址解不出行政區時退回場地表。順序是刻意的：地址是結構化資料，
+    # 場地名是人打的字串 —— 地址說得出來就別問場地。
+    # 需要這一步是因為有些場地根本是地標而不是地址（"Taipei Main Station"），
+    # 那種東西用規則推不出來，只能查表。
+    if district is None:
+        v_city, v_district = lookup_venue(venue)
+        if v_district:
+            city, district = v_city, v_district
+        elif city is None:
+            city = v_city
 
     is_free, price_text = _offer_price(node)
     if is_free is None:

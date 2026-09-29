@@ -154,8 +154,8 @@ jsonl 一行一筆，diff 乾淨；SQLite 是 binary，diff 完全看不懂。
   [ADR 0001](./docs/adr/0001-meetup-robots-whitelist.md)。
 
   還沒做的是第二段（群組頁的內嵌 JSON，階梯第 2 層）：結束時間、系列、報名人數。
-  以及英中行政區對照 —— 在那之前 Meetup 的行政區幾乎全是「未知」，縣市過濾器
-  實際上不太會作用。剩下的工作切成了七張票，放在本機的 `.scratch/meetup/issues/`
+  （英中行政區對照已經做了，見 `normalize.EN_DISTRICTS` 與 `venues.py` 的英文地標，
+  實測 45/50。）剩下的工作切成了七張票，放在本機的 `.scratch/meetup/issues/`
   （那個目錄不進版控，所以你在 GitHub 上看不到它）。
   （潮臺北 collector 也已經實作了，見 `crawler/collectors/trendy_taipei.py`。）
 - **`interests.yaml` 還沒被程式讀** —— 目前只是規格。`boost` / `exclude` 的排序邏輯要跟 skill 一起寫。

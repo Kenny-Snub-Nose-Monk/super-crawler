@@ -65,11 +65,20 @@ def main():
           all(e.type == "language_exchange" for e in evs),
           [(e.title[:18], e.type) for e in evs if e.type != "language_exchange"])
 
-    print("\n地理 —— 01 只保證不誤判，行政區解析是 issue 02")
+    print("\n地理")
     zhongli = by["316415672"]          # 中壢的那場，tw--taipei 半徑溢出來的
     check("中壢那筆沒有被當成雙北", zhongli.city not in ("臺北市", "新北市"), zhongli.city)
-    resolved = sum(1 for e in evs if e.district)
-    print(f"        （目前行政區解析 {resolved}/6，issue 02 會把它拉起來）")
+    # 這 6 筆裡：1 筆線上沒地址、1 筆中壢（本來就該解不出來），其餘 4 筆要全中。
+    # issue 02 之前這裡是 0/6 —— 地址是英文的，中文解析一筆都吃不下。
+    want = {"316644711": ("臺北市", "信義區"),
+            "316442352": ("新北市", "永和區"),
+            "316468148": ("臺北市", "中正區"),
+            "316399839": ("臺北市", "松山區")}
+    for sid, (wc, wd) in want.items():
+        e = by[sid]
+        check(f"{sid} → {wc}{wd}", (e.city, e.district) == (wc, wd), (e.city, e.district))
+    check("線上那筆沒有地址所以沒有行政區", by["316582208"].district is None,
+          by["316582208"].district)
 
     # 上面那條現在是靠「解析不出來」通過的，不是靠過濾器擋下來的。
     # 過濾器本身要另外釘住，否則 issue 02 把縣市解出來的那天才會發現它壞了。

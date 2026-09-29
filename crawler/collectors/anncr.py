@@ -27,7 +27,6 @@ from typing import Iterator, Optional
 
 from ..jsonld import event_from_jsonld, find_events_in_itemlist
 from ..schema import Event
-from ..venues import lookup as lookup_venue
 from .base import Collector
 
 BASE = "https://anncr.co"
@@ -63,9 +62,10 @@ class AnncrCollector(Collector):
             if ev is None:
                 continue
 
-            # location 只有場地名，縣市靠對照表補
-            city, district = lookup_venue(ev.venue)
-            ev.city, ev.district = city, district
+            # location 只有場地名，縣市靠對照表補 —— 這件事現在由
+            # jsonld.event_from_jsonld 統一做了（地址優先、場地表當退路），
+            # 這裡再查一次會反轉那個優先序，所以只讀結果不重算。
+            city = ev.city
 
             if city is None:
                 unknown += 1

@@ -189,6 +189,130 @@ _NEW_TAIPEI_DISTRICTS = (
 ).split()
 _KNOWN_DISTRICTS = tuple(_TAIPEI_DISTRICTS) + tuple(_NEW_TAIPEI_DISTRICTS)
 
+# 英文行政區 → 中文行政區。**這是一份清單，加一行就好，不用改邏輯。**
+#
+# 為什麼需要它：Meetup 的地址是英文的，上面那份中文白名單一筆都吃不下，
+# 所以在這張表出現之前，Meetup 的活動整批落在「未知」。
+#
+# 鍵值比對前會先正規化（見 _norm_en）：大小寫、空白、連字號、句點、
+# 以及兩種引號都會被拿掉。所以 "Da’an" / "Da'an" / "Daan" / "Da An" 寫一個就夠。
+EN_DISTRICTS: dict[str, str] = {
+    # 臺北市
+    "Zhongzheng": "中正區", "Datong": "大同區", "Zhongshan": "中山區",
+    "Songshan": "松山區", "Daan": "大安區", "Wanhua": "萬華區",
+    "Xinyi": "信義區", "Shilin": "士林區", "Beitou": "北投區",
+    "Neihu": "內湖區", "Nangang": "南港區", "Wenshan": "文山區",
+    # 新北市
+    "Banqiao": "板橋區", "Sanchong": "三重區", "Zhonghe": "中和區",
+    "Yonghe": "永和區", "Xinzhuang": "新莊區", "Xindian": "新店區",
+    "Shulin": "樹林區", "Yingge": "鶯歌區", "Sanxia": "三峽區",
+    "Tamsui": "淡水區", "Danshui": "淡水區", "Xizhi": "汐止區",
+    "Ruifang": "瑞芳區", "Tucheng": "土城區", "Luzhou": "蘆洲區",
+    "Wugu": "五股區", "Taishan": "泰山區", "Linkou": "林口區",
+    "Shenkeng": "深坑區", "Shiding": "石碇區", "Pinglin": "坪林區",
+    "Sanzhi": "三芝區", "Shimen": "石門區", "Bali": "八里區",
+    "Pingxi": "平溪區", "Shuangxi": "雙溪區", "Gongliao": "貢寮區",
+    "Jinshan": "金山區", "Wanli": "萬里區", "Wulai": "烏來區",
+}
+
+# 名字與名字之間允許出現的雜訊：空白、句點、連字號、底線、三種引號。
+# 有了它，對照表的 "Daan" 一個寫法就能對上 "Da an" / "Da'an" / "Da’an" / "DaAn"。
+_EN_SEP = r"[\s.\-_'\u2018\u2019\u02bc]*"
+
+_EN_NOISE_RE = re.compile(r"[\s.\-_,'\u2018\u2019\u02bc]+")
+
+
+def _norm_en(text: str) -> str:
+    """拿掉大小寫、空白、連字號、句點與各種引號，讓對照表只需要寫一種拼法。"""
+    return _EN_NOISE_RE.sub("", text).lower()
+
+
+def _en_district_re(name: str) -> re.Pattern:
+    """<行政區名> + District/Dist 的比對式。
+
+    **一定要有 District/Dist 這個字，而且它後面不能再接字母。** 兩個限制缺一不可：
+
+      少了「一定要有」：地址裡的 "Da An Park"、"DaAn SiLin Park" 是公園名，
+      會被當成大安區。地標名推行政區就是在猜。
+
+      少了「後面不能接字母」："Xinyi Distillery Bar, Hsinchu" 會被判成臺北市信義區，
+      "Banqiao Distribution Hub, Taoyuan" 會被判成新北市板橋區 —— 兩個都在別的縣市。
+      （這是 code review 抓到的，不是假想案例。）
+
+    猜錯比未知糟，見 IMPLEMENTATION.md §6。
+    """
+    body = _EN_SEP.join(re.escape(ch) for ch in name)
+    return re.compile(rf"(?<![A-Za-z]){body}{_EN_SEP}Dist(?:rict)?\b",
+                      re.IGNORECASE)
+
+
+_EN_DISTRICT_RES: dict[re.Pattern, str] = {}   # 延後到第一次用才建，見 _en_res()
+
+
+def _en_res() -> dict[re.Pattern, str]:
+    if not _EN_DISTRICT_RES:
+        for en, zh in EN_DISTRICTS.items():
+            _EN_DISTRICT_RES[_en_district_re(en)] = zh
+    return _EN_DISTRICT_RES
+
+
+# 這四個區名**雙北以外也有**，所以光看區名反推不出縣市：
+#   中正區 中山區 信義區 → 基隆市也有      大安區 → 臺中市也有
+# 對這四個要有別的佐證才敢說縣市。其餘 37 個在全台是唯一的。
+_AMBIGUOUS_DISTRICTS = {"中正區", "中山區", "信義區", "大安區"}
+
+# 中文的其他縣市。直接從 _CITY_RE 那份扣掉雙北，不另外維護一份。
+_OTHER_CITY_ZH_RE = re.compile(
+    r"桃園市|臺中市|台中市|臺南市|台南市|高雄市|基隆市|新竹市|新竹縣|苗栗縣|"
+    r"彰化縣|南投縣|雲林縣|嘉義市|嘉義縣|屏東縣|宜蘭縣|花蓮縣|臺東縣|台東縣")
+
+# 「這段文字提到雙北」的字面證據。要求 City／市 是刻意的 ——
+# 光一個 Taipei 不算數："Taipei Cultural Center, Kaohsiung" 在高雄、
+# "National Taipei University" 在三峽。（這也是 code review 抓到的。）
+_TPE_TOKEN_RE = re.compile(r"新北市|臺北市|台北市|New\s+Taipei(\s+City)?|Taipei\s+City",
+                           re.IGNORECASE)
+
+
+# 其他縣市的英文名。用來偵測「這個區名雖然雙北有，但這段地址講的是別的縣市」。
+#
+# **一定要跟著 City/County。** 台北有很多路名就是別的縣市的名字 ——
+# 信義區的「基隆路 Keelung Rd」是最常見的一條，光比 "Keelung" 會把
+# 「基隆路上的信義區」誤判成「基隆市的信義區」，然後縣市整個掉成未知。
+_OTHER_CITY_RE = re.compile(
+    r"\b(?:Keelung|Taichung|Kaohsiung|Taoyuan|Tainan|Hsinchu|Chiayi|Miaoli|"
+    r"Changhua|Nantou|Yunlin|Pingtung|Yilan|Hualien|Taitung|Penghu|Kinmen|"
+    r"Lienchiang)\s+(?:City|County)\b", re.IGNORECASE)
+
+
+def _city_of(district: Optional[str], evidence: str = "") -> Optional[str]:
+    """行政區反推縣市。反推不出來就回 None —— 不猜。
+
+    需要它是因為地址常常只有行政區沒有縣市（真實樣本：
+    「106大安區大學里新生南路三段60巷7號」）。少了這一步，那種地址會解出
+    行政區卻沒有縣市，然後被縣市過濾當成「不知道」放行。
+
+    四個區名雙北以外也有（見 _AMBIGUOUS_DISTRICTS）。對那四個的判準是
+    **「這段文字有沒有提到別的縣市」**，不是「有沒有提到雙北」：
+
+      "Xinyi District, Keelung City"  → 提到基隆 → 不反推（否則會誤判成臺北信義區）
+      "…, Da’an District, Ta"         → 沒提到任何別的縣市 → 反推臺北市
+
+    反過來寫（要求一定要有雙北字樣）會拒絕掉大半真實資料 —— Meetup 的地址
+    常常被截斷成 "…, Ta"，根本沒有完整的縣市名可以要求。
+
+    殘留風險：地址完全沒寫縣市、而且那個區名在別的縣市也有（例如臺中的
+    大安區只寫「大安區中松路1號」）會被反推成臺北市。這種地址人也分不出來，
+    而且實際樣本裡沒出現過。真的踩到的話，往 _OTHER_CITY_RE 加字就好。
+    """
+    if district in _AMBIGUOUS_DISTRICTS:
+        if _OTHER_CITY_RE.search(evidence) or _OTHER_CITY_ZH_RE.search(evidence):
+            return None
+    if district in _TAIPEI_DISTRICTS:
+        return "臺北市"
+    if district in _NEW_TAIPEI_DISTRICTS:
+        return "新北市"
+    return None
+
 
 def _normalize_city(name: str) -> str:
     """台/臺 統一成臺，否則同一個縣市會出現兩種寫法，過濾時會漏。"""
@@ -209,7 +333,7 @@ def parse_location(address: Optional[str]) -> tuple[Optional[str], Optional[str]
     # 雙北先查白名單 —— 命中就是確定的，不會被「文創園區」這類詞干擾
     for name in _KNOWN_DISTRICTS:
         if name in address:
-            return city, name
+            return city or _city_of(name, address), name
 
     rest = _CITY_RE.sub("", _COUNTRY_RE.sub("", address))
     # 其他縣市：掃過所有「X區」，跳過不是行政區的詞。
@@ -219,7 +343,23 @@ def parse_location(address: Optional[str]) -> tuple[Optional[str], Optional[str]
         name = m.group(1)
         if name in _NOT_DISTRICT or any(name.endswith(w) for w in _NOT_DISTRICT_SUFFIX):
             continue
-        return city, name
+        return city or _city_of(name, address), name
+
+    # 中文那三條都沒命中才換英文。順序不能顛倒 —— 中文地址是本地來源的
+    # 常態、資訊也比較完整，英文那條是給 Meetup 這種國際平台補的。
+    for rx, zh in _en_res().items():
+        if rx.search(address):
+            return city or _city_of(zh, address), zh
+
+    # --- 修 3：行政區解不出來時，至少把縣市解出來 ---
+    # 縣市會影響過濾（活動出不出現），行政區只影響排序，所以縣市值得多試一步。
+    # 但只認 "Taipei City" / "New Taipei City" 這種帶 City 的寫法，不認裸的
+    # "Taipei" —— 裸字會出現在別的縣市的地址裡（"…Taoyuan City, Taipei"）
+    # 和機構名裡（"National Taipei University"）。
+    if city is None:
+        m = _TPE_TOKEN_RE.search(address)
+        if m:
+            city = "新北市" if re.match(r"新北|New", m.group(0), re.I) else "臺北市"
     return city, None
 
 

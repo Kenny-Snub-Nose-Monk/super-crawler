@@ -42,5 +42,6 @@ sources:
     # 取捨與實測數字見 docs/adr/0001-meetup-robots-whitelist.md
     topics: [language-exchange]   # issue 03 會改成從情境的活動類型推出來
     cities: [臺北市, 新北市]
-    # 已知缺口：Meetup 的地址多半是英文，既有的中文解析吃不下，所以現在
-    # 行政區幾乎全是未知、縣市過濾實際上不太會作用。issue 02 補。
+    # 地址是中英混雜的：靠 normalize.EN_DISTRICTS 的英中對照，加上 venues.py
+    # 的場地表當退路（有些場地是地標不是地址，"Taipei Main Station" 那種）。
+    # 實測 45/50 解得出行政區，解不出來的留「未知」不猜。

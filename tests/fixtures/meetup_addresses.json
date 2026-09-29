@@ -1,0 +1,239 @@
+{
+ "_": "真實樣本：2026-09-29 從 meetup.com 的 8 個 tw--taipei 主題頁取得，67 場活動裡有地址的那些，去重後 39 筆。n = 有幾場活動用這組值（算解析率要用它加權，否則罕見的形狀會被高估）。venue 是 Meetup 另外給的場地名 —— 地址解不出行政區時靠它。這裡只存原始資料，期望值寫在 tests/test_district.py，由人逐筆核對。",
+ "addresses": [
+  {
+   "venue": "MTB TeaBar 米蓮娜茶酒吧",
+   "streetAddress": "106, Taiwan, Taipei City, Da’an District, 和平東路三段66號1樓, Taipei",
+   "addressLocality": "Taipei",
+   "n": 4
+  },
+  {
+   "venue": "TEA Bar",
+   "streetAddress": "台北市大安區和平東路三段66號, Taipei",
+   "addressLocality": "Taipei",
+   "n": 3
+  },
+  {
+   "venue": "Taipei Language Exchange、Board Games And Social Network",
+   "streetAddress": "Room. 2, 5th Floor, No. 575, Linsen North Road., Taipei",
+   "addressLocality": "Taipei",
+   "n": 2
+  },
+  {
+   "venue": "Bailing Rugby Grounds",
+   "streetAddress": "Lane 179, Tonghe St, Taipei",
+   "addressLocality": "Taipei",
+   "n": 2
+  },
+  {
+   "venue": "TBA, somewhere in Taipei",
+   "streetAddress": "TBA, Taipei",
+   "addressLocality": "Taipei",
+   "n": 2
+  },
+  {
+   "venue": "Da An Park Playground / Gym",
+   "streetAddress": "Da An Park Playground / Gym, DaAn SiLin Park, Taipei",
+   "addressLocality": "Taipei",
+   "n": 2
+  },
+  {
+   "venue": "Daan Forest Park",
+   "streetAddress": "No. 1號, Section 2, Xinsheng S Rd, 龍門里, Da’an District, Ta",
+   "addressLocality": "Da’an District",
+   "n": 2
+  },
+  {
+   "venue": "南港恩慈堂",
+   "streetAddress": "No. 67, Dong Xin St, Chengfu Village, Nangang District, Taipei City, Taiwan 11556, Chengfu Village",
+   "addressLocality": "Chengfu Village",
+   "n": 2
+  },
+  {
+   "venue": "MRT Jiantan Station",
+   "streetAddress": "Jiantan Rd, Shilin District, Taipei City, Taiwan 111, Shilin District",
+   "addressLocality": "Shilin District",
+   "n": 1
+  },
+  {
+   "venue": "臺北市中山區公所",
+   "streetAddress": "No. 367, SongJiang Rd, Zhongshan District, Taipei City, Taiwan 104, Zhongshan District",
+   "addressLocality": "Zhongshan District",
+   "n": 1
+  },
+  {
+   "venue": "Exit 2 of MRT Beimen Station",
+   "streetAddress": "No. 10, Tacheng St., Datong Dist. 103005, Taipei City, Taiwan, Taipei City, al",
+   "addressLocality": "Taipei City",
+   "n": 1
+  },
+  {
+   "venue": "SOMEWHERE 那裡",
+   "streetAddress": "No. 30號, Leli Rd, Quan'an Village, Da’an District, Taipei City, 106, Taipei",
+   "addressLocality": "Taipei",
+   "n": 1
+  },
+  {
+   "venue": "齊文藝室 The Singularity Co Working Cafe",
+   "streetAddress": "No. 32, Nanyang St, Zhongzheng District, Taipei City,, Taipei City",
+   "addressLocality": "Taipei City",
+   "n": 1
+  },
+  {
+   "venue": "Taipei Main Station",
+   "streetAddress": "Taipei Main Station, Taipei",
+   "addressLocality": "Taipei",
+   "n": 1
+  },
+  {
+   "venue": "Wonder Tree 玩逗樹咖啡",
+   "streetAddress": "No. 526號, Xinzhong N Rd,, Zhongli District",
+   "addressLocality": "Zhongli District",
+   "n": 1
+  },
+  {
+   "venue": "臺北市大安區錦安里金山南路二段141巷36號",
+   "streetAddress": "台北市大安區金山南路二段141巷36號, Taipei",
+   "addressLocality": "Taipei",
+   "n": 1
+  },
+  {
+   "venue": "元瓅書坊",
+   "streetAddress": "No. 24號, Lane 22, Wenzhou St, Da’an District, Taipei",
+   "addressLocality": "Taipei",
+   "n": 1
+  },
+  {
+   "venue": "樓 之 1, No. 155號3, Section 1, Keelung Rd",
+   "streetAddress": "No. 155號3, Section 1, Keelung Rd, 興雅里, Xinyi District, Ta",
+   "addressLocality": "Xinyi District",
+   "n": 1
+  },
+  {
+   "venue": "TMC",
+   "streetAddress": "台北市大安區羅斯福路三段297號5F, TAIPEI",
+   "addressLocality": "TAIPEI",
+   "n": 1
+  },
+  {
+   "venue": "Mr. Brown (JianGuo 建國）",
+   "streetAddress": "106, Taipei City, Da’an District, Section 1, Jianguo S Rd, 166號2樓, Taiwan",
+   "addressLocality": "Taiwan",
+   "n": 1
+  },
+  {
+   "venue": "The Aroma Cafe",
+   "streetAddress": "7樓, No. 36號, Guanqian Rd, Zhongzheng District, Taipei City, 100, 7 Floor, Number 36, Taipei",
+   "addressLocality": "Taipei",
+   "n": 1
+  },
+  {
+   "venue": "ON TAP",
+   "streetAddress": "No. 21, Alley 11, Lane 216, Section 4, Zhongxiao East Road, Da’an District,, Taipei",
+   "addressLocality": "Taipei",
+   "n": 1
+  },
+  {
+   "venue": "Taipei Main Station (ON the train)",
+   "streetAddress": "Taipei main station, Taipei",
+   "addressLocality": "Taipei",
+   "n": 1
+  },
+  {
+   "venue": "Tacos N Taps",
+   "streetAddress": "No. 1號, Yumen St, Zhongshan District, Taipei City, 10491,, Taipei",
+   "addressLocality": "Taipei",
+   "n": 1
+  },
+  {
+   "venue": "Aye Taipei Bar & Restaurant",
+   "streetAddress": "No. 15, Lane 138, Linsen N Rd, Zhengde Village, Zhongshan District, Taipei City, Taiwan 10491, Taipei",
+   "addressLocality": "Taipei",
+   "n": 1
+  },
+  {
+   "venue": "德佈Debut Cafe 台北店",
+   "streetAddress": "No. 15, Section 1, Xinsheng N Rd, Zhongshan District, Taipei City, Taiwan 104, taipei",
+   "addressLocality": "taipei",
+   "n": 1
+  },
+  {
+   "venue": "Moose Cafe",
+   "streetAddress": "No. 77-2號, Jieyun Rd, Chongming Village, Sanchong District, New Taipei City, 24161, New Taipei City",
+   "addressLocality": "New Taipei City",
+   "n": 1
+  },
+  {
+   "venue": "The 58 Bar 英式餐酒館《西門店》酒吧",
+   "streetAddress": "No. 58號, Section 2, Kaifeng St, 福星里, Wanhua District, Ta",
+   "addressLocality": "Wanhua District",
+   "n": 1
+  },
+  {
+   "venue": "Two Three Comedy Club 23喜劇俱樂部",
+   "streetAddress": "104, Taiwan, Taipei City, Zhongshan District, 中山區 Linsen N Rd, 286號B1, 中山區",
+   "addressLocality": "中山區",
+   "n": 1
+  },
+  {
+   "venue": "Revolver",
+   "streetAddress": "No. 1-2號, Section 1, Roosevelt Rd, 新營里, Zhongzheng District, Ta",
+   "addressLocality": "Zhongzheng District",
+   "n": 1
+  },
+  {
+   "venue": "Bar Root by -1",
+   "streetAddress": "No. 65號, Section 1, Anhe Rd, Dunhuang Village, Da’an District, Taipei City, Taiwan 106, Dunhuang Village",
+   "addressLocality": "Dunhuang Village",
+   "n": 1
+  },
+  {
+   "venue": "GOOD DAY CAFE by mrs inkolize",
+   "streetAddress": "103, Taiwan, Taipei City, Datong District, Jianming Village, Alley 3, Lane 138, Chang'an W Rd, 7號1樓, Jianming Village",
+   "addressLocality": "Jianming Village",
+   "n": 1
+  },
+  {
+   "venue": "Youbike station YouBike微笑單車 2.0: 親水公園",
+   "streetAddress": "Lane 527, Daye Road, fengnian village, beitou 112臺北市北投區豐年里, Taipei",
+   "addressLocality": "Taipei",
+   "n": 1
+  },
+  {
+   "venue": "Chiang Kai-shek Memorial Hall",
+   "streetAddress": "No. 21, Zhongshan S Rd, Zhongzheng District, Taipei",
+   "addressLocality": "Taipei",
+   "n": 1
+  },
+  {
+   "venue": "New Taipei City Banshu Gymnasium",
+   "streetAddress": "No. 90, Xicheng Road, Banqiao District, New Taipei City",
+   "addressLocality": "New Taipei City",
+   "n": 1
+  },
+  {
+   "venue": "8F., No.16, Fuhe St., Sanchong DistT",
+   "streetAddress": "8F., No.16, Fuhe St., Sanchong Dist, New Taipei City",
+   "addressLocality": "New Taipei City",
+   "n": 1
+  },
+  {
+   "venue": "丹堤濟南店",
+   "streetAddress": "台北市大安區濟南路三段25號, Taipei",
+   "addressLocality": "Taipei",
+   "n": 1
+  },
+  {
+   "venue": "人性空間 分店",
+   "streetAddress": "106大安區大學里新生南路三段60巷7號, Taipei City",
+   "addressLocality": "Taipei City",
+   "n": 1
+  },
+  {
+   "venue": "他。植物咖啡 He Coffee.",
+   "streetAddress": "吉祥里 Alley 52, Lane 245, Section 4, Bade Rd, 29號, Songshan District, Ta",
+   "addressLocality": "Songshan District",
+   "n": 1
+  }
+ ]
+}
