@@ -45,6 +45,7 @@ jobs:
           python tests/test_meetup.py
           python tests/test_district.py
           python tests/test_query_cases.py
+          node tests/test_query_js.mjs
 
       - name: 抓取
         run: python scripts/run_collectors.py

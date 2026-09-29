@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>雙北活動</title>
+  <meta name="description" content="雙北活動搜尋。網頁和 Claude（透過 WebMCP）查的是同一份資料、同一套條件。">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="masthead">
+    <div class="wrap">
+      <h1>雙北活動</h1>
+      <p class="stamp" id="stamp">載入中…</p>
+    </div>
+  </header>
+
+  <form class="filters" id="filters" autocomplete="off">
+    <div class="wrap">
+      <div class="row">
+        <label class="field grow">
+          <span class="label">關鍵字</span>
+          <input type="search" name="keyword" placeholder="例如：English、爵士、市集">
+        </label>
+        <label class="field">
+          <span class="label">開始於</span>
+          <input type="date" name="start_after">
+        </label>
+        <label class="field">
+          <span class="label">到</span>
+          <input type="date" name="start_before">
+        </label>
+        <label class="field">
+          <span class="label">城市</span>
+          <select name="city">
+            <option value="">雙北</option>
+            <option value="臺北市">臺北市</option>
+            <option value="新北市">新北市</option>
+          </select>
+        </label>
+      </div>
+      <fieldset class="types" id="types">
+        <legend class="label">類型</legend>
+      </fieldset>
+      <div class="row toggles">
+        <label class="toggle"><input type="checkbox" name="free_only"> 只看免費</label>
+        <label class="toggle"><input type="checkbox" name="signup_open"> 還能報名</label>
+        <label class="toggle"><input type="checkbox" name="exclude_online"> 排除線上</label>
+        <button type="reset" class="reset">清除條件</button>
+      </div>
+    </div>
+  </form>
+
+  <main class="wrap">
+    <div class="summary" id="summary" aria-live="polite"></div>
+    <p class="agent-note" id="agent-note" hidden></p>
+    <ol class="results" id="results"></ol>
+    <button type="button" class="more" id="more" hidden>顯示更多</button>
+  </main>
+
+  <template id="card">
+    <li class="card">
+      <a class="card-link" target="_blank" rel="noopener">
+        <div class="meta-top">
+          <span class="type"></span>
+          <span class="status"></span>
+          <span class="source"></span>
+        </div>
+        <h2 class="title"></h2>
+        <p class="when"></p>
+        <p class="where"></p>
+        <div class="facts">
+          <span class="price"></span>
+          <span class="deadline"></span>
+        </div>
+      </a>
+    </li>
+  </template>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

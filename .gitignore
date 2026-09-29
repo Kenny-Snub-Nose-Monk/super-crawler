@@ -9,3 +9,6 @@ logs/
 
 # 工作用的票與草稿。留在本機，不進版控。
 .scratch/
+
+# 網站資料由 scripts/export_site_data.py 產生，部署時才匯出
+site/data/
