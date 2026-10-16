@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "webmcp-relay": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@mcp-b/webmcp-local-relay@5.1.0", "--widget-origin", "http://localhost:8765"]
+    }
+  }
+}

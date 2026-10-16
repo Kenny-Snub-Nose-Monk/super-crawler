@@ -1,0 +1,78 @@
+{
+ "message": "ok",
+ "code": 200,
+ "data": [
+  {
+   "id": 4,
+   "title": {
+    "en": "Job",
+    "zh": "工作"
+   },
+   "blurb": {
+    "en": "Taiwan is an amazing place to work. Here's the administrative notes to support your career.",
+    "zh": "台灣是您適合工作的地方，請詳閱以下與工作相關的問答。"
+   },
+   "contents": [
+    {
+     "id": 23,
+     "title": {
+      "en": "What is a Foreign Specialist Professional?",
+      "zh": "何謂外國特定專業人才？"
+     },
+     "contents": {
+      "en": "<p>\n “Foreign Special Professionals” refers to foreign nationals who engage in work specified under Subparagraphs 1 to 6, Paragraph 1, Article 46 of the Employment Service Act, and who possess recognized expertise in one of the twelve designated fields announced by the relevant central competent authorities: technology, digital, economic affairs, education, culture and the arts, sports, finance, law, architecture and design, national defense, environment, and biotechnology. It also includes foreign professionals recognized by the competent authority, in consultation with the relevant central competent authorities, as possessing specialized expertise and qualifications.\n</p>\n",
+      "zh": "<p>\n 外國特定專業人才是指從事就業服務法第 46 條第 1 項第 1 款至第 6 款規定工作，又具有中央目的事業主管機關公告之科技、數位、經濟、教育、文化藝術、運動、金融、法律、建築設計、國防、環境及生技等 12 大領域，以及由主管機關會商相關中央目的事業主管機關認定具有特殊專長及資格條件的外國人才。\n</p>\n"
+     },
+     "sequence_no": 1,
+     "slug": "job-what-is-a-foreign-specialist-professional",
+     "category": 4
+    }
+   ],
+   "sequence_no": 1,
+   "slug": "job"
+  },
+  {
+   "id": 2,
+   "title": {
+    "en": "Taxation and Customs",
+    "zh": "稅務與關務"
+   },
+   "blurb": {
+    "en": "This category provides information related to Taiwan's tax system and customs regulations.",
+    "zh": "此分類的問答，提供台灣租稅制度與關務相關的資訊。"
+   },
+   "contents": [
+    {
+     "id": 2,
+     "title": {
+      "en": "Who do I contact if I have tax related questions?",
+      "zh": "如果我有稅務上的問題可以諮詢誰？"
+     },
+     "contents": {
+      "en": "<p>\n Please contact the\n <a href=\"https://www.ntbt.gov.tw/English/multiplehtml/bdcadadd375e4372959ba4873d872c42\">\n  <u>\n   National Taxation Bureau of Taipei, Ministry of Finance\n  </u>\n </a>\n .\n</p>\n",
+      "zh": "<p>\n 請聯繫\n <a href=\"https://www.ntbt.gov.tw/singlehtml/2e355f46119c4bbea512447b299c4d59?cntId=84c23c1909be40ee81b160063a052c33\">\n  <u>\n   財政部台北國稅局\n  </u>\n </a>\n 。\n</p>\n"
+     },
+     "sequence_no": 2,
+     "slug": "taxation-and-customs-who-do-i-contact-if-i-have-tax-related-questions",
+     "category": 2
+    },
+    {
+     "id": 3,
+     "title": {
+      "en": "Can I apply for the tax incentives for foreign specialist professionals?",
+      "zh": "我可以申請外國特定專業人才的租稅優惠嗎?"
+     },
+     "contents": {
+      "en": "<p>\n If you have met all of the following requirements you are eligible to apply for tax incentives:\n <br/>\n</p>\n<ul>\n <li>\n  You have been approved for the first time to reside in the R.O.C. for the purpose of work.\n </li>\n <li>\n  You have engaged in professional work related to the recognized specific expertise in the R.O.C.\n </li>\n <li>\n  During the last 5 years prior to the day of your employment engaged in professional work or the day of obtaining your Employment Gold Card, you did not have household registration in the R.O.C. and were not an resident individual of the R.O.C. in accordance with the Income Tax Act.\n </li>\n</ul>\n",
+      "zh": "<p>\n 符合下列 3 項規定者，可以申請外國特定專業人才租稅優惠：\n <br/>\n</p>\n<ul>\n <li>\n  因工作而首次核准在我國居留。\n </li>\n <li>\n  在我國從事與其經認定特殊專長相關的專業工作。\n </li>\n <li>\n  於受聘僱從事專業工作之日或取得就業金卡之日前 5 年內，在我國未設有戶籍且非屬所得稅法規定我國境內居住之個人。\n </li>\n</ul>\n"
+     },
+     "sequence_no": 2,
+     "slug": "taxation-and-customs-can-i-apply-for-the-tax-incentives-for-foreign-specialist-professionals",
+     "category": 2
+    }
+   ],
+   "sequence_no": 4,
+   "slug": "taxation-and-customs"
+  }
+ ]
+}

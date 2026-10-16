@@ -1,0 +1,100 @@
+slug: tax-benefits
+kind: tax
+order: 6
+title: Tax benefits for foreign professionals
+subtitle: The Gold Card, the special professional incentive, equity pay and overseas income
+summary: >-
+  Taiwan's most valuable tax rule for high earners lets you exclude half your salary above NT$3 million
+  for five years. It is easy to qualify for and easy to lose. Here is how it works — and how equity
+  and overseas income are treated.
+keywords: [gold card, special professional, incentive, art. 22, 3 million, half, five years, rsu, esop, stock options, equity, overseas income, amt, minimum tax, high earner]
+updated: 2026-10-15
+takeaways:
+  - "Foreign special professionals — including Gold Card holders while the card is valid — exclude half of salary above {{fact:special_talent_threshold}}."
+  - "It lasts {{fact:special_talent_years}}, and overseas income is {{fact:special_talent_overseas}} in those years."
+  - "It is not automatic: {{fact:special_talent_apply}}."
+  - "Stock options from an overseas parent are {{fact:stock_options_other_income}}, {{fact:stock_options_proration}}."
+sections:
+  - id: incentive
+    heading: The special professional incentive
+    blocks:
+      - p: >-
+          Article 22 of the Foreign Professionals Act (it was Article 9, then 20, before the 2025 amendment
+          renumbered it) gives qualifying foreign special professionals a simple benefit:
+          **{{fact:special_talent_rule}}**, in each year they are resident.
+      - callout:
+          kind: law
+          title: In the tax office's words
+          text: >-
+            "…half of the amount of the salary income exceeding the NT$3,000,000 of each such taxable year in which
+            he/she resides in the R.O.C. for 183 days or more may be excluded from the gross income…"
+            — National Taxation Bureau of Taipei
+      - calc:
+          title: NT$8.2 million salary, with and without the incentive
+          compare:
+            - { label: Without, input: { year: 2026, days: 365, salary: 8200000 } }
+            - { label: With the incentive, input: { year: 2026, days: 365, salary: 8200000, specialTalent: true } }
+  - id: who
+    heading: Who qualifies
+    blocks:
+      - list:
+          - "**You are a foreign special professional** — you hold a special professional work permit, or a Gold Card and are employed in professional work while it is valid ({{fact:special_talent_gold_card}})."
+          - "**Your Taiwan residence was approved for the first time for work.** Earlier residence for study or as a dependant doesn't disqualify you."
+          - "**No household registration, not a tax resident**, in the five years before the job or the Gold Card."
+          - "**Salary above {{fact:special_talent_threshold}}** in the year, from Taiwan and overseas employers combined, and **183+ days** in Taiwan that year."
+  - id: clock
+    heading: The five-year clock
+    blocks:
+      - p: >-
+          The five years start in the first tax year in which you are both resident and paid more than NT$3 million —
+          you can't choose a later start. Years in that window with fewer than 183 days simply don't get the benefit;
+          they don't extend it.
+      - list:
+          - "**Changing jobs:** switch employer within the five years and keep doing qualifying professional work, and {{fact:special_talent_employer_change}}."
+          - "**Applying:** the incentive is not automatic — {{fact:special_talent_apply}}. Attach the application to your May return (or your departure return); a late application loses that year's benefit for good."
+          - "**Where:** NTB Taipei's special professional pages list the forms and documents: the application, your work permit or Gold Card, and proof of salary."
+      - callout:
+          kind: warn
+          title: Old pages still circulate
+          text: >-
+            Some official pages and FAQs still describe the 2018 rules (Article 9, three years) or cite the old
+            article numbers. The threshold, the 50% and the five years are unchanged by the 2025 amendment;
+            the 2026 regulation added that changing employers keeps the benefit.
+  - id: equity
+    heading: Stock options, RSUs and other equity
+    blocks:
+      - p: >-
+          MOF has ruled on stock options granted by a foreign company to people working for its Taiwan
+          subsidiary or branch: the gain at exercise is Taiwan-source **other income** (not salary),
+          {{fact:stock_options_proration}}, taxed in the year you exercise.
+      - list:
+          - "{{fact:stock_options_employer_report}} — but nothing is withheld, so you declare it."
+          - "Non-residents: {{fact:stock_options_nonresident}}."
+          - "Selling later: {{fact:stock_options_later_sale}}."
+      - callout:
+          kind: note
+          title: RSUs are less settled
+          text: >-
+            There is no public MOF ruling specifically on restricted stock units from an overseas parent. The
+            stock-option ruling and the rules for domestic employee shares are the closest guides, and practice
+            varies. Ask your employer's payroll or tax adviser how they report RSU vests, and keep the vesting
+            records for every year you were in Taiwan.
+  - id: overseas
+    heading: Overseas income and the minimum tax
+    blocks:
+      - p: >-
+          For residents, income from outside Taiwan sits outside the regular income tax. It enters the
+          **minimum tax** only when the household's overseas income reaches {{fact:overseas_threshold}} — and
+          then all of it counts. Basic income above {{fact:amt_exemption_2026}} is taxed at {{fact:amt_rate}};
+          you pay that only to the extent it exceeds your regular tax, and foreign tax paid on the income can be credited.
+      - p: >-
+          A salary-only resident needs a large portfolio before this matters: with NT$4M of salary, even NT$6M of
+          overseas gains leaves the minimum tax below the regular tax. It bites when overseas income is several
+          times the salary:
+      - calc:
+          title: NT$3.5M salary plus NT$12M of overseas gains
+          compare:
+            - { label: Regular resident, input: { year: 2026, days: 365, salary: 3500000, overseasIncome: 12000000 } }
+            - { label: Using the incentive, input: { year: 2026, days: 365, salary: 3500000, overseasIncome: 12000000, specialTalent: true } }
+sources: [ntbt_special_talent_intro, ntbt_en_special_talent_intro, law_foreign_professionals_act, law_special_talent_regulation, mof_special_talent_regulation_2026, talent_faq_tax, talent_gold_card_amendments, mof_ruling_stock_options, mof_nonresident_rates, law_income_basic_tax, gazette_2026_amt, ntbt_resident_basic_tax]
+related: [tax-rates, tax-in-taiwan, how-to-file]

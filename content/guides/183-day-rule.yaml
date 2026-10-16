@@ -1,0 +1,88 @@
+slug: 183-day-rule
+kind: tax
+order: 2
+title: Understanding the 183-day rule
+subtitle: How Taiwan counts your days — and why your arrival date matters
+summary: >-
+  One number decides how you are taxed in Taiwan. This is how the days are counted,
+  what happens at 90 and 183, and how to prove your count.
+keywords: [183, days, residency, resident, non-resident, arrival, departure, count, trips, 90 days, certificate]
+updated: 2026-10-15
+takeaways:
+  - "A tax year is a calendar year. Each 1 January your count starts again from zero."
+  - "Count with the {{fact:day_counting}}. Trips in and out are added together."
+  - "{{fact:residency_days}} or more in the year makes you a resident; 90 days is a second line that matters for pay from abroad."
+  - "Arrive by 1 July and stay, and you'll be a resident in your first year."
+  - "The immigration agency's entry/exit certificate is the official record — {{fact:entry_exit_certificate_fee}}, or free online."
+sections:
+  - id: rule
+    heading: The rule
+    blocks:
+      - p: >-
+          Under the Income Tax Act, someone without a home in Taiwan becomes a resident for a tax year by
+          staying here {{fact:residency_days}} or more in total during that year. The tax year is
+          {{fact:tax_year}} — not your contract year, not a rolling twelve months.
+      - p: >-
+          There is a second line at 90 days. Up to 90 days, pay you receive from an overseas employer for work
+          done here is {{fact:foreign_employer_90}}. Past 90, it becomes Taiwan income — taxed at
+          {{fact:foreign_employer_over_90_rate}} while you are a non-resident.
+      - stats:
+          - { value: "{{fact:residency_days}}", label: Resident from }
+          - { value: 90 days, label: Overseas pay taxable after }
+          - { value: 1 Jan, label: Count resets }
+          - { value: "{{fact:entry_exit_certificate_fee}}", label: Official day-count record }
+  - id: counting
+    heading: How the days are counted
+    blocks:
+      - p: >-
+          Days come from your passport stamps or the immigration agency's entry/exit certificate. The rule is
+          the one Taiwan's administrative law uses everywhere: the first day doesn't count, the last day does.
+          In practice: **{{fact:day_counting}}**.
+      - callout:
+          kind: law
+          title: In the tax office's words
+          text: >-
+            "The computation of a foreigner's period of residence … is based on the dates stamped on his/her passport
+            or the Certificate of Entry and Exit Dates … (excluding the date of arrival and including the date of
+            departure). If a foreigner enters and exits this country a number of times within a taxable year, the
+            period of residence shall be the total number of accumulated days." — National Taxation Bureau of Taipei
+      - p: "MOF's own example: {{fact:day_counting_example}}."
+  - id: examples
+    heading: Worked examples
+    blocks:
+      - table:
+          head: [Situation, Days in that year, Status]
+          rows:
+            - ["Arrive 1 July, never leave", "183", "Resident — the last arrival date that works in a 365-day year"]
+            - ["Arrive 15 July, never leave", "169", "Non-resident in year one, resident from 1 January"]
+            - ["Arrive 1 March, two weeks home at Christmas (leave 20 Dec, back 3 Jan)", "294", "Resident"]
+            - ["Based in Singapore, 12 trips of 10 days", "120", "Non-resident — and overseas pay for those days is taxable"]
+            - ["Arrive 1 Aug, leave for good 20 Nov", "111", "Non-resident (MOF's own example)"]
+      - callout:
+          kind: tip
+          title: Arriving in the second half of the year
+          text: >-
+            A first year with fewer than 183 days means non-resident withholding — usually a flat 18% — and no
+            exemptions or deductions. Moving your start date to on or before 1 July can change the first year's
+            bill noticeably; run both dates through the calculator.
+  - id: midyear
+    heading: When your status changes during the year
+    blocks:
+      - list:
+          - "**You pass 183 days.** Tax already withheld at non-resident rates isn't lost: the year is {{fact:recompute_on_183}}."
+          - "**Your employer can plan for it.** If you expect to stay 183 days or more, withholding at resident rates from day one is {{fact:employer_resident_rate_from_start}} — tell HR how long you plan to stay."
+          - "**You leave before reaching 183.** Taiwan salary withholding is final. If an overseas employer paid you and you stayed over 90 days, report that pay before you go."
+  - id: proof
+    heading: Getting proof of your days
+    blocks:
+      - p: >-
+          The official record is the Certificate of Entry and Exit Dates from the National
+          Immigration Agency. Apply at any service station ({{fact:entry_exit_certificate_fee}}) or overseas mission,
+          or online with a citizen digital certificate. It is worth getting before you file if your year had a
+          lot of travel.
+      - steps:
+          - { title: "Count from your stamps", text: "List every arrival and departure in the year. Don't count arrival days; do count departure days." }
+          - { title: "Request the certificate", text: "Ask for the calendar year you are filing for. Bring your ARC or passport (original and copy)." }
+          - { title: "Keep it with your return", text: "If the tax office asks how you reached 183 days, this is the document it trusts." }
+sources: [law_income_tax_act, mof_tax_year, mof_day_counting, ntbt_en_period_of_stay, mof_saving_manual_alien, immigration_entry_exit_certificate, mof_withholding_faq_1514]
+related: [tax-in-taiwan, tax-rates, employer-withholding]

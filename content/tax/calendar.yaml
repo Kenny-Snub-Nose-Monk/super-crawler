@@ -1,0 +1,54 @@
+# 稅務行事曆。網站依今天的日期標出「已過」「下一個」。
+#
+# date 是確定日期；approx: true 表示官方只說了大概時間（例如「11 月底公告」）。
+# fact 指到 facts.yaml，畫面上會帶出處；沒有 fact 的是由規則推出來的（例如每年 1/1 重新計算天數）。
+
+items:
+  - date: "2026-01-01"
+    title: Tax year 2026 begins
+    text: Your day count starts again from zero. The minimum wage rises to NT$29,500, so the non-resident 6% / 18% cut-off moves to NT$44,250 a month.
+    fact: nr_threshold_2026
+  - date: "2026-04-28"
+    title: Income data opens for tax year 2025
+    text: Download your income and deduction records before you file — check every employer and dependant is there.
+    fact: income_query_2026
+  - date: "2026-05-01"
+    end: "2026-06-01"
+    title: Filing period for tax year 2025
+    text: Residents file their 2025 return. 31 May fell on a Sunday, so the deadline moved to Monday 1 June.
+    fact: filing_2026
+  - date: "2026-06-11"
+    title: Last day to send supporting documents
+    text: If you e-filed and have documents to attach (for example the special professional application), they must reach your tax office by this date.
+    fact: efiling_documents_2026
+  - date: "2026-07-31"
+    title: First refund batch
+    text: E-filed returns and confirmed tax-estimate cases are refunded first — straight into your bank account if you gave one.
+    fact: refunds_2026
+  - date: "2026-10-30"
+    title: Second refund batch
+    text: Refunds for returns filed by 1 June with a 2D barcode or on paper. Watch out for refund scams — the tax office never asks you to click a link or use an ATM.
+    fact: refunds_2026
+  - date: "2026-11-30"
+    approx: true
+    title: 2026 basic living expense announced
+    text: MOF publishes the last missing 2026 amount in late November. Until then our 2026 estimates use the 2025 figure.
+    fact: basic_living_2026
+  - date: "2026-12-31"
+    title: Last day of tax year 2026
+    text: Count your days. 183 or more makes you a resident for 2026; if you leave for good before year-end, you file before you go.
+    fact: residency_days
+  - date: "2027-01-01"
+    title: Tax year 2027 begins
+    text: The day count resets. The minimum wage decided for 2027 is NT$30,900, which would put the 6% / 18% cut-off at NT$46,350.
+    fact: min_wage_2027
+  - date: "2027-01-20"
+    title: Third refund batch for tax year 2025
+    text: The last batch of refunds from the 2026 filing season.
+    fact: refunds_2026
+  - date: "2027-05-01"
+    end: "2027-05-31"
+    approx: true
+    title: Filing period for tax year 2026
+    text: The law sets 1 – 31 May; 31 May 2027 is a Monday, so no extension is expected. MOF announces the exact dates in spring.
+    fact: filing_window

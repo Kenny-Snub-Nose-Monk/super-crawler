@@ -1,0 +1,504 @@
+# 稅務來源 —— 抓的是「規則的原文」，不是活動。
+#
+# 每一條是一頁原文。scripts/collect_tax_sources.py 讀這裡，產出
+# data/tax/snapshots/<id>.md 與 data/tax/sources.json。
+# 起點是 2026-10 收到的「在台灣工作外國人的繳稅相關資訊」整理（6 個政府來源、
+# 2 個民間來源、2 個官方工具），之後補上法規全文與 Talent Taiwan 的官方 FAQ。
+#
+# 欄位：
+#   fetch    html（預設）/ talent_article / talent_faq / manual（只列連結，不抓）
+#   select   內容容器，依序試。**一定要指定** —— 整頁取文字會混進導覽列與
+#            頁尾的「更新日期:今天」，每週都是假變更。
+#   follow   跟著頁內連結往下抓（見 crawler/tax/collect.py 的 TaxSource）
+#   kind     government / law / non_government / tool
+#            網站上的數字只引用 government 與 law；non_government 只當交叉比對。
+
+sources:
+  # --- 財政部稅務入口網：外僑稅務服務 -----------------------------------
+  # 列表頁是伺服器渲染、可分頁；size=100 一次拿到全部連結。
+  - id: mof_alien_income_tax
+    title: 財政部｜外僑與綜合所得稅
+    publisher: 財政部
+    url: https://www.etax.nat.gov.tw/etwmain/alien-tax-service/alien-individual-income-tax?page=0&size=100
+    index_only: true
+    follow:
+      pattern: ^/etwmain/alien-tax-service/alien-individual-income-tax/[A-Za-z0-9]{7}$
+      select: [div.etw-article]
+      date_select: [div.text-brown]
+      names:
+        15r2N1n: mof_residency_and_tax
+        wPKao9v: mof_taiwan_source_income
+        5pl90BK: mof_tax_year
+        NJr2poV: mof_day_counting
+        rbbABDr: mof_income_recognition
+        rg0WVD3: mof_filing_time
+        PqB5v23: mof_filing_place
+        kDzWqQA: mof_efiling
+        qb8BejY: mof_crossing_183_midyear
+        vM9WKNq: mof_filing_documents
+        z5Y69Y1: mof_exemptions
+        e92AvqV: mof_resident_deductions
+        vV8Z3o9: mof_nonresident_rates
+        W9mE5vb: mof_tax_clearance
+
+  - id: mof_alien_tax_faq
+    title: 財政部｜外僑稅務 FAQ
+    publisher: 財政部
+    url: https://www.etax.nat.gov.tw/etwmain/alien-tax-service/alien-tax-faq?page=0&size=100
+    index_only: true
+    follow:
+      pattern: ^/etwmain/alien-tax-service/alien-tax-faq/[A-Za-z0-9]{7}$
+      select: [div.etw-article]
+      date_select: [div.text-brown]
+      names:
+        E9VWqg8: mof_faq_when_to_file
+        E0bAkZg: mof_faq_late_filing_penalty
+        jjv2qBg: mof_faq_where_to_file
+        JKG6lQ7: mof_faq_salary_income
+        Q1vj3xK: mof_faq_foreign_employer_over_90
+        Dq1kJrY: mof_faq_resident_definition
+        3rPz1Pw: mof_faq_resident_vs_nonresident_filing
+        P0qYz8v: mof_faq_dependents_abroad
+        AzJPvm6: mof_faq_resident_deductions
+        MABWgLO: mof_faq_resident_tax_computation
+        pa0lrZE: mof_faq_more_help
+
+  - id: mof_alien_basic_tax
+    title: 財政部｜外僑：個人所得基本稅額
+    publisher: 財政部
+    url: https://www.etax.nat.gov.tw/etwmain/alien-tax-service/individual-income-basic-tax?page=0&size=100
+    index_only: true
+    follow:
+      pattern: ^/etwmain/alien-tax-service/individual-income-basic-tax/[A-Za-z0-9]{7}$
+      select: [div.etw-article]
+      date_select: [div.text-brown]
+
+  - id: mof_saving_manual_alien
+    title: 財政部｜綜所稅節稅手冊：外僑篇
+    publisher: 財政部
+    url: https://www.etax.nat.gov.tw/etwmain/tax-info/understanding/tax-saving-manual/national/individual-income-tax/kGAQlxB
+    select: [div.etw-article]
+    date_select: [div.text-brown]
+
+  - id: mof_withholding_faq_1514
+    title: 財政部｜外僑扣繳規定 FAQ（1514）
+    publisher: 財政部
+    url: https://www.etax.nat.gov.tw/etwmain/tax-info/understanding/tax-q-and-a/national/individual-income-tax/withheld-rule/rule/QYglDKr
+    select: [div.etw-article]
+    date_select: [div.text-brown]
+    note: 頁面最後更新 2022-04-29；扣繳的門檻（基本工資 1.5 倍）會隨基本工資每年變動，金額以當年基本工資為準
+
+  # --- 財政部臺北國稅局：外僑個人綜所稅專區 ------------------------------
+  # 結構是 htmlList（目錄）→ multiplehtml（內容），「稅務居民身分」底下還多一層目錄。
+  # 「特定專業人才租稅優惠」只有臺北國稅局有獨立頁面，財政部主站的外僑專區沒有列出。
+  - id: ntbt_source_income
+    title: 臺北國稅局｜中華民國來源所得及免稅規定
+    publisher: 財政部臺北國稅局
+    url: https://www.ntbt.gov.tw/htmlList/3644eaa2f3704101ab7718244acfcad1
+    select: [.paging-content]
+    index_only: true
+    follow:
+      pattern: ^/multiplehtml/[0-9a-f]{32}$
+      select: [.left-content-text]
+      names:
+        d97934266fcd4fb79c5de0efebdb7b56: ntbt_taiwan_source_income
+        9822d46f40304e68b73e12b983f8bbde: ntbt_exemptions
+
+  - id: ntbt_residency
+    title: 臺北國稅局｜稅務居民身分及相關申報作業
+    publisher: 財政部臺北國稅局
+    url: https://www.ntbt.gov.tw/htmlList/14f54790aff04645bde7db394f6bcace
+    select: [.paging-content]
+    index_only: true
+    follow:
+      pattern: ^/(htmlList|multiplehtml)/[0-9a-f]{32}$
+      index_pattern: /htmlList/
+      index_select: [.paging-content]
+      select: [.left-content-text]
+      depth: 2
+      names:
+        d6836a22c12146539200d5100c8b9947: ntbt_nonresident_90
+        8ab4068898844f69bb8619c9e1ff5fa6: ntbt_nonresident_90_183
+        00c79f3c83c249f6a0c280f638c868c0: ntbt_resident_183
+        df93772580dd46189977c6f37ffd66de: ntbt_nonresident_rate
+        d8a7d1c8487443ce94ff0fc798d176c0: ntbt_resident_basic_tax
+        f4e3899a499b4f05821af5a5afadd2f5: ntbt_resident_deductions
+
+  - id: ntbt_special_talent
+    title: 臺北國稅局｜特定專業人才租稅優惠
+    publisher: 財政部臺北國稅局
+    url: https://www.ntbt.gov.tw/htmlList/292f9eb8b4244b3381cedad56c6cf658
+    select: [.paging-content]
+    index_only: true
+    follow:
+      pattern: ^/multiplehtml/[0-9a-f]{32}$
+      select: [.left-content-text]
+      names:
+        c2a5663d40244cf2b56088d4034f3716: ntbt_special_talent_intro
+        0ca502ebb0ef44fcaafb4519b444616f: ntbt_special_talent_where
+        c73420ea0cde4d27bca487e45a5593e2: ntbt_special_talent_documents
+        76455c7cc8f74375ac9b78e80bf53113: ntbt_special_talent_form
+        733f896ab80441a4b38b0431fe1bd2d7: ntbt_special_talent_rulings
+        94236d709dee43d3b63239a30ed6bd39: ntbt_special_talent_faq
+        e403896835f64d84ad606fce32c4af60: ntbt_special_talent_links
+
+  - id: ntbt_other_services
+    title: 臺北國稅局｜外僑其他服務
+    publisher: 財政部臺北國稅局
+    url: https://www.ntbt.gov.tw/htmlList/013f495996a94f2fa22d02c587eb79a7
+    select: [.paging-content]
+    index_only: true
+    follow:
+      pattern: ^/multiplehtml/[0-9a-f]{32}$
+      select: [.left-content-text]
+      names:
+        1282433623154eeeb814bcd635bb7d70: ntbt_efiling
+        8b2de8f2ca77427bb122772e94611c22: ntbt_forms
+        120182a1c5374ab9b078c097c0f88d3e: ntbt_exchange_rates
+        40df0758d80149bf8541802f5eb4504b: ntbt_handbook_2025
+        65b820ab9b03480b81450179f235fc13: ntbt_japanese
+        a9730001b6a146f7bd3ed7e172496a02: ntbt_asean
+    note: 中英對照小手冊是 PDF，放在 /download/ 底下 —— robots.txt 禁止，所以只快照目錄頁、網站上連過去
+
+  - id: ntbt_contacts
+    title: 臺北國稅局｜外僑洽辦電話（各局）
+    publisher: 財政部臺北國稅局
+    url: https://www.ntbt.gov.tw/multiplehtml/b3239835cd0542328aca16177d11ab3d
+    select: [.left-content-text]
+
+  # 臺北國稅局的英文版。結構跟中文版一樣（目錄 → 內容），而且是官方英文原文 ——
+  # 英文網站引用時優先用這裡的句子，不自己翻譯法條。
+  - id: ntbt_en
+    title: NTB Taipei｜Foreign Individual Income Tax (English)
+    publisher: 財政部臺北國稅局
+    lang: en
+    url: https://www.ntbt.gov.tw/English/htmlList/0862921c90af4c398eb037f8afe4e796
+    select: [.paging-content]
+    index_only: true
+    follow:
+      pattern: ^/English/(htmlList|multiplehtml)/[0-9a-f]{32}$
+      index_pattern: /English/htmlList/
+      index_select: [.paging-content]
+      select: [.left-content-text]
+      depth: 3
+      names:
+        06922971ae7e48d18d2902dfa6ebfcea: ntbt_en_period_of_stay
+        71b35f4132414a35a91daf5aeebbb801: ntbt_en_faq
+        a6e48e01d19b43578be115615df48138: ntbt_en_directory
+        dd1c6867f456496b8b2ee51995133825: ntbt_en_rate_applicable
+        154ea88a1dc848e5b3a207fb4c684220: ntbt_en_forms
+        d25ac7c981384b7b8e25aaa399badeca: ntbt_en_special_talent_intro
+
+  - id: dhsc_salary_tax
+    title: 勞動部直接聘僱聯合服務中心｜薪資所得之課稅規定
+    publisher: 勞動部
+    url: https://dhsc.wda.gov.tw/PreHireNotice?MenuId=176397ea-c6c8-49e2-83b2-107d1d7d3b80&ChildMenuId=60c20421-f86f-4d07-8d1c-0d6dedcf9a37
+    select: [main]
+    note: 雇主角度：居住者／非居住者扣繳、家庭雇主非扣繳義務人、漏報與未申報罰則
+
+  - id: immigration_entry_exit_certificate
+    title: 移民署｜入出國日期證明書申請須知
+    publisher: 內政部移民署
+    url: https://www.immigration.gov.tw/5385/7244/7250/20406/190354/190435/
+    select: [.cp]
+
+  # --- 國發會 Talent Taiwan ----------------------------------------------
+  # SPA，靜態抓只有 15 個字。前端自己打的內部 API（階梯第 2 層）中英文都有。
+  - id: talent_tax_quick_guide
+    title: "Talent Taiwan｜Filing Taxes in Taiwan: A Quick Guide for Expats"
+    publisher: 國家發展委員會 Talent Taiwan
+    url: https://talent.nat.gov.tw/en/life/filing-taxes-in-taiwan-a-quick-guide-for-expats
+    fetch: talent_article
+    lang: en
+    slug: filing-taxes-in-taiwan-a-quick-guide-for-expats
+
+  - id: talent_gold_card_amendments
+    title: "Talent Taiwan｜Taiwan Gold Card: New Amendments, Stronger Advantages"
+    publisher: 國家發展委員會 Talent Taiwan
+    url: https://talent.nat.gov.tw/en/life/taiwan-gold-card-new-amendments-stronger-advantages
+    fetch: talent_article
+    lang: en
+    slug: taiwan-gold-card-new-amendments-stronger-advantages
+
+  - id: talent_new_rules_2026
+    title: "Talent Taiwan｜Taiwan's New Rules for Global Talent: Six Key Highlights"
+    publisher: 國家發展委員會 Talent Taiwan
+    url: https://talent.nat.gov.tw/en/life/taiwans-new-rules-for-global-talent-six-key-highlights
+    fetch: talent_article
+    lang: en
+    slug: taiwans-new-rules-for-global-talent-six-key-highlights
+
+  - id: talent_2026_vision
+    title: "Talent Taiwan｜Taiwan's 2026 Vision: New Rules, New Opportunities"
+    publisher: 國家發展委員會 Talent Taiwan
+    url: https://talent.nat.gov.tw/en/life/taiwans-2026-vision-new-rules-new-opportunities-for-global-talent
+    fetch: talent_article
+    lang: en
+    slug: taiwans-2026-vision-new-rules-new-opportunities-for-global-talent
+
+  - id: talent_faq_tax
+    title: Talent Taiwan｜FAQ：Taxation and Customs
+    publisher: 國家發展委員會 Talent Taiwan
+    url: https://talent.nat.gov.tw/en/faqs
+    fetch: talent_faq
+    lang: en
+    category: Taxation
+
+  - id: talent_networking
+    title: Talent Taiwan｜Networking and Social Support for Foreign Professionals
+    publisher: 國家發展委員會 Talent Taiwan
+    url: https://talent.nat.gov.tw/en/life/building-connections-networking-and-social-support-for-foreign-professionals
+    fetch: talent_article
+    lang: en
+    slug: building-connections-networking-and-social-support-for-foreign-professionals
+
+  # --- 年度金額與公告：行政院公報、財政部新聞稿、勞動部 ----------------------
+  # 免稅額、級距這類「每年一個數字」的東西，以公報上的財政部公告為準。
+  # 新聞稿用來佐證申報期間、退稅批次、修法生效日這類時間點。
+  - id: gazette_2025_amounts
+    title: 財政部公告｜114年度免稅額、扣除額、課稅級距
+    publisher: 行政院公報
+    url: https://gazette.nat.gov.tw/EG_FileManager/eguploadpub/eg030223/ch04/type3/gov30/num16/Eg.htm
+    note: 113-11-28 台財稅字第11304670610號
+
+  - id: gazette_2026_amounts
+    title: 財政部公告｜115年度免稅額、扣除額、課稅級距
+    publisher: 行政院公報
+    url: https://gazette.nat.gov.tw/EG_FileManager/eguploadpub/eg031224/ch04/type3/gov30/num12/Eg.htm
+    note: 114-11-27 台財稅字第11404664070號
+
+  - id: gazette_2025_basic_living
+    title: 財政部公告｜114年度每人基本生活所需費用
+    publisher: 行政院公報
+    url: https://gazette.nat.gov.tw/EG_FileManager/eguploadpub/eg031224/ch04/type3/gov30/num11/Eg.htm
+    note: 115年度的金額每年 11 月底才公告
+
+  - id: gazette_2025_amt
+    title: 財政部公告｜114年度個人基本稅額（最低稅負制）
+    publisher: 行政院公報
+    url: https://gazette.nat.gov.tw/EG_FileManager/eguploadpub/eg030223/ch04/type3/gov30/num15/Eg.htm
+
+  - id: gazette_2026_amt
+    title: 財政部公告｜115年度個人基本稅額（最低稅負制）
+    publisher: 行政院公報
+    url: https://gazette.nat.gov.tw/EG_FileManager/eguploadpub/eg031218/ch04/type3/gov30/num13/Eg.htm
+
+  - id: mof_minor_child_2026
+    title: 財政部新聞稿｜未成年子女免稅額增加 50%（115年度起）
+    publisher: 財政部
+    url: https://www.mof.gov.tw/singlehtml/384fb3077bb349ea973e7fc6f13b6974?cntId=901f90d254454c568df85ec5e8128c83
+    select: [.left-content-text]
+    note: 所得稅法 115-09-11 修正，溯及 115-01-01
+
+  - id: mof_ltc_deduction
+    title: 財政部新聞稿｜長期照顧特別扣除額提高至 18 萬（114年度起）
+    publisher: 財政部
+    url: https://www.mof.gov.tw/singlehtml/384fb3077bb349ea973e7fc6f13b6974?cntId=ac9ee8a563c24db9ad0ad3fdc6c4046f
+    select: [.left-content-text]
+
+  - id: mof_rent_deduction
+    title: 財政部新聞稿｜房屋租金支出改列特別扣除（113年度起）
+    publisher: 財政部
+    url: https://www.mof.gov.tw/singlehtml/384fb3077bb349ea973e7fc6f13b6974?cntId=643fcb01a1c04ff49c4e3008cdba4eea
+    select: [.left-content-text]
+
+  - id: mof_cpi_2026
+    title: 財政部新聞稿｜115年度免稅額等金額依物價調整
+    publisher: 財政部
+    url: https://www.mof.gov.tw/singlehtml/384fb3077bb349ea973e7fc6f13b6974?cntId=34b463dc8f1b49f29d440d92a6fd5139
+    select: [.left-content-text]
+
+  - id: mof_nr_threshold_2026
+    title: 財政部新聞稿｜非居住者薪資扣繳門檻 44,250 元
+    publisher: 財政部
+    url: https://www.mof.gov.tw/singlehtml/384fb3077bb349ea973e7fc6f13b6974?cntId=dd1c8e641b594e6da94a69d613e4947f
+    select: [.left-content-text]
+
+  - id: mof_filing_2026
+    title: 財政部新聞稿｜114年度綜所稅查調與申報期間
+    publisher: 財政部
+    url: https://www.mof.gov.tw/singlehtml/384fb3077bb349ea973e7fc6f13b6974?cntId=6a3b2e5661bb404f8e50496f9eb7e57d
+    select: [.left-content-text]
+
+  - id: mof_refund_batch1_2026
+    title: 財政部新聞稿｜114年度綜所稅第 1 批退稅
+    publisher: 財政部
+    url: https://www.mof.gov.tw/singlehtml/384fb3077bb349ea973e7fc6f13b6974?cntId=0d94b5ced0714378a36efb944ab58c19
+    select: [.left-content-text]
+
+  - id: mof_refund_batches_2026
+    title: 財政部新聞稿｜114年度綜所稅三批次退稅
+    publisher: 財政部
+    url: https://www.mof.gov.tw/singlehtml/384fb3077bb349ea973e7fc6f13b6974?cntId=92c743cd8d6546c8a656b94ae4f6c347
+    select: [.left-content-text]
+
+  - id: mof_withholding_reform
+    title: 財政部新聞稿｜114年起扣繳義務人改為事業本身
+    publisher: 財政部
+    url: https://www.mof.gov.tw/singlehtml/384fb3077bb349ea973e7fc6f13b6974?cntId=90f22783f1b64953aecea0ac7559e3b0
+    select: [.left-content-text]
+
+  - id: mof_foreigner_reminder_2026
+    title: 財政部新聞稿｜外僑辦理114年度綜所稅申報提醒
+    publisher: 財政部
+    url: https://www.mof.gov.tw/singlehtml/384fb3077bb349ea973e7fc6f13b6974?cntId=819dcd9096e846858ba12f0046f45084
+    select: [.left-content-text]
+
+  - id: mof_holiday_extension
+    title: 財政部新聞稿｜非居住者扣繳期限遇連假順延
+    publisher: 財政部
+    url: https://www.mof.gov.tw/singlehtml/384fb3077bb349ea973e7fc6f13b6974?cntId=f88b8f7b1bbf479ead0494494c3b41b1
+    select: [.left-content-text]
+
+  - id: mol_minimum_wage
+    title: 勞動部｜歷年最低工資／基本工資調整
+    publisher: 勞動部
+    url: https://www.mol.gov.tw/1607/28162/28166/28180/70460/76761/76833/post
+    select: [.cp]
+    note: 非居住者薪資 6%／18% 的分界是最低工資的 1.5 倍
+
+  - id: mol_minimum_wage_2027
+    title: 勞動部｜116年最低工資審議結果
+    publisher: 勞動部
+    url: https://www.mol.gov.tw/1607/1632/1633/99195/
+    select: [.cp]
+    note: 審議通過，正式公告前以此為準
+
+  - id: etax_withholding_rates
+    title: 財政部｜各類所得的扣繳率（114年起）
+    publisher: 財政部
+    url: https://www.etax.nat.gov.tw/etwmain/tax-info/innotative-tax-e-reference/withheld/regulation/Prj8q2V
+    select: [div.etw-article]
+
+  # --- 法規全文（全國法規資料庫只允許 LawAll.aspx 這條路徑）---------------
+  - id: law_income_basic_tax
+    title: 所得基本稅額條例
+    publisher: 法務部全國法規資料庫
+    kind: law
+    url: https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=G0340115
+    select: [div.law-reg-content]
+
+  - id: law_income_tax_act
+    title: 所得稅法
+    publisher: 法務部全國法規資料庫
+    kind: law
+    url: https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=G0340003
+    select: [div.law-reg-content]
+
+  - id: law_withholding_rates
+    title: 各類所得扣繳率標準
+    publisher: 法務部全國法規資料庫
+    kind: law
+    url: https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=G0340028
+    select: [div.law-reg-content]
+
+  - id: etax_overseas_income_scope
+    title: 財政部｜海外所得 Q&A：範圍
+    publisher: 財政部
+    url: https://www.etax.nat.gov.tw/etwmain/tax-info/understanding/tax-q-and-a/national/individual-income-tax/basic-tax-question/oversea-income/KobJmwW
+    select: [div.etw-article]
+    date_select: [div.text-brown]
+
+  - id: etax_overseas_income_timing
+    title: 財政部｜海外所得 Q&A：認列年度
+    publisher: 財政部
+    url: https://www.etax.nat.gov.tw/etwmain/tax-info/understanding/tax-q-and-a/national/individual-income-tax/basic-tax-question/oversea-income/ZrPmV2V
+    select: [div.etw-article]
+    date_select: [div.text-brown]
+
+  - id: etax_overseas_income_cost
+    title: 財政部｜海外所得 Q&A：成本與損失
+    publisher: 財政部
+    url: https://www.etax.nat.gov.tw/etwmain/tax-info/understanding/tax-q-and-a/national/individual-income-tax/basic-tax-question/oversea-income/awYgOG9
+    select: [div.etw-article]
+    date_select: [div.text-brown]
+
+  - id: mof_ruling_stock_options
+    title: 財政部函釋｜外國公司員工取得並執行員工認股權之課稅
+    publisher: 財政部主管法規共用系統
+    kind: law
+    url: https://law-out.mof.gov.tw/LawContent.aspx?id=GL006495
+    select: [.law-content]
+    note: 海外母公司給台灣子公司員工的認股權：其他所得，按在台天數比例
+
+  - id: mof_ruling_sars
+    title: 財政部函釋｜外國公司股票增值權之課稅
+    publisher: 財政部主管法規共用系統
+    kind: law
+    url: https://law-out.mof.gov.tw/LawContent.aspx?id=GL006501
+    select: [.law-content]
+
+  - id: mof_ruling_employee_shares
+    title: 財政部函釋｜員工取得股票之課稅時點與價格
+    publisher: 財政部主管法規共用系統
+    kind: law
+    url: https://law-out.mof.gov.tw/LawContent.aspx?id=GL008991
+    select: [.law-content]
+    note: 國內公司的規定；外國公司 RSU 沒有對應的公開函釋，只能類推
+
+  - id: mof_special_talent_regulation_2026
+    title: 財政部｜外國特定專業人才減免所得稅辦法（115年修正）
+    publisher: 財政部主管法規共用系統
+    kind: law
+    url: https://law-out.mof.gov.tw/LawContent.aspx?id=GL010401
+    select: [.law-content]
+
+  - id: law_foreign_professionals_act
+    title: 外國專業人才延攬及僱用法
+    publisher: 法務部全國法規資料庫
+    kind: law
+    url: https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=A0030295
+    select: [div.law-reg-content]
+
+  - id: law_special_talent_regulation
+    title: 外國特定專業人才減免所得稅辦法
+    publisher: 法務部全國法規資料庫
+    kind: law
+    url: https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=G0340150
+    select: [div.law-reg-content]
+
+  - id: law_tax_collection_act
+    title: 稅捐稽徵法
+    publisher: 法務部全國法規資料庫
+    kind: law
+    url: https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=G0340001
+    select: [div.law-reg-content]
+
+  # --- 民間整理（只拿來交叉比對，網站上的數字不引用它們）------------------
+  - id: money101_foreigner_tax
+    title: Money101｜外國人報稅怎麼報？居留日數、試算、級距、退稅
+    publisher: Money101
+    kind: non_government
+    url: https://www.money101.com.tw/blog/報稅-所得稅-外國人報稅-居留日數-試算-級距-退稅
+    select: [div.post-body]
+
+  - id: jobbank104_foreigner_tax
+    title: 104 外籍人才｜2026 在台外國人新手報稅教學指南
+    publisher: 104 人力銀行
+    kind: non_government
+    url: https://go.104.com.tw/zh-hant/expats/article/taiwan-tax-filing-guide-for-foreigners/
+    fetch: manual
+    note: 對誠實標示的爬蟲 User-Agent 回 202 空內容。不偽裝成瀏覽器，只列連結
+
+  # --- 不抓的（只在網站上列連結）------------------------------------------
+  - id: ndc_foreign_talent_act
+    title: 國發會｜外國專業人才延攬及僱用法專區
+    publisher: 國家發展委員會
+    url: https://foreigntalentact.ndc.gov.tw/Content_List.aspx?n=8E20BBA0AFD356E5
+    fetch: manual
+    note: Cloudflare 挑戰頁。不繞過 bot 驗證；法條內容改由臺北國稅局與 Talent Taiwan 的頁面佐證
+
+  - id: tool_mof_alien_calculator
+    title: 財政部｜外僑綜合所得稅試算
+    publisher: 財政部
+    kind: tool
+    url: https://www.etax.nat.gov.tw/etwmain/etw158w/1502
+    fetch: manual
+    note: 官方試算工具。它不會先幫你判斷居住者／非居住者 —— 本站的試算先做這一步
+
+  - id: tool_efiling
+    title: 財政部｜綜合所得稅電子結算申報
+    publisher: 財政部
+    kind: tool
+    url: https://tax.nat.gov.tw/
+    fetch: manual

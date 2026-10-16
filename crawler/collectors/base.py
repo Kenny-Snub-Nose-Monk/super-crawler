@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import ssl
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
@@ -21,11 +22,33 @@ from ..schema import Event
 USER_AGENT = "super-crawler/0.1 (personal use; contact via github)"
 
 
-def make_session(*, retries: int = 3, backoff: float = 1.5) -> requests.Session:
+class _GovCertAdapter(HTTPAdapter):
+    """照樣驗證憑證，只拿掉 Python 3.13 新加的 VERIFY_X509_STRICT。
+
+    2026-10-15 踩到：臺北國稅局（www.ntbt.gov.tw）在 Python 3.13 上一律
+    CERTIFICATE_VERIFY_FAILED: Missing Subject Key Identifier。
+    憑證鏈本身是對的 —— curl 連得上，CI 的 Python 3.12 也連得上 ——
+    是 3.13 起預設開啟的 RFC 5280 嚴格檢查拒絕了政府憑證鏈裡少一個擴充欄位的那張。
+
+    **不是關掉驗證**（verify=False 會讓任何人都能冒充國稅局）。根憑證、
+    簽章、主機名、效期全部照驗，只是不因為缺 SKI 這一個欄位而拒絕。
+    """
+
+    def init_poolmanager(self, *args, **kwargs):
+        ctx = ssl.create_default_context()
+        ctx.verify_flags &= ~getattr(ssl, "VERIFY_X509_STRICT", 0)
+        kwargs["ssl_context"] = ctx
+        return super().init_poolmanager(*args, **kwargs)
+
+
+def make_session(*, retries: int = 3, backoff: float = 1.5,
+                 gov_certs: bool = False) -> requests.Session:
     """帶重試的 session。
 
     這些來源是政府與中小型平台，偶發 502/503 很常見。沒有重試的話，
     你每週的抓取會用一種很煩的頻率隨機失敗一次。
+
+    gov_certs=True：容忍政府網站憑證缺少 Subject Key Identifier（見 _GovCertAdapter）。
     """
     s = requests.Session()
     s.headers.update({"User-Agent": USER_AGENT, "Accept": "application/json"})
@@ -36,7 +59,7 @@ def make_session(*, retries: int = 3, backoff: float = 1.5) -> requests.Session:
         allowed_methods=("GET",),
         raise_on_status=False,
     )
-    s.mount("https://", HTTPAdapter(max_retries=retry))
+    s.mount("https://", (_GovCertAdapter if gov_certs else HTTPAdapter)(max_retries=retry))
     s.mount("http://", HTTPAdapter(max_retries=retry))
     return s
 

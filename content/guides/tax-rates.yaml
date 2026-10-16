@@ -1,0 +1,81 @@
+slug: tax-rates
+kind: tax
+order: 3
+title: Tax rates for foreign workers
+subtitle: What you'll actually pay — non-resident flat rates and resident brackets, side by side
+summary: >-
+  The headline numbers are 18% for non-residents and 5–40% for residents, but the gap between them is
+  wider than it looks. Here are the rates for 2025 and 2026 and three salaries worked through.
+keywords: [rates, rate, bracket, brackets, progressive, 18%, 6%, 40%, effective rate, withholding, how much]
+updated: 2026-10-15
+takeaways:
+  - "Non-residents: a flat {{fact:nr_salary_rate}} on salary, no deductions — {{fact:nr_salary_rate_low}} only below {{fact:nr_threshold_2026}} a month."
+  - "Residents: 5% to 40% on net income after exemptions and deductions; the 40% band starts above NT$5.19M in 2026."
+  - "For most professional salaries, resident status costs noticeably less than the flat 18%."
+  - "High earners lose the rent deduction once their marginal rate reaches 20%."
+sections:
+  - id: non-resident-rates
+    heading: Non-residents — flat rates at source
+    blocks:
+      - p: >-
+          A non-resident's tax is withheld by whoever pays them, and the withheld amount is final. No
+          exemptions, no deductions, no return. The cut-off between 6% and 18% is 1.5 times the monthly
+          minimum wage: {{fact:nr_threshold_2025}} in 2025 and {{fact:nr_threshold_2026}} in 2026.
+      - facts: [nr_salary_rate, nr_salary_rate_low, nr_threshold_2026, nr_professional_rate]
+  - id: resident-rates
+    heading: Residents — progressive rates on net income
+    blocks:
+      - p: >-
+          Residents pay progressive rates on **net** income: salary minus the salary special deduction, minus
+          exemptions for you and anyone you support, minus the standard (or itemized) deduction and any special
+          deductions. The brackets rose for 2026 with inflation.
+      - table:
+          head: [Net taxable income, Rate, 2025 limits, 2026 limits]
+          rows:
+            - ["First band", "5%", "up to NT$590,000", "up to NT$610,000"]
+            - ["Second band", "12%", "to NT$1,330,000", "to NT$1,380,000"]
+            - ["Third band", "20%", "to NT$2,660,000", "to NT$2,770,000"]
+            - ["Fourth band", "30%", "to NT$4,980,000", "to NT$5,190,000"]
+            - ["Top band", "40%", "above NT$4,980,000", "above NT$5,190,000"]
+      - cite: [gazette_2025_amounts, gazette_2026_amounts]
+      - table:
+          head: [Amount, Tax year 2025, Tax year 2026]
+          rows:
+            - ["Personal exemption", "{{fact:exemption_2025}}", "{{fact:exemption_2026}}"]
+            - ["Exemption, minor child", "{{fact:exemption_2025}}", "{{fact:exemption_minor_2026}}"]
+            - ["Standard deduction (single / married)", "{{fact:standard_single_2025}} / {{fact:standard_married_2025}}", "{{fact:standard_single_2026}} / {{fact:standard_married_2026}}"]
+            - ["Salary special deduction", "{{fact:salary_deduction_2025}}", "{{fact:salary_deduction_2026}}"]
+            - ["Basic living expense per person", "{{fact:basic_living_2025}}", "{{fact:basic_living_2026}}"]
+      - callout:
+          kind: note
+          title: The basic living expense
+          text: >-
+            If your household's exemptions and deductions add up to less than the basic living expense per person,
+            the difference is deductible too. It matters for large families on modest incomes; for most
+            professionals it never applies.
+  - id: compare
+    heading: Three salaries, worked through
+    blocks:
+      - p: >-
+          The same annual salary, taxed as a non-resident (flat 18%) and as a single resident with no other
+          income, tax year 2026. These are computed live by the same code as the calculator.
+      - compare:
+          - { label: "NT$1.5M · non-resident", input: { year: 2026, days: 120, salary: 1500000 } }
+          - { label: "NT$1.5M · resident", input: { year: 2026, days: 365, salary: 1500000 } }
+      - compare:
+          - { label: "NT$3M · non-resident", input: { year: 2026, days: 120, salary: 3000000 } }
+          - { label: "NT$3M · resident", input: { year: 2026, days: 365, salary: 3000000 } }
+      - compare:
+          - { label: "NT$6M · resident", input: { year: 2026, days: 365, salary: 6000000 } }
+          - { label: "NT$6M · resident with incentive", input: { year: 2026, days: 365, salary: 6000000, specialTalent: true } }
+      - p: "Try your own numbers in the [calculator](#/tax/calculator)."
+  - id: deductions-that-matter
+    heading: Deductions that matter for professionals
+    blocks:
+      - list:
+          - "**Rent.** Up to {{fact:rent_cap}} for your home in Taiwan — but {{fact:rent_exclusion}}. For most readers of this guide, that means it doesn't apply."
+          - "**Family abroad.** Residents can claim a spouse and close dependants living overseas: {{fact:dependents_abroad}}."
+          - "**Children.** From tax year 2026 each minor child you support carries a {{fact:exemption_minor_2026}} exemption, and children aged six or under add a preschool deduction of {{fact:preschool_deduction}}."
+          - "**Dividends.** Taiwan dividends get either a credit of {{fact:dividend_credit}} or a separate {{fact:dividend_separate}} rate — whichever is better for you."
+sources: [law_withholding_rates, mof_nr_threshold_2026, mol_minimum_wage, gazette_2025_amounts, gazette_2026_amounts, gazette_2025_basic_living, mof_faq_resident_deductions, mof_minor_child_2026, law_income_tax_act]
+related: [tax-in-taiwan, 183-day-rule, tax-benefits]

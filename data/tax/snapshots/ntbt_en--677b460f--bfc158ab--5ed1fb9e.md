@@ -1,0 +1,15 @@
+# Filing Period
+
+- 來源：https://www.ntbt.gov.tw/English/multiplehtml/5ed1fb9e911b4803b3bc182349d81187
+- 頁面標題：Filing Period -National Taxation Bureau of Taipei
+- 頁面標示更新：2021-03-31
+
+---
+
+:::
+
+Filing Period
+
+Taxpayers must file their income tax returns before departure or file annual income tax returns for the previous year from May 1st to May 31st in the current year.
+
+Last updated：2021-03-31

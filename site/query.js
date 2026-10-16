@@ -70,6 +70,22 @@ export function queryEvents(events, params = {}, now = Date.now()) {
   return out.sort((a, b) => rank(a) - rank(b) || (key(a) < key(b) ? -1 : key(a) > key(b) ? 1 : 0));
 }
 
+// 依現在時間重算 upcoming / ongoing / expired —— crawler/store.py 的 refresh_status 的同語意實作。
+// 匯出時已經算過一次；但靜態頁可能在匯出幾天後才被打開，昨天的活動不該還掛著「即將開始」。
+// 手動標成 cancelled 的不動。
+export function refreshStatus(events, now = Date.now()) {
+  const nowMs = typeof now === "number" ? now : parse(now);
+  for (const ev of events) {
+    if (ev.status === "cancelled") continue;
+    const start = parse(ev.starts_at);
+    const end = parse(ev.ends_at) ?? start;
+    if (end !== null && end < nowMs) ev.status = "expired";
+    else if (start !== null && start <= nowMs && nowMs <= (end ?? nowMs)) ev.status = "ongoing";
+    else ev.status = "upcoming";
+  }
+  return events;
+}
+
 // 網頁過濾列與 WebMCP 工具共用的參數正規化。
 // 日期可以給 YYYY-MM-DD（當成台北時間的整天），也可以給完整 ISO 8601。
 export function normalizeParams(raw = {}) {

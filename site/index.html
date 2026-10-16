@@ -1,10 +1,16 @@
 <!doctype html>
-<html lang="zh-Hant-TW">
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>雙北活動</title>
-  <meta name="description" content="雙北活動搜尋。網頁和 Claude（透過 WebMCP）查的是同一份資料、同一套條件。">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <title>Ma — Life in Taipei, made clear</title>
+  <meta name="description" content="English-friendly events in Taipei, plain-English tax guides and a residency-aware tax calculator for foreign professionals. Your AI assistant can use the same data through WebMCP.">
+  <meta name="theme-color" content="#fbfaf8">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g' cx='.42' cy='.38' r='.7'%3E%3Cstop offset='0' stop-color='%23fff6dd'/%3E%3Cstop offset='.45' stop-color='%23ffc46b'/%3E%3Cstop offset='1' stop-color='%23f08a4b'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='26' fill='url(%23g)'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
   <link rel="stylesheet" href="style.css">
   <script>
     // WebMCP 的頁內傳輸只接受同源訊息（預設是任何來源）
@@ -16,78 +22,67 @@
   <script src="vendor/mcp-b/global.iife.js"></script>
 </head>
 <body>
+  <a class="skip" href="#view">Skip to content</a>
+
   <header class="masthead">
-    <div class="wrap">
-      <h1>雙北活動</h1>
-      <p class="stamp" id="stamp">載入中…</p>
-      <button type="button" class="relay" id="relay" aria-pressed="false"
-              title="把這個頁面的搜尋工具交給本機的 webmcp-local-relay，讓 Claude Code 呼叫">
-        連接本機 AI 助理
-      </button>
+    <div class="wrap masthead-row">
+      <a class="brand" href="#/" aria-label="Ma — home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-word">Ma</span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="#/events" data-nav="events">Events</a>
+        <a href="#/topics" data-nav="topics">Topics</a>
+        <a href="#/tax" data-nav="tax">Tax</a>
+        <a href="#/saved" data-nav="saved">Saved</a>
+      </nav>
+      <form class="header-search" id="header-search" role="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+        <input type="search" name="q" placeholder="Search events and tax" aria-label="Search events and tax questions" autocomplete="off" enterkeyhint="search">
+      </form>
+      <div class="masthead-tools">
+        <a class="icon-btn search-link" href="#/search" aria-label="Search" data-nav="search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+        </a>
+        <button type="button" class="relay" id="relay" aria-pressed="false"
+                title="Let your local Claude Code use this page's tools through the WebMCP relay">
+          <span class="relay-dot" aria-hidden="true"></span><span class="relay-label">Connect Claude</span>
+        </button>
+      </div>
     </div>
   </header>
 
-  <form class="filters" id="filters" autocomplete="off">
-    <div class="wrap">
-      <div class="row">
-        <label class="field grow">
-          <span class="label">關鍵字</span>
-          <input type="search" name="keyword" placeholder="例如：English、爵士、市集">
-        </label>
-        <label class="field">
-          <span class="label">開始於</span>
-          <input type="date" name="start_after">
-        </label>
-        <label class="field">
-          <span class="label">到</span>
-          <input type="date" name="start_before">
-        </label>
-        <label class="field">
-          <span class="label">城市</span>
-          <select name="city">
-            <option value="">雙北</option>
-            <option value="臺北市">臺北市</option>
-            <option value="新北市">新北市</option>
-          </select>
-        </label>
+  <main id="view" class="view" tabindex="-1" aria-live="polite"></main>
+
+  <div class="agent-toast" id="agent-toast" role="status" hidden>
+    <span class="agent-toast-mark" aria-hidden="true"></span>
+    <span class="agent-toast-text" id="agent-toast-text"></span>
+  </div>
+
+  <footer class="colophon">
+    <div class="wrap colophon-grid">
+      <div>
+        <p class="colophon-brand"><span class="brand-mark" aria-hidden="true"></span>Ma</p>
+        <p>Events in Taipei and New Taipei, and clear answers on tax for people who just moved here. Events are collected every week from public listings.</p>
       </div>
-      <fieldset class="types" id="types">
-        <legend class="label">類型</legend>
-      </fieldset>
-      <div class="row toggles">
-        <label class="toggle"><input type="checkbox" name="free_only"> 只看免費</label>
-        <label class="toggle"><input type="checkbox" name="signup_open"> 還能報名</label>
-        <label class="toggle"><input type="checkbox" name="exclude_online"> 排除線上</label>
-        <button type="reset" class="reset">清除條件</button>
+      <div>
+        <p class="colophon-title">Last updated</p>
+        <p id="freshness">Loading…</p>
+      </div>
+      <div>
+        <p class="colophon-title">Not tax advice</p>
+        <p>General information, not advice for your situation. Confirm with the National Taxation Bureau before you file. <a href="#/about">Where our data comes from</a></p>
       </div>
     </div>
-  </form>
+  </footer>
 
-  <main class="wrap">
-    <div class="summary" id="summary" aria-live="polite"></div>
-    <p class="agent-note" id="agent-note" hidden></p>
-    <ol class="results" id="results"></ol>
-    <button type="button" class="more" id="more" hidden>顯示更多</button>
-  </main>
-
-  <template id="card">
-    <li class="card">
-      <a class="card-link" target="_blank" rel="noopener">
-        <div class="meta-top">
-          <span class="type"></span>
-          <span class="status"></span>
-          <span class="source"></span>
-        </div>
-        <h2 class="title"></h2>
-        <p class="when"></p>
-        <p class="where"></p>
-        <div class="facts">
-          <span class="price"></span>
-          <span class="deadline"></span>
-        </div>
-      </a>
-    </li>
-  </template>
+  <nav class="dock" aria-label="Mobile">
+    <a href="#/" data-nav="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/></svg>Home</a>
+    <a href="#/events" data-nav="events"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Events</a>
+    <a href="#/search" data-nav="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>Search</a>
+    <a href="#/tax" data-nav="tax"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l3 3v15H6z"/><path d="M9 10h6M9 14h6M9 18h3"/></svg>Tax</a>
+    <a href="#/saved" data-nav="saved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v17l-5-4-5 4z"/></svg>Saved</a>
+  </nav>
 
   <script type="module" src="app.js"></script>
   <script type="module" src="webmcp.js"></script>

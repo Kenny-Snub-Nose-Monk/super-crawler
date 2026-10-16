@@ -1,0 +1,758 @@
+# 稅務數字與規則 —— 網站上每一個稅務數字的唯一出處。
+#
+# 每一筆都要有 evidence：data/tax/snapshots/ 裡哪一份快照、哪一句原文。
+# scripts/collect_tax_sources.py 每週抓完會核對引述還在不在（比對時忽略空白、全半形）：
+#   對得上 → 網站照常顯示「已核對」
+#   對不上 → 網站標「待複核」，數字照樣顯示但會提醒使用者
+# 所以引述要挑「數字所在的那一句」，不要挑整段 —— 整段的話，旁邊改一個字也會誤報。
+#
+# 指南裡用 {{fact:<id>}} 引用；試算用的參數在 params.yaml 指到這裡。
+# label / display / note 是給外國讀者看的英文；quote 是原文，不翻譯。
+#
+# 2026-10-15 整理。來源核對過程見 docs/adr/0003-tax-facts-pinned-to-snapshots.md。
+
+facts:
+  # --- 居住者判定 ----------------------------------------------------------
+  residency_days:
+    label: Days in Taiwan in a calendar year that make you a tax resident
+    value: 183
+    display: 183 days
+    topics: [residency]
+    evidence:
+      - source: law_income_tax_act
+        quote: 於一課稅年度內在中華民國境內居留合計滿一百八十三天者
+  tax_year:
+    label: Tax year
+    value: calendar
+    display: 1 January – 31 December
+    topics: [residency]
+    evidence:
+      - source: mof_tax_year
+        quote: 自1月1日起至同年12月31日止為一課稅年度
+  day_counting:
+    label: How days are counted
+    value: arrival-excluded
+    display: arrival day not counted, departure day counted
+    topics: [residency]
+    note: Every trip in the same calendar year is added together, based on passport stamps or the immigration agency's entry/exit certificate.
+    evidence:
+      - source: mof_day_counting
+        quote: 始日不計末日計
+      - source: ntbt_en_period_of_stay
+        quote: excluding the date of arrival and including the date of departure
+  day_counting_example:
+    label: MOF's own worked example
+    value: 111
+    display: arrive 1 Aug, leave 20 Nov → 111 days
+    topics: [residency]
+    evidence:
+      - source: mof_saving_manual_alien
+        quote: 114年8月1日入境，11月20日出境後未再入境，當年度Ｂ君在臺居住共111天
+  foreign_employer_90:
+    label: Pay from an overseas employer when you stay 90 days or fewer
+    value: exempt
+    display: not taxed in Taiwan
+    topics: [residency, nonresident]
+    evidence:
+      - source: law_income_tax_act
+        quote: 於一課稅年度內在中華民國境內居留合計不超過九十天者，其自中華民國境外僱主所取得之勞務報酬不在此限
+  foreign_employer_over_90_rate:
+    label: Pay from an overseas employer when you stay over 90 but under 183 days
+    value: 0.18
+    display: 18%, self-reported
+    topics: [nonresident]
+    evidence:
+      - source: ntbt_en_rate_applicable
+        quote: remunerations paid by employers outside the R.O.C. for services rendered in the R.O.C. shall be filed and taxed at the rate of 18%
+      - source: ntbt_nonresident_rate
+        quote: 按18%扣繳率申報納稅
+  entry_exit_certificate_fee:
+    label: Entry/exit date certificate from the National Immigration Agency
+    value: 100
+    display: NT$100 at a service station
+    topics: [residency]
+    evidence:
+      - source: immigration_entry_exit_certificate
+        quote: 在國內申請者，繳交規費新臺幣一百元
+
+  # --- 非居住者扣繳 --------------------------------------------------------
+  nr_salary_rate:
+    label: Non-resident withholding on salary
+    value: 0.18
+    display: "18%"
+    topics: [nonresident, withholding]
+    evidence:
+      - source: law_withholding_rates
+        quote: 薪資按給付額扣取百分之十八
+  nr_salary_rate_low:
+    label: Non-resident withholding when a month's pay is at most 1.5× the minimum wage
+    value: 0.06
+    display: "6%"
+    topics: [nonresident, withholding]
+    evidence:
+      - source: law_withholding_rates
+        quote: 全月薪資給付總額在行政院核定每月基本工資一點五倍以下者，按給付額扣取百分之六
+  min_wage_2025:
+    label: Monthly minimum wage, 2025
+    value: 28590
+    display: NT$28,590
+    year: 2025
+    topics: [withholding]
+    evidence:
+      - source: mol_minimum_wage
+        quote: 訂定每月最低工資為28,590元
+  min_wage_2026:
+    label: Monthly minimum wage, 2026
+    value: 29500
+    display: NT$29,500
+    year: 2026
+    topics: [withholding]
+    evidence:
+      - source: mol_minimum_wage
+        quote: 訂定每月最低工資為29,500元
+  min_wage_2027:
+    label: Monthly minimum wage decided for 2027
+    value: 30900
+    display: NT$30,900
+    year: 2027
+    topics: [withholding]
+    note: Decided by the wage review committee in September 2026; the formal notice is still to come.
+    evidence:
+      - source: mol_minimum_wage_2027
+        quote: 決定自116年1月1日起，每月最低工資由29,500元調整至30,900元
+  nr_threshold_2025:
+    label: The 6% / 18% cut-off for a month's pay, 2025
+    value: 42885
+    display: NT$42,885
+    year: 2025
+    topics: [nonresident, withholding]
+    note: 1.5 × NT$28,590. Our arithmetic from the two official figures; MOF did not print this one.
+    evidence:
+      - source: mol_minimum_wage
+        quote: 訂定每月最低工資為28,590元
+      - source: law_withholding_rates
+        quote: 全月薪資給付總額在行政院核定每月基本工資一點五倍以下者，按給付額扣取百分之六
+  nr_threshold_2026:
+    label: The 6% / 18% cut-off for a month's pay, 2026
+    value: 44250
+    display: NT$44,250
+    year: 2026
+    topics: [nonresident, withholding]
+    evidence:
+      - source: mof_nr_threshold_2026
+        quote: 計算適用扣繳率的金額基準調升至44,250元（29,500元×1.5）
+  nr_professional_rate:
+    label: Non-resident withholding on professional fees (freelance work)
+    value: 0.20
+    display: "20%"
+    topics: [nonresident, withholding]
+    evidence:
+      - source: law_withholding_rates
+        quote: 執行業務者之報酬按給付額扣取百分之二十
+  nr_dividend_rate:
+    label: Non-resident withholding on Taiwan dividends
+    value: 0.21
+    display: "21%"
+    topics: [nonresident, withholding]
+    evidence:
+      - source: law_withholding_rates
+        quote: 按給付額、應分配額或所得數扣取百分之二十一
+  nr_interest_rate:
+    label: Non-resident withholding on interest
+    value: 0.20
+    display: "20%"
+    topics: [nonresident, withholding]
+    note: Bonds, short-term bills and repos are 15%.
+    evidence:
+      - source: law_withholding_rates
+        quote: 其餘各種利息，一律按給付額扣取百分之二十
+  nr_rent_rate:
+    label: Non-resident withholding on rent received
+    value: 0.20
+    display: "20%"
+    topics: [nonresident, withholding]
+    evidence:
+      - source: law_withholding_rates
+        quote: 租金按給付額扣取百分之二十
+  nr_royalty_rate:
+    label: Non-resident withholding on royalties
+    value: 0.20
+    display: "20%"
+    topics: [nonresident, withholding]
+    evidence:
+      - source: law_withholding_rates
+        quote: 權利金按給付額扣取百分之二十
+  resident_withholding_flat:
+    label: Flat withholding option for residents' salary
+    value: 0.05
+    display: "5% (or the withholding table)"
+    topics: [withholding]
+    evidence:
+      - source: law_withholding_rates
+        quote: 按全月給付總額扣取百分之五
+  employer_resident_rate_from_start:
+    label: Expected to stay 183+ days? Your employer may withhold at resident rates from day one
+    value: allowed
+    display: allowed
+    topics: [withholding]
+    evidence:
+      - source: mof_withholding_faq_1514
+        quote: 可以從一開始就按我國境內居住者的扣繳率扣繳
+  household_employer_not_agent:
+    label: Household employers (helpers, caregivers) do not withhold tax
+    value: self-file
+    display: the worker files on their own
+    topics: [withholding]
+    evidence:
+      - source: dhsc_salary_tax
+        quote: 由於雇主並非所得稅法規定之扣繳義務人
+
+  # --- 居住者的年度金額 ----------------------------------------------------
+  exemption_2025:
+    label: Personal exemption, tax year 2025
+    value: 97000
+    display: NT$97,000
+    year: 2025
+    topics: [deductions]
+    evidence:
+      - source: gazette_2025_amounts
+        quote: 114年度綜合所得稅之免稅額，每人全年新臺幣（下同）97,000元
+  exemption_2026:
+    label: Personal exemption, tax year 2026
+    value: 101000
+    display: NT$101,000
+    year: 2026
+    topics: [deductions]
+    evidence:
+      - source: gazette_2026_amounts
+        quote: 115年度綜合所得稅之免稅額，每人全年新臺幣（下同）101,000元
+  exemption_70_2025:
+    label: Exemption for a taxpayer, spouse or parent aged 70+, tax year 2025
+    value: 145500
+    display: NT$145,500
+    year: 2025
+    topics: [deductions]
+    evidence:
+      - source: gazette_2025_amounts
+        quote: 年滿70歲受納稅義務人扶養者，每人全年145,500元
+  exemption_70_2026:
+    label: Exemption for a taxpayer, spouse or parent aged 70+, tax year 2026
+    value: 151500
+    display: NT$151,500
+    year: 2026
+    topics: [deductions]
+    evidence:
+      - source: gazette_2026_amounts
+        quote: 年滿70歲受納稅義務人扶養者，每人全年151,500元
+  exemption_minor_2026:
+    label: Exemption for each minor child you support, from tax year 2026
+    value: 151500
+    display: NT$151,500
+    year: 2026
+    topics: [deductions]
+    note: New in September 2026 and backdated to 1 January 2026 — 50% more than the regular exemption.
+    evidence:
+      - source: mof_minor_child_2026
+        quote: 每位免稅額由新臺幣（下同）10.1萬元增加為15.15萬元
+  standard_single_2025:
+    label: Standard deduction (single), tax year 2025
+    value: 131000
+    display: NT$131,000
+    year: 2025
+    topics: [deductions]
+    evidence:
+      - source: gazette_2025_amounts
+        quote: 納稅義務人個人扣除131,000元；有配偶者扣除262,000元
+  standard_married_2025:
+    label: Standard deduction (married), tax year 2025
+    value: 262000
+    display: NT$262,000
+    year: 2025
+    topics: [deductions]
+    evidence:
+      - source: gazette_2025_amounts
+        quote: 納稅義務人個人扣除131,000元；有配偶者扣除262,000元
+  standard_single_2026:
+    label: Standard deduction (single), tax year 2026
+    value: 136000
+    display: NT$136,000
+    year: 2026
+    topics: [deductions]
+    evidence:
+      - source: gazette_2026_amounts
+        quote: 納稅義務人個人扣除136,000元；有配偶者扣除272,000元
+  standard_married_2026:
+    label: Standard deduction (married), tax year 2026
+    value: 272000
+    display: NT$272,000
+    year: 2026
+    topics: [deductions]
+    evidence:
+      - source: gazette_2026_amounts
+        quote: 納稅義務人個人扣除136,000元；有配偶者扣除272,000元
+  salary_deduction_2025:
+    label: Salary special deduction, tax year 2025
+    value: 218000
+    display: NT$218,000
+    year: 2025
+    topics: [deductions]
+    evidence:
+      - source: gazette_2025_amounts
+        quote: 每人每年扣除數額以218,000元為限
+  salary_deduction_2026:
+    label: Salary special deduction, tax year 2026
+    value: 227000
+    display: NT$227,000
+    year: 2026
+    topics: [deductions]
+    evidence:
+      - source: gazette_2026_amounts
+        quote: 每人每年扣除數額以227,000元為限
+  basic_living_2025:
+    label: Basic living expense per person, tax year 2025
+    value: 213000
+    display: NT$213,000
+    year: 2025
+    topics: [deductions]
+    evidence:
+      - source: gazette_2025_basic_living
+        quote: 114年度每人基本生活所需之費用，新臺幣（下同）213,000元
+  basic_living_2026:
+    label: Basic living expense per person, tax year 2026 (provisional)
+    value: 213000
+    display: NT$213,000 (provisional)
+    year: 2026
+    provisional: true
+    topics: [deductions]
+    note: The 2026 amount is announced in late November 2026. Until then the 2025 amount stands in, so 2026 estimates for low incomes may move slightly.
+    evidence:
+      - source: gazette_2025_basic_living
+        quote: 114年度每人基本生活所需之費用，新臺幣（下同）213,000元
+  brackets_2025:
+    label: Progressive rates, tax year 2025
+    value: [[590000, 0.05, 0], [1330000, 0.12, 29500], [2660000, 0.20, 118300], [4980000, 0.30, 384300], [null, 0.40, 1080300]]
+    display: 5% to NT$590,000 · 12% to 1.33M · 20% to 2.66M · 30% to 4.98M · 40% above
+    year: 2025
+    topics: [rates]
+    evidence:
+      - source: gazette_2025_amounts
+        quote: 全年綜合所得淨額在590,000元以下者，課徵5％
+      - source: gazette_2025_amounts
+        quote: 超過590,000元至1,330,000元者，課徵29,500元，加超過590,000元部分之12％
+      - source: gazette_2025_amounts
+        quote: 超過1,330,000元至2,660,000元者，課徵118,300元，加超過1,330,000元部分之20％
+      - source: gazette_2025_amounts
+        quote: 超過2,660,000元至4,980,000元者，課徵384,300元，加超過2,660,000元部分之30％
+      - source: gazette_2025_amounts
+        quote: 超過4,980,000元者，課徵1,080,300元，加超過4,980,000元部分之40％
+  brackets_2026:
+    label: Progressive rates, tax year 2026
+    value: [[610000, 0.05, 0], [1380000, 0.12, 30500], [2770000, 0.20, 122900], [5190000, 0.30, 400900], [null, 0.40, 1126900]]
+    display: 5% to NT$610,000 · 12% to 1.38M · 20% to 2.77M · 30% to 5.19M · 40% above
+    year: 2026
+    topics: [rates]
+    evidence:
+      - source: gazette_2026_amounts
+        quote: 全年綜合所得淨額在610,000元以下者，課徵5％
+      - source: gazette_2026_amounts
+        quote: 超過610,000元至1,380,000元者，課徵30,500元，加超過610,000元部分之12％
+      - source: gazette_2026_amounts
+        quote: 超過1,380,000元至2,770,000元者，課徵122,900元，加超過1,380,000元部分之20％
+      - source: gazette_2026_amounts
+        quote: 超過2,770,000元至5,190,000元者，課徵400,900元，加超過2,770,000元部分之30％
+      - source: gazette_2026_amounts
+        quote: 超過5,190,000元者，課徵1,126,900元，加超過5,190,000元部分之40％
+  quick_formula_2025:
+    label: MOF quick formula, tax year 2025
+    value: [0, 41300, 147700, 413700, 911700]
+    display: net income × rate − 0 / 41,300 / 147,700 / 413,700 / 911,700
+    year: 2025
+    topics: [rates]
+    evidence:
+      - source: mof_faq_resident_deductions
+        quote: 590,001~1,330,000 × 12% － 41,300
+  rent_cap:
+    label: Rent special deduction (your home in Taiwan), per household
+    value: 180000
+    display: up to NT$180,000
+    topics: [deductions]
+    evidence:
+      - source: mof_faq_resident_deductions
+        quote: 每一申報戶每年可扣除限額180,000元
+  rent_exclusion:
+    label: When the rent deduction is not allowed
+    value: rate-20
+    display: not allowed once your marginal rate reaches 20%
+    topics: [deductions]
+    note: Also not allowed if you choose the 28% separate rate for dividends, or if your basic income for the minimum tax exceeds NT$7.5 million.
+    evidence:
+      - source: mof_resident_deductions
+        quote: 經減除長期照顧特別扣除額及房屋租金支出特別扣除額後，全年綜合所得稅適用稅率在20%以上
+  ltc_deduction:
+    label: Long-term care special deduction, per person
+    value: 180000
+    display: NT$180,000
+    topics: [deductions]
+    note: Raised from NT$120,000 in December 2025, backdated to tax year 2025.
+    evidence:
+      - source: mof_ltc_deduction
+        quote: 將扣除額度由新臺幣（下同）12萬元提高至18萬元
+  preschool_deduction:
+    label: Preschool special deduction (children aged 6 or under)
+    value: [150000, 225000]
+    display: NT$150,000 first child · NT$225,000 each after
+    topics: [deductions]
+    evidence:
+      - source: law_income_tax_act
+        quote: 第一名子女每年扣除十五萬元，第二名及以上子女每人每年扣除二十二萬五千元
+  savings_deduction:
+    label: Savings and investment special deduction, per household
+    value: 270000
+    display: up to NT$270,000
+    topics: [deductions]
+    evidence:
+      - source: law_income_tax_act
+        quote: 合計全年扣除數額以二十七萬元為限
+  dependents_abroad:
+    label: Residents may claim a spouse and close dependents who live abroad
+    value: allowed
+    display: allowed, with proof
+    topics: [deductions]
+    note: Spouse, parents and grandparents (60+ or unable to work), and children or siblings (minors, students, or unable to work). Bring proof of the relationship and of your support.
+    evidence:
+      - source: mof_faq_dependents_abroad
+        quote: 亦可認列其免稅額
+  dividend_credit:
+    label: Dividend tax credit (combined option)
+    value: [0.085, 80000]
+    display: 8.5%, capped at NT$80,000 per household
+    topics: [rates]
+    evidence:
+      - source: law_income_tax_act
+        quote: 按百分之八點五計算可抵減稅額
+      - source: law_income_tax_act
+        quote: 每一申報戶每年抵減金額以八萬元為限
+  dividend_separate:
+    label: Dividend separate-taxation option
+    value: 0.28
+    display: 28% flat
+    topics: [rates]
+    evidence:
+      - source: law_income_tax_act
+        quote: 按百分之二十八之稅率分開計算應納稅額
+
+  # --- 最低稅負制（海外所得）----------------------------------------------
+  overseas_threshold:
+    label: Overseas income that triggers the minimum-tax check, per household
+    value: 1000000
+    display: NT$1,000,000 or more
+    topics: [overseas]
+    note: Below NT$1M, overseas income is ignored entirely. At or above it, the whole amount counts.
+    evidence:
+      - source: law_income_basic_tax
+        quote: 但一申報戶全年之本款所得合計數未達新臺幣一百萬元者，免予計入
+      - source: ntbt_resident_basic_tax
+        quote: 一申報戶全年合計數未達100萬元者，免予計入；在100萬元以上者，應全數計入
+  amt_exemption_2025:
+    label: Basic income exemption for the minimum tax, tax year 2025
+    value: 7500000
+    display: NT$7,500,000
+    year: 2025
+    topics: [overseas]
+    evidence:
+      - source: gazette_2025_amt
+        quote: 114年度個人之基本所得額在750萬元以下者，免依本條例規定繳納所得稅
+  amt_exemption_2026:
+    label: Basic income exemption for the minimum tax, tax year 2026
+    value: 7500000
+    display: NT$7,500,000
+    year: 2026
+    topics: [overseas]
+    evidence:
+      - source: gazette_2026_amt
+        quote: 115年度個人之基本所得額在750萬元以下者，免依本條例規定繳納所得稅
+  amt_rate:
+    label: Minimum tax rate
+    value: 0.20
+    display: 20% of basic income above the exemption
+    topics: [overseas]
+    evidence:
+      - source: gazette_2026_amt
+        quote: 其基本稅額為基本所得額扣除750萬元後，按20％計算之金額
+
+  # --- 外國特定專業人才（含就業金卡）----------------------------------------
+  special_talent_rule:
+    label: Special professional tax incentive (Foreign Professionals Act, Art. 22)
+    value: half-above-3m
+    display: half of salary above NT$3M is tax-free
+    topics: [incentives]
+    evidence:
+      - source: ntbt_special_talent_intro
+        quote: 薪資所得超過300萬元部分之半數免予計入綜合所得總額課稅
+      - source: ntbt_en_special_talent_intro
+        quote: half of the amount of the salary income exceeding the NT$3,000,000 of each such taxable year in which he/she resides in the R.O.C. for 183 days or more may be ex
+  special_talent_threshold:
+    label: Salary threshold for the incentive
+    value: 3000000
+    display: NT$3,000,000
+    topics: [incentives]
+    evidence:
+      - source: ntbt_special_talent_intro
+        quote: 首次成為我國居住者且薪資所得超過新臺幣300萬元之課稅年度起算5年內
+  special_talent_years:
+    label: How long the incentive lasts
+    value: 5
+    display: 5 tax years from the first qualifying year
+    topics: [incentives]
+    note: Only years with 183+ days in Taiwan get the benefit, and the clock starts in the first year you are resident with salary above NT$3M — you cannot choose a later start.
+    evidence:
+      - source: ntbt_special_talent_intro
+        quote: 首次成為我國居住者且薪資所得超過新臺幣300萬元之課稅年度起算5年內
+  special_talent_gold_card:
+    label: Gold Card holders employed in professional work qualify while the card is valid
+    value: eligible
+    display: eligible
+    topics: [incentives]
+    evidence:
+      - source: ntbt_special_talent_intro
+        quote: 或依規定取得就業金卡，在就業金卡有效期間受聘僱從事專業工作者
+  special_talent_overseas:
+    label: Overseas income during the incentive years
+    value: excluded
+    display: excluded from the minimum tax
+    topics: [incentives, overseas]
+    evidence:
+      - source: ntbt_special_talent_intro
+        quote: 不適用所得基本稅額條例第12條第1項第1款有關海外所得課徵基本稅額規定
+  special_talent_apply:
+    label: The incentive is not automatic
+    value: apply-by-deadline
+    display: apply with your return, before the filing deadline
+    topics: [incentives]
+    note: Miss the deadline and that year's benefit is gone.
+    evidence:
+      - source: law_special_talent_regulation
+        quote: 未於各該課稅年度綜合所得稅結算申報期間屆滿前依規定格式申請，不得適用
+  special_talent_employer_change:
+    label: Changing employer during the five years
+    value: keeps-benefit
+    display: you keep the benefit
+    topics: [incentives]
+    evidence:
+      - source: law_special_talent_regulation
+        quote: 於第一項所定租稅優惠五年期間內轉換雇主或工作，且仍從事符合前條第一項第二款專業工作者，得繼續適用本法第二十二條租稅優惠至五年期間屆滿
+
+  # --- 股權報酬 ------------------------------------------------------------
+  stock_options_other_income:
+    label: Stock options from an overseas parent company
+    value: other-income
+    display: taxed as "other income" in the year you exercise
+    topics: [equity]
+    evidence:
+      - source: mof_ruling_stock_options
+        quote: 核屬所得稅法第14條第1項第10類規定之其他所得，計入執行年度之所得額
+  stock_options_proration:
+    label: Taiwan-source share of a stock option gain
+    value: days-ratio
+    display: prorated by your days in Taiwan between grant and first exercise date
+    topics: [equity]
+    evidence:
+      - source: mof_ruling_stock_options
+        quote: 依員工於上開期間內在我國境內居留之天數，佔該期間之比例，計算我國來源所得
+
+  # --- 申報時程 ------------------------------------------------------------
+  filing_window:
+    label: Annual filing period
+    value: [5, 1, 5, 31]
+    display: 1 – 31 May
+    topics: [filing]
+    evidence:
+      - source: law_income_tax_act
+        quote: 納稅義務人應於每年五月一日起至五月三十一日止，填具結算申報書
+  filing_2026:
+    label: Filing period in 2026 (for tax year 2025)
+    value: ["2026-05-01", "2026-06-01"]
+    display: 1 May – 1 June 2026
+    year: 2025
+    topics: [filing]
+    note: 31 May 2026 was a Sunday, so the deadline moved to Monday 1 June.
+    evidence:
+      - source: mof_filing_2026
+        quote: 114年度綜合所得稅結算申報末日原為115年5月31日，適逢週日順延至6月1日(週一)
+  income_query_2026:
+    label: Income and deduction data opened for download (2026)
+    value: "2026-04-28"
+    display: 28 April 2026, 8:00
+    year: 2025
+    topics: [filing]
+    evidence:
+      - source: mof_filing_2026
+        quote: 將於115年4月28日上午8時開放查調
+  refunds_2026:
+    label: Refund batches for tax year 2025
+    value: ["2026-07-31", "2026-10-30", "2027-01-20"]
+    display: 31 Jul 2026 · 30 Oct 2026 · 20 Jan 2027
+    year: 2025
+    topics: [filing]
+    evidence:
+      - source: mof_refund_batches_2026
+        quote: 分別於今年7月31日，10月30日及116年1月20日辦理3批次退稅
+  departure_filing:
+    label: Residents leaving Taiwan for good mid-year
+    value: before-departure
+    display: file before you leave
+    topics: [filing, departure]
+    evidence:
+      - source: law_income_tax_act
+        quote: 於年度中廢止中華民國境內之住所或居所離境者，應於離境前就該年度之所得辦理結算申報納稅
+  departure_proration:
+    label: Exemptions and deductions in your departure year
+    value: prorated
+    display: prorated by days resident
+    topics: [departure, deductions]
+    evidence:
+      - source: mof_faq_resident_deductions
+        quote: 其免稅額、標準扣除額及基本生活費，應按當年度在中華民國境內居住日數占全年日數之比例換算減除
+  penalty_not_filed:
+    label: Penalty for not filing at all
+    value: 3
+    display: up to 3× the tax due
+    topics: [filing]
+    evidence:
+      - source: dhsc_salary_tax
+        quote: 如未依法辦理申報者，將處補稅額３倍以下之罰鍰
+  penalty_underreported:
+    label: Penalty for under-reporting
+    value: 2
+    display: up to 2× the tax missed
+    topics: [filing]
+    evidence:
+      - source: dhsc_salary_tax
+        quote: 應處漏稅額２倍以下之罰鍰
+
+  # --- 聯絡 ----------------------------------------------------------------
+  ntb_taipei_desk:
+    label: Where foreigners in Taipei file in person
+    value: No. 2, Sec. 1, Zhonghua Rd., Wanhua District
+    display: NTB Taipei, foreigners' section — No. 2, Sec. 1, Zhonghua Rd.
+    topics: [filing]
+    evidence:
+      - source: mof_filing_place
+        quote: 居留臺北市之外僑，請到臺北市中華路1段2號財政部臺北國稅局綜所遺贈稅組外僑股申報
+  ntb_phone:
+    label: NTB Taipei foreigners' desk
+    value: "+886-2-2311-3711 ext. 1116"
+    display: (02) 2311-3711 ext. 1116 / 1118
+    topics: [filing]
+    evidence:
+      - source: mof_faq_more_help
+        quote: 02-23113711轉1116
+  filing_documents:
+    label: What to bring when you file
+    value: passport-arc-statements
+    display: passport, ARC, withholding statements, dividend slips, proof of overseas pay
+    topics: [filing]
+    evidence:
+      - source: mof_filing_documents
+        quote: 例如護照、居留證、扣繳憑單、股利憑單
+  efiling_login:
+    label: How foreigners can e-file
+    value: efiling
+    display: ARC number + passport number, NHI card + password, or a digital certificate
+    topics: [filing]
+    evidence:
+      - source: mof_efiling
+        quote: 下載外僑綜合所得稅電子申報程式
+      - source: mof_efiling
+        quote: 已申辦「健保卡網路服務註冊」之全民健康保險保險憑證
+  efiling_documents_2026:
+    label: Supporting documents for an e-filed 2026 return
+    value: "2026-06-11"
+    display: deliver or post by 11 June 2026
+    year: 2025
+    topics: [filing]
+    evidence:
+      - source: mof_efiling
+        quote: 如有應檢附之證明文件，請於115年6月11日前親自遞送或郵寄至所屬國稅局
+  departure_lead_time:
+    label: When to file if you leave for good mid-year
+    value: 10
+    display: within the 10 days before you leave
+    topics: [filing, departure]
+    note: Other official pages say "a week before" or simply "before departure". Ten days is the safest reading.
+    evidence:
+      - source: mof_filing_time
+        quote: 但若於年度中途離境者，則應於離境前10天內，辦理當年度申報納稅
+  nonwithheld_before_departure:
+    label: Non-residents with income that was not withheld
+    value: before-departure
+    display: file before you leave — e.g. stock option income
+    topics: [nonresident, filing, equity]
+    evidence:
+      - source: mof_filing_time
+        quote: 如員工認股權所得或抵押利息所得等，應於離境前辦理申報納稅
+  dta_form:
+    label: Tax treaties (DTAs) can exempt employment income on short assignments
+    value: dta
+    display: NTB Taipei has a self-assessment form
+    topics: [nonresident]
+    evidence:
+      - source: ntbt_en_forms
+        quote: Self-Assessment for Claiming Exemption on Employment Income under Avoidance of Double Taxation Agreements (DTAs)
+  recompute_on_183:
+    label: Taxed as a non-resident, then reached 183 days in the same year
+    value: recompute
+    display: recomputed at resident rates, with tax already paid credited
+    topics: [residency, filing]
+    evidence:
+      - source: mof_exemptions
+        quote: 稅率重新核算該年度之應納稅額，至於前已繳納該年度稅款，可以退抵
+  departure_agent:
+    label: Can't file in person before leaving? Appoint a tax agent
+    value: agent
+    display: a resident individual, approved by the tax office
+    topics: [departure, filing]
+    evidence:
+      - source: law_income_tax_act
+        quote: 得報經稽徵機關核准，委託中華民國境內居住之個人負責代理申報納稅
+  tax_clearance:
+    label: Tax payment certificate before departure
+    value: optional
+    display: available on request from the tax office
+    topics: [departure]
+    note: Exit can be refused if you owe tax and appointed no agent.
+    evidence:
+      - source: mof_tax_clearance
+        quote: 外僑離境前或申請延期居留時，得向國稅局申請所得稅納稅證明書
+  payslip_bilingual:
+    label: Employers of foreign workers must give payslips in Chinese and your language
+    value: bilingual
+    display: required
+    topics: [withholding]
+    evidence:
+      - source: dhsc_salary_tax
+        quote: 應檢附印有中文及母國文字之薪資明細表
+  stock_options_employer_report:
+    label: Who reports option income from an overseas parent
+    value: taiwan-entity
+    display: your Taiwan employer files an information return by the end of January
+    topics: [equity]
+    evidence:
+      - source: mof_ruling_stock_options
+        quote: 於每年1月底前
+  stock_options_later_sale:
+    label: Selling the shares later
+    value: securities-gain
+    display: the gain after exercise is a securities transaction gain
+    topics: [equity]
+    evidence:
+      - source: mof_ruling_stock_options
+        quote: 股票出售價格與權利執行日標的股票時價之差額為證券交易所得或損失
+  stock_options_nonresident:
+    label: Stock option income for non-residents
+    value: 0.20
+    display: self-reported at 20% before departure
+    topics: [equity, nonresident]
+    evidence:
+      - source: mof_nonresident_rates
+        quote: 員工認股權所得按20%扣繳率申報納稅

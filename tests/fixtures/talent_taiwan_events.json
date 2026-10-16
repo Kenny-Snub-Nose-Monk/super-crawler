@@ -1,0 +1,126 @@
+{
+ "message": "ok",
+ "code": 200,
+ "data": [
+  {
+   "id": 186,
+   "cover": "https://storage.talent.nat.gov.tw/media/event/covers/Introduction_to_Taiwan_Income_Tax_and_Tax_Preferences_for_Foreign_Professio_ENDn2NN.png",
+   "banner": "https://storage.talent.nat.gov.tw/media/event/banners/Introduction_to_Taiwan_Income_Tax_and_Tax_Preferences_for_Foreign_Professi_TzbeX9p.png",
+   "title": {
+    "en": "Introduction to Taiwan Income Tax and Tax Preferences for Foreign Professionals (Taipei)",
+    "zh": "外籍人士稅務說明會（台北場）"
+   },
+   "contents": {
+    "en": "<p>Getting ready for tax season? It doesn’t have to be complicated. Whether you’re a long-term foreign resident or new to Taiwan, navigating the tax system can be simpler—with the right guidance.</p><p>&nbsp;</p><p>Talent Taiwan is hosting an informative tax workshop covering individual income tax, available tax incentives, and how to apply for them. Experts from <strong>Ernst &amp; Young Taiwan</",
+    "zh": "<p>準備好迎接報稅季了嗎？別再為繁雜的程序感到頭痛！無論您是資深在台外籍人士，還是初來乍到的職場新人，報稅這條路，您不必獨自摸索。</p><p><br>Talent Taiwan 特別舉辦外國人稅務說明會，內容涵蓋個人所得稅、各項稅務優惠及其申請管道。我們特別邀請到 <strong>安永台灣 (Ernst &amp; Young Taiwan)</strong> 的稅務專家，為您深度解析身為外籍專業人士應盡的義務與享有的權利。</p>"
+   },
+   "event_link": "https://luma.com/qg1zf2ts",
+   "categories": [
+    {
+     "id": 1,
+     "title": {
+      "en": "Talent Taiwan Events",
+      "zh": "Talent Taiwan 活動"
+     }
+    }
+   ],
+   "format": "In-person",
+   "fee": "",
+   "location": {
+    "en": "FutureWard Central",
+    "zh": "FutureWard Central 共享辦公室"
+   },
+   "organiser": {
+    "en": "Talent Taiwan",
+    "zh": "國際人才服務及延攬中心"
+   },
+   "date": "2026-04-14",
+   "start_time": "18:30:00",
+   "end_time": "20:30:00",
+   "slug": "introduction-to-taiwan-income-tax-and-tax-preferences-for-foreign-professionals-taipei",
+   "updated_time": "2026-03-27T01:53+00:00",
+   "created_time": "2026-03-27T01:49+00:00",
+   "past": true
+  },
+  {
+   "id": 235,
+   "cover": "https://storage.talent.nat.gov.tw/media/event/covers/%E5%83%91%E5%A7%94%E6%9C%8326_v3_-_CrossBond_Brands.png",
+   "banner": "https://storage.talent.nat.gov.tw/media/event/banners/%E5%83%91%E5%A7%94%E6%9C%8326_v3_-_CrossBond_Brands.png",
+   "title": {
+    "en": "(Taichung) 2026 Hiring and Retaining Overseas Compatriot Student Info Session for Enterprises",
+    "zh": "(台中場) 2026 企業聘用僑生就業說明會"
+   },
+   "contents": {
+    "en": "<p>The 2026 Hiring and Retaining Overseas Compatriot Student Info Session held by OCAC is coming to a city near you!&nbsp;</p><p><br>Whether you're an enterprise looking for multi-lingual global talent or a student seeking career opportunities in Taiwan, this is the event for you! Get the latest updates on work permits and residency, and connect directly with companies/candidates through our on-si",
+    "zh": "<p>僑委會「2026 企業聘用僑生就業說明會」北中南巡迴即將登場！</p><p><br>無論是企業想尋找具備多語優勢的人才開拓海外市場，還是僑生想留在臺灣發揮國際專長，都能在這裡找到解答！現場不僅有最新留臺工作與居留政策解析，更有一對一實體媒合會，幫您精準對接理想職缺與優秀人才！</p><p>&nbsp;</p><p>名額有限，別錯過拓展全球競爭力的好機會！<br><br>立刻報名卡位: <a href=\"https://cbtalent.co/ocac26\" rel=\"noopener noreferrer\"><span style=\"color:#197E68;\"><strong><u>https://cbtalent.co/ocac26</u></strong></span></a></p><p>瀏覽職缺: <a href=\"https://ocac.cbtalent.tw/\" r"
+   },
+   "event_link": "https://cbtalent.co/ocac26",
+   "categories": [
+    {
+     "id": 2,
+     "title": {
+      "en": "Partner Career Events",
+      "zh": "合作職涯活動"
+     }
+    }
+   ],
+   "format": "In-person",
+   "fee": "",
+   "location": {
+    "en": "Conference Hall, 6F Library & Hallway, National Chung Hsing University",
+    "zh": "國立中興大學 - 圖書館6樓會議廳與走廊"
+   },
+   "organiser": {
+    "en": "Overseas Community Affairs Council (OCAC)",
+    "zh": "僑務委員會"
+   },
+   "date": "2026-09-09",
+   "start_time": "13:00:00",
+   "end_time": "17:00:00",
+   "slug": "taichung-2026-hiring-and-retaining-overseas-compatriot-student-info-session-for-enterprises",
+   "updated_time": "2026-08-31T03:51+00:00",
+   "created_time": "2026-08-31T03:37+00:00",
+   "past": true
+  },
+  {
+   "id": 224,
+   "cover": "https://storage.talent.nat.gov.tw/media/event/covers/0827_TAIWAN_Career_Lab_KV_-_Evelyn_Peng.png",
+   "banner": "https://storage.talent.nat.gov.tw/media/event/banners/0827_TAIWAN_Career_Lab_KV_-_Evelyn_Peng.png",
+   "title": {
+    "en": "TAIWAN Career Lab: Global Opportunities at Delta Electronics",
+    "zh": "TAIWAN Career Lab：台達電子（Delta Electronics）全球職涯機會"
+   },
+   "contents": {
+    "en": "<p>Thinking about moving to Taiwan, or working for a Taiwan tech giant in the US?&nbsp;</p><p>&nbsp;</p><p>Join our webinar on Wednesday evening, August 26th (US Time) and hear career opportunities at Delta, a global leader in the next-gen infrastructure of AI data centers.<br>Spots are limited, RSVP now.</p><p>&nbsp;</p><p>【You will learn】</p><p>Delta Global Talent Acquisition’s firsthand informa",
+    "zh": "<p>正在考慮搬回臺灣、或想在美國為臺灣科技巨頭工作嗎？</p><p>&nbsp;</p><p>歡迎參加我們於美國時間 8 月 26 日（星期三）晚間舉辦的線上講座，了解台達電子的職涯機會——一家在 next-gen AI 資料中心基礎建設領域的全球領導廠商。名額有限，立即報名。</p><p>&nbsp;</p><p>【你將會了解到】：</p><p>台達全球人才招募團隊第一手分享美國與臺灣的技術職缺資訊<br>臺灣 AI 與半導體產業的職涯與產業現況<br>臺灣各類簽證的運作方式與申請流程<br>灣區實體科技職涯活動的搶先預覽</p><p>&nbsp;</p><p>【關於台達電子】</p><p>台達電子成立於 1971 年，是電源電子與散熱管理領域的全球領導廠商，提供涵蓋工業自動化、資料中心、電動車充電、再生能源與儲能等領域的解決方案，支撐全球關鍵基礎設施運作。台達在五大洲擁有近 200 "
+   },
+   "event_link": "https://forms.gle/MdH9Ggq4AMmkYvNf6",
+   "categories": [
+    {
+     "id": 1,
+     "title": {
+      "en": "Talent Taiwan Events",
+      "zh": "Talent Taiwan 活動"
+     }
+    }
+   ],
+   "format": "Online",
+   "fee": "",
+   "location": {
+    "en": "Online",
+    "zh": "線上"
+   },
+   "organiser": {
+    "en": "Talent Taiwan Career Service Team",
+    "zh": "Talent Taiwan 就業服務團隊"
+   },
+   "date": "2026-08-27",
+   "start_time": "09:00:00",
+   "end_time": "11:00:00",
+   "slug": "taiwan-career-lab-global-opportunities-at-delta-electronics",
+   "updated_time": "2026-08-07T08:33+00:00",
+   "created_time": "2026-08-07T07:24+00:00",
+   "past": true
+  }
+ ]
+}

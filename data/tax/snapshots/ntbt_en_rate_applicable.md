@@ -1,0 +1,58 @@
+# Rate Applicable
+
+- 來源：https://www.ntbt.gov.tw/English/multiplehtml/dd1c6867f456496b8b2ee51995133825
+- 頁面標題：Rate Applicable-National Taxation Bureau of Taipei
+- 頁面標示更新：2021-03-31
+
+---
+
+:::
+
+Rate Applicable
+
+Flat rate
+
+- The withholding tax rate on dividend distributed by a company, profit distributed by a cooperative, earnings payable by a profit-seeking enterprise organized as a partnership to its partners each year, or earnings from a profit-seeking enterprise organized as a sole proprietorship each year is 21%.
+
+- The withholding tax rate on salaries is 18%.
+In the case that the monthly salaries in full amount are equal to or lower than one and a half times of the monthly baseline salary as assessed by the Executive Yuan, the withholding tax rate is 6% from January 1st, 2009.
+
+- The withholding tax rate on commissions is 20%.
+
+- The withholding tax rate on interest is 20%. However, the kinds of interest listed below shall be withheld in accordance with their associated regulations:
+
+- The portion of the pecuniary amount realized by short-term commercial papers at their maturity in excess of the selling price at their initial issuance is deemed as income from interest and shall be withheld by 15%.
+
+- The interest distributed from beneficiary securities or asset-backed securities issued in accordance with the Financial Asset Securitization Act or the Real Estate Securitization Act shall be withheld by 15%.
+
+- The interest accrued from government bonds, corporate bonds, and financial bonds shall be withheld by 15%.
+
+- The interest derived from repo (RP/RS) trade whereby an individual purchases short - term commercial papers or securities as listed in the preceding items A., B., or C. shall be withheld by 15% of the net amount of the sale price at maturity in excess of the original purchase price.
+
+- The withholding tax rate on rentals is 20%.
+
+- The withholding tax rate on royalties is 20%.
+
+- The withholding tax rate on cash awards or payments given in contests or prizes won by chance is 20%. However, taxation is exempted when the prize is not more than NT$5,000 from lottery tickets or uniform invoices issued under the auspices of the government (Before Nov. 30th, 2019, the exempted amount for the prize was NT$2,000).
+
+- The withholding tax rate on the remuneration to a professional practice is 20%.
+
+- After deducting any regulated exemption, retirement payments or pensions shall be withheld at the rate of 18%.
+
+- The withholding tax rate on payment of reward for information or accusation is 20%.
+
+Additionally, income which is not subject to the Withholding Code shall be filed and taxed in accordance with the following:
+
+- Income from property transactions shall be filed and taxed at the rate of 20%.
+
+- Profits from exercising stock options shall be filed and taxed at the rate of 20%.
+
+- In the case of income from the transfer of tax-deferred stocks, the par value of the stocks shall be deemed as the taxable income of the year of transfer. If the actual transfer price of such stocks at the time of sale or the market value of such stocks at the time of bestowal or distribution of the estate is lower than the par value, the actual transfer price or the market value shall be deemed the taxable income. Such income shall be filed and taxed at the rate of 18% or 21% in accordance with the different category of income.
+
+- Miscellaneous income shall be filed and taxed at the rate of 20%.
+
+- Where a trust deed is set up by a profit-seeking enterprise, the beneficiary shall be taxed at the rate of 20% on the value of his/her entitlement to the trust in the year of establishment, and a newly replaced beneficiary shall be taxed in the year of replacement. Furthermore, the beneficiaries shall be taxed at the rate of 20% on the increased part of the value of their entitlements when the enterprise makes the addition of an increment to the trust fund.
+
+- For non-R.O.C. residents who stay in the R.O.C. over 90 days within a taxable year, remunerations paid by employers outside the R.O.C. for services rendered in the R.O.C. shall be filed and taxed at the rate of 18%.
+
+Last updated：2021-03-31

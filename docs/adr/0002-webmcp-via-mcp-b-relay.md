@@ -1,6 +1,6 @@
 # 網站的 agent 介面走 WebMCP + MCP-B relay，不走遠端 HTTP MCP
 
-**Status**: accepted（2026-09-29）。尚未實作。
+**Status**: accepted（2026-09-29），已實作；2026-10-15 擴充為 8 個工具（見文末「更新」）。
 
 活動網站是 GitHub Pages 上的純靜態頁。讓 Claude 查詢它的方式，是頁面自己用
 `document.modelContext` 註冊 `search_events` / `get_event` 兩個唯讀工具，
@@ -42,3 +42,24 @@ Claude 呼叫工具時，頁面的過濾列會跟著變。
   不是可以給別人日常依賴的服務。
 - 如果 Claude 客戶端之後原生支援 WebMCP，relay 可以直接拿掉，頁面端的工具註冊不用改。
   這時這份 ADR 應被更新。
+
+## 更新（2026-10-15）：網站改版，工具從 2 個變 8 個
+
+網站加入稅務指南與試算後，工具依同一個原則擴充 —— 全部唯讀、全部走畫面同一條路，
+呼叫時頁面會切到同一個結果：
+
+| 工具 | 頁面會切到 |
+|---|---|
+| `search_events`、`get_event` | 活動列表（帶同一組條件）、活動詳細頁 |
+| `search_guides`、`get_guide` | 搜尋結果（指南）、指南的那一節 |
+| `check_tax_residency`、`estimate_tax` | 試算頁，帶入同一組天數與收入 |
+| `get_tax_calendar` | 稅務首頁的行事曆 |
+| `get_tax_facts` | 不換頁，只顯示提示 |
+
+稅務工具回傳的每個數字都帶 fact id、官方出處、原文引述與核對狀態（見 ADR 0003），
+工具說明要求助理引用出處、說明暫定或待複核的數字。
+
+網站改成單頁應用（hash 路由）有一部分就是為了這件事：換頁不重新載入，工具不會在使用者
+點來點去時消失又重新註冊。實測：本機 relay 以 `--widget-origin http://localhost:8765` 啟動，
+頁面帶 `?relay=1` 打開後 8 個工具都出現在 Claude Code 的工具清單裡。
+

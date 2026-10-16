@@ -1,0 +1,116 @@
+# 主文章（統整型）。其他五篇從這裡連出去。
+# 行內語法：**粗體**、[文字](網址)、{{fact:id}}、[[guide:slug|文字]]
+slug: tax-in-taiwan
+kind: tax
+order: 1
+start_here: true
+title: Do I need to pay tax in Taiwan?
+subtitle: A complete guide for foreign professionals, 2026
+summary: >-
+  Taiwan taxes you on Taiwan-source income, and how depends almost entirely on one number:
+  the days you spend here in a calendar year. Here is the whole system on one page.
+keywords: [tax, taxes, overview, resident, non-resident, 183, filing, overseas income]
+updated: 2026-10-15
+takeaways:
+  - "Your status is decided per **calendar year** by days in Taiwan: {{fact:residency_days}} or more makes you a resident."
+  - "Non-residents are taxed by withholding — usually a flat {{fact:nr_salary_rate}} on salary — and normally never file a return."
+  - "Residents file every May and pay progressive rates from 5% to 40% after exemptions and deductions."
+  - "Money earned outside Taiwan is mostly left alone, unless a household's overseas income reaches {{fact:overseas_threshold}}."
+  - "Earning over {{fact:special_talent_threshold}}? Half of the excess may be tax-free for five years — but only if you apply."
+sections:
+  - id: days
+    heading: It starts with your days
+    blocks:
+      - p: >-
+          Taiwan doesn't ask what passport you hold or where your employer is based. It asks how long you were
+          here in the tax year, which runs {{fact:tax_year}}. Days are counted from passport stamps with the
+          {{fact:day_counting}}, and every trip in the year is added together.
+      - table:
+          head: [Days in Taiwan this year, Status, How your salary is taxed]
+          rows:
+            - ["90 or fewer", "Non-resident", "Withheld at source. Pay from an overseas employer is {{fact:foreign_employer_90}}."]
+            - ["91 – 182", "Non-resident", "Withheld at source, and overseas-employer pay for work done here is {{fact:foreign_employer_over_90_rate}}."]
+            - ["183 or more", "Resident", "Everything earned for work in Taiwan goes on an annual return at progressive rates."]
+      - callout:
+          kind: tip
+          title: The July rule of thumb
+          text: >-
+            If you arrive by 1 July and stay put, you will reach 183 days by New Year's Eve (in a 365-day year).
+            Arrive later and your first year is almost always a non-resident year.
+      - p: "More on counting, trips and proof: [[guide:183-day-rule|Understanding the 183-day rule]]."
+  - id: non-resident
+    heading: If you are a non-resident
+    blocks:
+      - p: >-
+          Non-residents don't get exemptions or deductions. Instead, whoever pays you withholds a flat rate and
+          that is the end of it — no annual return. For salary the rate is {{fact:nr_salary_rate}}, or
+          {{fact:nr_salary_rate_low}} when a month's pay is at most 1.5 times the minimum wage
+          ({{fact:nr_threshold_2026}} in 2026). For professional salaries, assume 18%.
+      - table:
+          head: [Income, Non-resident rate]
+          rows:
+            - ["Salary", "{{fact:nr_salary_rate}} ({{fact:nr_salary_rate_low}} under the cut-off)"]
+            - ["Professional fees (freelance work)", "{{fact:nr_professional_rate}}"]
+            - ["Taiwan dividends", "{{fact:nr_dividend_rate}}"]
+            - ["Interest", "{{fact:nr_interest_rate}}"]
+            - ["Rent you receive", "{{fact:nr_rent_rate}}"]
+            - ["Royalties", "{{fact:nr_royalty_rate}}"]
+      - callout:
+          kind: warn
+          title: The two exceptions
+          text: >-
+            You do have to file, before you leave, if you stayed over 90 days and an overseas employer paid you
+            for work done here, or if you had income nobody withheld — stock option income is the common one.
+  - id: resident
+    heading: If you are a resident
+    blocks:
+      - p: >-
+          Residents add up their Taiwan-source income for the year — including pay from an overseas employer for
+          work done in Taiwan — subtract exemptions and deductions, and pay progressive rates. In tax year 2026
+          the personal exemption is {{fact:exemption_2026}}, the standard deduction {{fact:standard_single_2026}}
+          (single) and the salary special deduction {{fact:salary_deduction_2026}}.
+      - facts: [brackets_2026, exemption_2026, standard_single_2026, salary_deduction_2026]
+      - p: >-
+          You file once a year in May for the previous year. In 2026 that was {{fact:filing_2026}}; refunds were
+          paid in three batches: {{fact:refunds_2026}}. Step by step: [[guide:how-to-file|How to file]].
+      - calc:
+          title: A resident earning NT$3 million
+          input: { year: 2026, days: 365, salary: 3000000 }
+  - id: overseas
+    heading: Money from outside Taiwan
+    blocks:
+      - p: >-
+          Investment income from abroad — foreign dividends, gains on foreign shares — is outside the regular
+          income tax. It only matters for the **minimum tax**: once a household's overseas
+          income reaches {{fact:overseas_threshold}}, the whole amount is added to a separate "basic income".
+          If 20% of basic income above {{fact:amt_exemption_2026}} is more than your regular tax, you pay the difference.
+      - p: >-
+          In practice that bites only for large portfolios. Foreign tax already paid can be credited, and
+          special professionals using the incentive leave overseas income out entirely.
+  - id: first-and-last
+    heading: Your first year and your last
+    blocks:
+      - list:
+          - "**Crossing 183 days mid-year.** Your employer may have withheld at the non-resident 18% until you passed 183 days — or at resident rates from day one if your contract showed a long stay. Either way, the May return settles it, often with a refund."
+          - "**Leaving for good.** Residents file the year's return before departure — {{fact:departure_lead_time}} — and exemptions and deductions are {{fact:departure_proration}}."
+          - "**Coming back.** If you were taxed as a non-resident and later reach 183 days in the same year, the year is recomputed at resident rates and tax already paid is credited."
+  - id: incentives
+    heading: The incentive most high earners miss
+    blocks:
+      - p: >-
+          Foreign special professionals — including Gold Card holders while the card is valid — can exclude
+          half of their salary above {{fact:special_talent_threshold}} for five years. It is not automatic:
+          {{fact:special_talent_apply}}. Details and a worked example:
+          [[guide:tax-benefits|Tax benefits for foreign professionals]].
+  - id: next
+    heading: What to read next
+    blocks:
+      - list:
+          - "[[guide:183-day-rule|Understanding the 183-day rule]] — how days are counted, with examples."
+          - "[[guide:tax-rates|Tax rates for foreign workers]] — what you'll actually pay, side by side."
+          - "[[guide:how-to-file|How to file, step by step]] — dates, documents, e-filing."
+          - "[[guide:employer-withholding|What your employer deducts]] — and what is still your job."
+          - "[[guide:tax-benefits|Gold Card and special incentives]] — the five-year benefit and equity pay."
+          - "[Estimate your tax](#/tax/calculator) — residency first, then the numbers."
+sources: [law_income_tax_act, mof_residency_and_tax, mof_day_counting, law_withholding_rates, gazette_2026_amounts, mof_filing_2026, mof_refund_batches_2026, law_income_basic_tax, ntbt_special_talent_intro]
+related: [183-day-rule, tax-rates, how-to-file]

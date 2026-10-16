@@ -24,6 +24,7 @@ from crawler.collectors.taiwan_pathfinder import TaiwanPathfinderCollector
 from crawler.collectors.anncr import AnncrCollector
 from crawler.collectors.base import make_session
 from crawler.collectors.meetup import MeetupCollector
+from crawler.collectors.talent_taiwan import TalentTaiwanCollector
 from crawler.collectors.travel_taipei import TravelTaipeiCollector
 from crawler.collectors.trendy_taipei import TrendyTaipeiCollector
 from crawler.normalize import now_iso
@@ -38,6 +39,7 @@ COLLECTORS = {
     "trendy_taipei": TrendyTaipeiCollector,
     "taiwan_pathfinder": TaiwanPathfinderCollector,
     "meetup": MeetupCollector,
+    "talent_taiwan": TalentTaiwanCollector,
 }
 
 CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"

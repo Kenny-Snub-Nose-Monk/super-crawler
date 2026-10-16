@@ -1,0 +1,45 @@
+{
+ "message": "ok",
+ "code": 200,
+ "data": {
+  "id": 39,
+  "title": {
+   "en": "Filing Taxes in Taiwan: A Quick Guide for Expats",
+   "zh": "台灣報稅簡易指南"
+  },
+  "contents": {
+   "en": "<figure class=\"image\">\n <img alt=\"Filing Taxes in Taiwan: A Quick Guide for Expats\" sizes=\"100vw\" src=\"https://storage.talent.nat.gov.tw/media/articles/images/tax-pay-flat-collage-with-finance-bills-receipts-vector-illustration_982_EEH1WE9.jpg\" srcset=\"https://storage.talent.nat.gov.tw/media/articles/images/tax-pay-flat-collage-with-finance-bills-receipts-vector-illustration_982_oiM0I0j.jpg 800w, https://storage.talent.nat.gov.tw/media/articles/images/tax-pay-flat-collage-with-finance-bills-receipts-vector-illustration_982_K7TKiJW.jpg 1024w, https://storage.talent.nat.gov.tw/media/articles/images/tax-pay-flat-collage-with-finance-bills-receipts-vector-illustration_982_zV1omv2.jpg 1920w\" width=\"1920\"/>\n</figure>\n<p>\n</p>\n<p>\n</p>\n<p>\n</p>\n<p>\n</p>\n<p>\n <span style=\"background-color:transparent;color:#000000;\">\n  In Taiwan, tax season runs from\n  <strong>\n   May 1 to May 31\n  </strong>\n  each year. For expats living and working here, filing taxes for the first time can feel confusing or overwhelming. Whether you're employed by a local company or earning income from abroad, understanding your tax responsibilities is key. This guide breaks down the essential questions to ease the process:\n </span>\n <br/>\n</p>\n<p>\n</p>\n<hr/>\n<p>\n <br/>\n</p>\n<ol>\n <li>\n  <span style=\"background-color:transparent;color:#000000;\">\n   <strong>\n    Do foreigners need to file taxes in Taiwan?\n   </strong>\n  </span>\n  <br/>\n  <br/>\n  <span style=\"background-color:transparent;color:#000000;\">\n   Yes. If y",
+   "zh": "<p>\n</p>\n<figure class=\"image\">\n <img alt=\"台灣報稅簡易指南\" sizes=\"100vw\" src=\"https://storage.talent.nat.gov.tw/media/articles/images/tax-pay-flat-collage-with-finance-bills-receipts-vector-illustration_982_tPTCyFa.jpg\" srcset=\"https://storage.talent.nat.gov.tw/media/articles/images/tax-pay-flat-collage-with-finance-bills-receipts-vector-illustration_982_JBQ2wtD.jpg 800w, https://storage.talent.nat.gov.tw/media/articles/images/tax-pay-flat-collage-with-finance-bills-receipts-vector-illustration_982_J7Xk3E0.jpg 1024w, https://storage.talent.nat.gov.tw/media/articles/images/tax-pay-flat-collage-with-finance-bills-receipts-vector-illustration_982_lQLe0v9.jpg 1920w\" width=\"1920\"/>\n</figure>\n<p>\n</p>\n<p>\n</p>\n<p>\n</p>\n<p>\n</p>\n<p>\n <span style=\"background-color:transparent;color:#000000;\">\n  在台灣，一年一度的報稅季為每年\n  <strong>\n   5 月 1 日至 5 月 31 日\n  </strong>\n  。對於居住並在台工作的外籍人士來說，首次報稅可能會感到困惑或壓力大。然而，無論您是受僱於台灣公司，或是從海外賺取收入，了解自己的納稅義務都是相當重要的。本文統整了以下關鍵問題，協助您更順利地完成報稅流程：\n </span>\n</p>\n<p>\n <br/>\n</p>\n<hr/>\n<p>\n</p>\n<p>\n</p>\n<p>\n <span style=\"background-color:transparent;color:#000000;\">\n  <strong>\n   一、外國人也要報稅嗎？\n  </strong>\n </span>\n <br/>\n <br/>\n 是的\n <span style=\"background-color:transparent;color:#000000;\">\n  。只要外籍人士在台有賺取收入，就需要依照規定納稅。課稅方式會根據當年度「在台居留日數」而有所不同。\n </span>\n</p>\n<p>\n</p>\n<hr/>\n<p>\n</p>\n<p>\n</p>\n<p>\n <span style=\"background-color:transparent;color:#000000;\">\n  <strong>\n   二、課稅方式一覽\n  </strong>\n </span>\n <br/>\n <br/>\n <span style=\"background-color:transparent;color:#000000;\">\n  依據居留日數分為「居住者」與「非居"
+  },
+  "blurb": {
+   "en": "    In Taiwan, tax season runs from May 1 to May 31 each year. For expats living and working here, filing taxes for the first time can feel confusing or overwhelming. Whether you're employed by a loca",
+   "zh": "     在台灣，一年一度的報稅季為每年 5 月 1 日至 5 月 31 日。對於居住並在台工作的外籍人士來說，首次報稅可能會感到困惑或壓力大。然而，無論您是受僱於台灣公司，或是從海外賺取收入，了解自己的納稅義務都是相當重要的。本文統整了以下關鍵問題，協助您更順利地完成報稅流程：   一、外國人也要報稅嗎？是的。只要外籍人士在台有賺取收入，就需要依照規定納稅。課稅方式會根據當年度「在台居留日數」而"
+  },
+  "category": {
+   "en": "Living Essentials",
+   "zh": "生活指南",
+   "slug": "living-essentials"
+  },
+  "tags": {
+   "en": [
+    "Tax",
+    "Finance"
+   ],
+   "zh": [
+    "稅務",
+    "財務"
+   ],
+   "slug": [
+    "tax",
+    "finance"
+   ]
+  },
+  "cover": "https://storage.talent.nat.gov.tw/media/articles/covers/tax-pay-flat-collage-with-finance-bills-receipts-vector-illustration_98292-9008.jpg",
+  "is_top": false,
+  "stay_for_long": "2",
+  "updated_time": "2025-09-04T06:17+00:00",
+  "created_time": "2025-04-16T06:33+00:00",
+  "first_published_time": "2025-04-16T06:33+00:00",
+  "slug": "filing-taxes-in-taiwan-a-quick-guide-for-expats"
+ }
+}

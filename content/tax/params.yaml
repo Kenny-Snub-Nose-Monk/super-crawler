@@ -1,0 +1,48 @@
+# 試算用的參數。每一格都指到 facts.yaml 的一筆 id —— 這裡不寫任何數字。
+#
+# 匯出時（scripts/export_site_data.py）會換成實際數值，並把 fact id 一起帶給網站，
+# 試算結果的每一行才能標出「這個數字出自哪一份官方文件」。
+# 新的年度金額公告後：先在 facts.yaml 加那一年的 facts，再在這裡加一個年度。
+
+default_year: 2026
+
+years:
+  2025:
+    label: Tax year 2025
+    filed: Filed 1 May – 1 June 2026
+    exemption: exemption_2025
+    exemption_70: exemption_70_2025
+    exemption_minor: exemption_2025       # 未成年子女加成從 2026 年度才開始
+    standard_single: standard_single_2025
+    standard_married: standard_married_2025
+    salary_deduction: salary_deduction_2025
+    basic_living: basic_living_2025
+    brackets: brackets_2025
+    amt_exemption: amt_exemption_2025
+    min_wage: min_wage_2025
+    nr_threshold: nr_threshold_2025
+
+  2026:
+    label: Tax year 2026
+    filed: Filed May 2027
+    exemption: exemption_2026
+    exemption_70: exemption_70_2026
+    exemption_minor: exemption_minor_2026
+    standard_single: standard_single_2026
+    standard_married: standard_married_2026
+    salary_deduction: salary_deduction_2026
+    basic_living: basic_living_2026       # 暫用 2025 年度的金額，facts 標了 provisional
+    brackets: brackets_2026
+    amt_exemption: amt_exemption_2026
+    min_wage: min_wage_2026
+    nr_threshold: nr_threshold_2026
+
+shared:
+  residency_days: residency_days
+  nr_rate: nr_salary_rate
+  nr_rate_low: nr_salary_rate_low
+  foreign_employer_rate: foreign_employer_over_90_rate
+  rent_cap: rent_cap
+  amt_rate: amt_rate
+  overseas_threshold: overseas_threshold
+  talent_threshold: special_talent_threshold

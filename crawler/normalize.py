@@ -160,6 +160,23 @@ def detect_languages(*texts: Optional[str]) -> list[str]:
             if any(h in blob for h in hints)]
 
 
+_LATIN_RE = re.compile(r"[A-Za-z]")
+_HAN_RE = re.compile(r"[㐀-鿿豈-﫿]")
+
+
+def script_language_tags(title: Optional[str]) -> list[str]:
+    """標題整句是拉丁字母（沒有任何漢字、至少 8 個字母）→ lang:en。
+
+    detect_languages 認的是「提到英文」的字眼（English、英文會話）；Meetup 上很多英文活動
+    標題根本不提語言 ——「Winding Down With Chai」—— 卻顯然是用英文辦的。
+    門檻刻意保守：中英混排的標題（「週三英文中文語言交換」）不靠這條，
+    交給 detect_languages；只有幾個字母的品牌名（「EnJoin' x JECHO 活動空間」）不算。
+    """
+    if not title or _HAN_RE.search(title):
+        return []
+    return ["lang:en"] if len(_LATIN_RE.findall(title)) >= 8 else []
+
+
 # --- 地點 -------------------------------------------------------------
 
 _DISTRICT_RE = re.compile(r"([一-鿿]{2,3}區)")

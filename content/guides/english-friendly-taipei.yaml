@@ -1,0 +1,65 @@
+# 生活指南：把活動資料本身變成一篇指南。數字是頁面打開時從活動表即時算的（live 區塊），
+# 不是寫死的 —— 爬蟲每週更新，這篇跟著變。
+slug: english-friendly-taipei
+kind: life
+order: 1
+title: Finding your people in Taipei
+subtitle: English-friendly events, language exchanges and where they come from
+summary: >-
+  The fastest way to feel at home is a standing weekly thing — a language exchange, a climbing night,
+  a tea tasting. Here is what is on in English right now and how to read the listings.
+keywords: [english, english-friendly, language exchange, meetup, social, friends, community, networking, events]
+updated: 2026-10-15
+takeaways:
+  - "Language exchanges run almost every night of the week — most are free or cost a drink."
+  - "An event marked English-friendly says English in its listing, or is organised in English."
+  - "Recurring groups beat one-off events: go three times and you know people."
+  - "Talent Taiwan keeps a directory of professional networks and the Gold Card community."
+sections:
+  - id: now
+    heading: On right now
+    blocks:
+      - live: [english_week, exchange_month, free_week, sources]
+      - events:
+          title: English-friendly this week
+          tags: [lang:en]
+          window: next7
+          limit: 6
+  - id: reading
+    heading: How to read the listings
+    blocks:
+      - list:
+          - "**English-friendly** means the listing says so — an English title, or a tag for English or language exchange — not that every word will be in English."
+          - "**Price not listed** means the source didn't say. It doesn't mean free, and it doesn't mean paid."
+          - "**Ongoing** events (long exhibitions, markets) sit after dated events so they don't crowd out tonight."
+          - "Titles are shown in English when the organiser gives one. Otherwise they stay in the original language — the event page also shows the original title, which is what you will see at the door."
+  - id: exchanges
+    heading: Language exchanges
+    blocks:
+      - p: >-
+          Taipei's language exchanges are the closest thing the city has to a standing social club. Most are
+          bars or cafés with tables by language; you buy a drink and rotate. Several run weekly on Meetup —
+          they show up here with each session listed, so if Wednesday doesn't work you can see the Sunday one.
+      - events:
+          title: Language exchanges coming up
+          types: [language_exchange]
+          window: next30
+          limit: 4
+  - id: professional
+    heading: Professional networks
+    blocks:
+      - p: >-
+          For the professional side, Talent Taiwan — the National Development Council's service for foreign
+          professionals — keeps a directory of government-affiliated, community-run and business networks,
+          including the Gold Card Office's newsletter and the official Gold Card family group. Its own events
+          appear here when they are announced.
+      - cite: [talent_networking]
+  - id: sources
+    heading: Where these events come from
+    blocks:
+      - p: >-
+          Ma collects public listings once a week from Accupass, Meetup, ANNCR (performing arts), Travel Taipei,
+          Taiwan Pathfinder (outdoor challenges), Trendy Taipei and Talent Taiwan, keeping only Taipei and New Taipei.
+          Nothing is scraped from behind a login, and every card links back to the original listing — book there.
+sources: [talent_networking]
+related: [tax-in-taiwan]

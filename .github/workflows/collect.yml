@@ -45,16 +45,30 @@ jobs:
           python tests/test_meetup.py
           python tests/test_district.py
           python tests/test_query_cases.py
+          python tests/test_talent_taiwan.py
+          python tests/test_tax_sources.py
+          python tests/test_site_export.py
           node tests/test_query_js.mjs
+          node tests/test_event_js.mjs
+          # 試算與搜尋的測試讀的是網站實際用的 content.json，先匯出一次
+          python scripts/export_site_data.py
+          node tests/test_tax_js.mjs
+          node tests/test_search_js.mjs
 
       - name: 抓取
         run: python scripts/run_collectors.py
+
+      - name: 稅務來源（原文快照）
+        # 全部來源都失敗才會非零退出。即使這步紅了，活動資料照樣要 commit ——
+        # 所以不讓它擋住下一步，紅燈留在這一步上給人看。
+        continue-on-error: true
+        run: python scripts/collect_tax_sources.py
 
       - name: Commit 資料變更
         run: |
           git config user.name  "super-crawler bot"
           git config user.email "actions@github.com"
-          git add data/events.jsonl
+          git add data/events.jsonl data/tax
           if git diff --staged --quiet; then
             echo "沒有變更"
             exit 0

@@ -1,0 +1,87 @@
+# 官方來源的英文名稱 —— 網站介面只用英文，原文標題（多半是中文）留在快照與 WebMCP 的回傳裡。
+#
+# scripts/export_site_data.py 會把這裡的名稱帶成 sources[].title_en。
+# 指南、cite 區塊、fact 證據引用到的來源，以及 config/tax_sources.yaml 的每一個起點，
+# 都必須有英文名稱 —— 少了就不匯出（網站上冒出一行中文標題，正是要避免的那種中英夾雜）。
+# 爬蟲沿著連結找到、但沒被引用的子頁不需要；畫面上會退回「出版單位 + page」。
+#
+# 年度：114 年度 = 2025 tax year，115 年度 = 2026，116 年 = 2027。
+
+dhsc_salary_tax: How salary income is taxed
+etax_overseas_income_cost: "Overseas income Q&A: costs and losses"
+etax_overseas_income_scope: "Overseas income Q&A: what counts"
+etax_overseas_income_timing: "Overseas income Q&A: which year it belongs to"
+etax_withholding_rates: Withholding rates by income type (from 2025)
+gazette_2025_amounts: 2025 exemptions, deductions and tax brackets
+gazette_2025_amt: 2025 minimum tax amounts
+gazette_2025_basic_living: 2025 basic living expense per person
+gazette_2026_amounts: 2026 exemptions, deductions and tax brackets
+gazette_2026_amt: 2026 minimum tax amounts
+immigration_entry_exit_certificate: Applying for a Certificate of Entry and Exit Dates
+jobbank104_foreigner_tax: A beginner's guide to filing tax in Taiwan (2026)
+law_foreign_professionals_act: Act for the Recruitment and Employment of Foreign Professionals
+law_income_basic_tax: Income Basic Tax Act (the minimum tax)
+law_income_tax_act: Income Tax Act
+law_special_talent_regulation: Regulations on tax relief for foreign special professionals
+law_tax_collection_act: Tax Collection Act
+law_withholding_rates: Withholding rate standards by income type
+mof_alien_basic_tax: "Foreign nationals: the minimum tax"
+mof_alien_income_tax: Foreign nationals and individual income tax
+mof_alien_tax_faq: Tax FAQ for foreign nationals
+mof_cpi_2026: 2026 amounts adjusted for inflation
+mof_day_counting: How days of stay are counted
+mof_efiling: Filing online with the e-filing software
+mof_exemptions: Tax-exempt income
+mof_faq_dependents_abroad: Claiming a spouse or dependants who live abroad
+mof_faq_more_help: Where to get more tax help
+mof_faq_resident_deductions: Deductions open to resident foreign nationals
+mof_filing_2026: "2025 tax year: income data and filing period"
+mof_filing_documents: What to bring when you file
+mof_filing_place: Where to file and pay
+mof_filing_time: When to file and pay
+mof_foreigner_reminder_2026: "2025 tax year: filing reminders for foreign nationals"
+mof_holiday_extension: Non-resident withholding deadline moved for long holidays
+mof_ltc_deduction: Long-term care deduction raised to NT$180,000 from 2025
+mof_minor_child_2026: Exemption for minor children up 50% from 2026
+mof_nonresident_rates: Withholding rates for non-residents
+mof_nr_threshold_2026: Non-resident salary threshold set at NT$44,250
+mof_refund_batch1_2026: "2025 tax year: first batch of refunds"
+mof_refund_batches_2026: "2025 tax year: refunds in three batches"
+mof_rent_deduction: Rent becomes a special deduction from 2024
+mof_residency_and_tax: How your length of stay affects income tax
+mof_resident_deductions: Exemptions and deductions for residents
+mof_ruling_employee_shares: "Ruling: when and at what price employee shares are taxed"
+mof_ruling_sars: "Ruling: stock appreciation rights from foreign companies"
+mof_ruling_stock_options: "Ruling: stock options from foreign companies"
+mof_saving_manual_alien: "Tax-saving handbook: foreign nationals"
+mof_special_talent_regulation_2026: Special professional tax relief regulations (2026 amendment)
+mof_tax_clearance: Tax clearance certificates
+mof_tax_year: What a "tax year" means
+mof_withholding_faq_1514: Withholding rules for foreign nationals (FAQ)
+mof_withholding_reform: From 2025 the business itself withholds tax
+mol_minimum_wage: Minimum wage history
+mol_minimum_wage_2027: 2027 minimum wage decision
+money101_foreigner_tax: "How foreigners file: days, rates and refunds"
+ndc_foreign_talent_act: Foreign Professionals Act information hub
+ntbt_contacts: Phone numbers for foreign taxpayers, by office
+ntbt_en: Foreign Individual Income Tax (English site)
+ntbt_en_forms: Forms
+ntbt_en_period_of_stay: Computing Period of Stay
+ntbt_en_rate_applicable: Rate Applicable
+ntbt_en_special_talent_intro: Introduction of Tax Incentives
+ntbt_handbook_2025: Income tax handbook for foreign nationals (2025 tax year)
+ntbt_nonresident_rate: Tax rates for non-residents
+ntbt_other_services: Other services for foreign taxpayers
+ntbt_residency: Tax residency and what to file
+ntbt_resident_basic_tax: Filing the minimum tax
+ntbt_source_income: Taiwan-source income and exemptions
+ntbt_special_talent: Tax incentives for special professionals
+ntbt_special_talent_intro: "Tax incentives: overview"
+talent_2026_vision: "Taiwan's 2026 Vision: New Rules, New Opportunities"
+talent_faq_tax: "FAQ: Taxation and Customs"
+talent_gold_card_amendments: "Taiwan Gold Card: New Amendments, Stronger Advantages"
+talent_networking: Networking and Social Support for Foreign Professionals
+talent_new_rules_2026: "Taiwan's New Rules for Global Talent: Six Key Highlights"
+talent_tax_quick_guide: "Filing Taxes in Taiwan: A Quick Guide for Expats"
+tool_efiling: Individual income tax e-filing
+tool_mof_alien_calculator: Income tax calculator for foreign nationals

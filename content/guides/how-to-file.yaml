@@ -1,0 +1,100 @@
+slug: how-to-file
+kind: tax
+order: 4
+title: How to file your income tax
+subtitle: Step by step for foreigners in Taiwan, 2026 season
+summary: >-
+  Residents file once a year, in May, for the year before. Here is the sequence — from downloading
+  your income data to the day the refund lands — with the 2026 dates.
+keywords: [file, filing, return, how to, deadline, may, e-filing, online, documents, refund, refunds, steps, departure, leaving, glossary, terms, words, chinese, form, forms]
+updated: 2026-10-15
+takeaways:
+  - "Who files: residents, always; non-residents only for overseas-employer pay or income nobody withheld."
+  - "When: 1–31 May for the previous year. In 2026 it was {{fact:filing_2026}}."
+  - "How: online with your ARC number, or at your tax office — in Taipei, {{fact:ntb_taipei_desk}}."
+  - "Refunds came in three batches: {{fact:refunds_2026}}."
+  - "Leaving for good? File {{fact:departure_lead_time}}."
+sections:
+  - id: who
+    heading: Do you need to file?
+    blocks:
+      - table:
+          head: ["You are…", "File?", "When"]
+          rows:
+            - ["A resident (183+ days)", "Yes", "1–31 May the following year"]
+            - ["A resident leaving Taiwan for good", "Yes", "{{fact:departure_lead_time}}"]
+            - ["A non-resident with only Taiwan salary", "No — withholding is final", "—"]
+            - ["A non-resident, over 90 days, paid by an overseas employer", "Yes", "Before you leave, or in May"]
+            - ["A non-resident with income nobody withheld (e.g. stock options)", "Yes", "Before you leave"]
+  - id: steps
+    heading: The steps
+    blocks:
+      - steps:
+          - title: Confirm your status
+            text: "Count your days for the year — [[guide:183-day-rule|the 183-day rule]] — and get the immigration agency's entry/exit certificate if you travelled a lot."
+          - title: Download your income data
+            text: "From late April the tax office releases the income and deduction records it holds for you. In 2026 that opened on {{fact:income_query_2026}}. Check that every employer, bank and insurer you expect is there."
+          - title: Gather your documents
+            text: "Bring {{fact:filing_documents}}. Add proof for any dependants you claim, and the special professional application if you qualify."
+          - title: File online or in person
+            text: "E-filing works for ARC holders with a unified ID number: {{fact:efiling_login}}. Or file at the tax office for your ARC address — in Taipei, {{fact:ntb_taipei_desk}}."
+          - title: Send supporting documents
+            text: "E-filed with documents to attach? In 2026 they had to arrive by {{fact:efiling_documents_2026}}."
+          - title: Pay, or wait for your refund
+            text: "Tax due is paid when you file. Refunds were paid in three batches — {{fact:refunds_2026}}. Give a bank account for direct deposit; it is fastest."
+  - id: dates
+    heading: The 2026 season at a glance
+    blocks:
+      - stats:
+          - { value: 28 Apr, label: Income data opens }
+          - { value: "1 May – 1 Jun", label: Filing period }
+          - { value: 31 Jul, label: First refunds }
+          - { value: 30 Oct, label: Second refunds }
+      - cite: [mof_filing_2026, mof_refund_batches_2026]
+      - callout:
+          kind: warn
+          title: Refund scams
+          text: >-
+            The tax office never asks you to click a link, share bank details by text or email, or go to an ATM
+            to receive a refund. Ignore any message that does.
+  - id: leaving
+    heading: Leaving Taiwan
+    blocks:
+      - list:
+          - "**Residents leaving for good** file the current year's return before departure — {{fact:departure_lead_time}}. Exemptions and deductions are {{fact:departure_proration}}."
+          - "**Can't do it yourself?** Appoint a tax agent — {{fact:departure_agent}} — to file and pay for you."
+          - "**Proof for immigration.** A tax payment certificate is {{fact:tax_clearance}} — and exit can be refused if tax is owed with no agent appointed."
+  - id: help
+    heading: Getting help in English
+    blocks:
+      - p: >-
+          The National Taxation Bureau of Taipei runs a foreigners' section and an English website with
+          FAQs and forms. The desk's number is {{fact:ntb_phone}}; the national toll-free line 0800-000-321 handles
+          tax questions during office hours. The bureau also publishes a bilingual Chinese–English filing handbook each year.
+      - callout:
+          kind: note
+          title: Penalties, briefly
+          text: >-
+            Not filing when you should can cost {{fact:penalty_not_filed}}; under-reporting, {{fact:penalty_underreported}}.
+            Correcting a return yourself before the tax office starts asking generally avoids the fine.
+  - id: glossary
+    heading: Words you'll see at the tax office
+    blocks:
+      - p: >-
+          Forms, letters and the e-filing software use these terms. If you only remember one, make it the
+          withholding statement — it is the number everything else is checked against.
+      - table:
+          head: [In English, In Chinese, What it is]
+          rows:
+            - [Individual income tax return, 綜合所得稅結算申報, The return residents file every May for the year before.]
+            - [Withholding statement, 扣繳憑單, Your employer's record of last year's pay and the tax withheld. Issued each January.]
+            - [Tax resident / non-resident, 居住者 / 非居住者, Decided by your days in Taiwan in the calendar year.]
+            - [Salary special deduction, 薪資所得特別扣除額, A fixed amount every salaried resident deducts.]
+            - [Exemption, 免稅額, A fixed amount per person in your household.]
+            - [Standard deduction, 標準扣除額, The flat alternative to listing your expenses.]
+            - [Minimum tax, 個人所得基本稅額, A separate calculation that can apply when overseas income is large.]
+            - [Certificate of Entry and Exit Dates, 入出國日期證明書, Immigration's official record of your days in Taiwan.]
+            - [Tax clearance certificate, 完稅證明, Proof that your tax is paid — often asked for when you leave.]
+            - [National Taxation Bureau, 國稅局, The tax office that handles your return.]
+sources: [mof_filing_time, mof_filing_documents, mof_efiling, mof_filing_2026, mof_refund_batches_2026, mof_refund_batch1_2026, mof_filing_place, mof_faq_more_help, law_income_tax_act, mof_tax_clearance, dhsc_salary_tax, ntbt_handbook_2025]
+related: [tax-in-taiwan, employer-withholding, 183-day-rule]

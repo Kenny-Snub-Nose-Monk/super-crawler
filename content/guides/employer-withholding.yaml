@@ -1,0 +1,76 @@
+slug: employer-withholding
+kind: tax
+order: 5
+title: What your employer deducts
+subtitle: And what is still your job — withholding, payslips and the cases where you file yourself
+summary: >-
+  Your employer withholds tax from every payslip, but for residents that is only a down payment.
+  Here is what the company does, how the rate is chosen, and where the responsibility shifts to you.
+keywords: [employer, withholding, withheld, payslip, payroll, hr, 5%, 18%, household, caregiver, self-file, foreign employer]
+updated: 2026-10-15
+takeaways:
+  - "Residents: your employer withholds {{fact:resident_withholding_flat}} — a pre-payment settled by your May return."
+  - "Non-residents: {{fact:nr_salary_rate}} (or {{fact:nr_salary_rate_low}} under the cut-off), and that is final."
+  - "{{fact:employer_resident_rate_from_start}} if your contract shows you'll stay 183+ days."
+  - "Paid by an overseas employer, or by a household? Nobody withholds — the filing is yours."
+sections:
+  - id: residents
+    heading: If you are a resident
+    blocks:
+      - p: >-
+          For residents, payroll withholding is an estimate. Your employer takes either a flat
+          {{fact:resident_withholding_flat}} from each month's pay — you choose which method — and the
+          annual return in May squares the account. High earners usually owe a balance in May, because
+          withholding at 5% or by table seldom keeps up with a 30–40% marginal rate.
+      - callout:
+          kind: tip
+          title: Avoid a May surprise
+          text: >-
+            Run your expected year through the [calculator](#/tax/calculator) and compare the total with what
+            your payslips show as withheld. Put the difference aside — or ask payroll to withhold more.
+  - id: non-residents
+    heading: If you are a non-resident
+    blocks:
+      - p: >-
+          Non-resident withholding is final. Your employer takes {{fact:nr_salary_rate}} from salary — or
+          {{fact:nr_salary_rate_low}} when the month's total is at most {{fact:nr_threshold_2026}} — and you
+          don't file. Bonuses paid in a month count towards that month's total.
+  - id: first-year
+    heading: Your first year
+    blocks:
+      - p: >-
+          Payroll doesn't know in January whether you'll reach 183 days. If your contract or residence permit shows a
+          long stay, {{fact:employer_resident_rate_from_start}} — and collects the difference if you leave early.
+          Otherwise you start at 18%, and once you pass 183 days the year is {{fact:recompute_on_183}}.
+      - callout:
+          kind: note
+          title: Tell HR your plans
+          text: >-
+            A one-line note to payroll about your expected stay can save you months of 18% withholding and a long
+            wait for the refund.
+  - id: your-job
+    heading: When nobody withholds — and the filing is yours
+    blocks:
+      - list:
+          - "**An overseas employer pays you for work done in Taiwan.** Nobody in Taiwan withholds. Over 90 days in the year, report it yourself — at {{fact:foreign_employer_over_90_rate}} as a non-resident, or on your return as a resident."
+          - "**Equity from an overseas parent.** Stock option gains are {{fact:stock_options_other_income}}; {{fact:stock_options_employer_report}}, but no tax is withheld — you declare it."
+          - "**Household employment.** Families who employ domestic helpers or caregivers don't withhold tax — {{fact:household_employer_not_agent}}."
+          - "**Freelance and side income.** Professional fees paid to a non-resident are withheld at {{fact:nr_professional_rate}}; residents add them to the annual return."
+  - id: payslip
+    heading: Your payslip
+    blocks:
+      - p: >-
+          Employers of foreign workers must hand over a payslip showing the pay items, total, and every
+          deduction — and {{fact:payslip_bilingual}} that it be printed in Chinese and in your own language. Keep them:
+          they are the easiest way to check your withholding statement in January.
+      - p: >-
+          Each January your employer issues a withholding statement for the previous year. That is the
+          number that appears in your downloadable income data in April.
+  - id: penalties
+    heading: If something goes wrong
+    blocks:
+      - p: >-
+          Employers that fail to withhold face their own penalties. For you, the risks are
+          {{fact:penalty_not_filed}} for not filing and {{fact:penalty_underreported}} for under-reporting.
+sources: [law_withholding_rates, mof_withholding_faq_1514, mof_nr_threshold_2026, dhsc_salary_tax, mof_ruling_stock_options, mof_exemptions, ntbt_nonresident_rate]
+related: [how-to-file, tax-rates, 183-day-rule]
