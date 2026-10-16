@@ -1,0 +1,82 @@
+name: pages
+
+# 把網站發布到 GitHub Pages：https://kenny-snub-nose-monk.github.io/super-crawler/
+#
+# site/data/ 不進版控（見 .gitignore），所以每次部署都在這裡重新匯出一次。
+# 三種情況會部署：
+#   - main 上網站、內容或資料有變動
+#   - 每週的 collect 跑完 —— 它用 GITHUB_TOKEN push 的 commit 不會觸發 push 事件，
+#     所以要靠 workflow_run 接在後面
+#   - 在 Actions 頁面手動按「Run workflow」
+#
+# 第一次使用前，要在 repo 的 Settings → Pages → Source 選「GitHub Actions」。
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "content/**"
+      - "data/**"
+      - "crawler/**"
+      - "scripts/export_site_data.py"
+      - ".github/workflows/pages.yml"
+  workflow_run:
+    workflows: [collect]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  # 新的部署取代還在排隊的舊部署；正在發布的那一次跑完
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    # collect 失敗時不重新部署，網站維持上一版
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # workflow_run 預設 checkout 觸發時的 commit；要拿 collect 剛 push 的最新資料
+          ref: main
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: 匯出網站資料
+        run: python scripts/export_site_data.py
+
+      - name: 試算與搜尋的測試（用剛匯出的資料）
+        run: |
+          node tests/test_tax_js.mjs
+          node tests/test_search_js.mjs
+          node tests/test_query_js.mjs
+          node tests/test_event_js.mjs
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

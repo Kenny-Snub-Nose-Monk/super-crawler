@@ -75,7 +75,8 @@ export function render({ state }) {
     h("thead", null, h("tr", null, ["Official source", "Status", "Page last updated", "Last good copy"].map((x) => h("th", null, x)))),
     h("tbody", null, taxRows)));
 
-  const relayCmd = "npx @mcp-b/webmcp-local-relay@5.1.0 --widget-origin <this site's origin>";
+  // 指令帶入目前網站的網址：本機是 http://localhost:8765，GitHub Pages 上是 github.io
+  const relayCmd = `claude mcp add -s user webmcp-relay -- npx -y @mcp-b/webmcp-local-relay@5.1.0 --widget-origin ${location.origin}`;
 
   return {
     title: "About the data",
@@ -95,8 +96,8 @@ export function render({ state }) {
         h("p", { style: "max-width:720px;color:var(--ink-2)" },
           "The page registers its own tools with WebMCP. With the local relay running, Claude Code can call them — and because the tools drive this page, you see the same results Claude sees."),
         h("ol", { class: "steps", style: "max-width:720px" },
-          h("li", null, h("span", { class: "t" }, "Run the relay"), h("code", null, relayCmd)),
-          h("li", null, h("span", { class: "t" }, "Press “Connect Claude”"), "at the top of the page. It's off by default, so ordinary visitors' browsers never scan local ports."),
+          h("li", null, h("span", { class: "t" }, "Add the relay to Claude Code (once)"), h("code", { style: "overflow-wrap:anywhere" }, relayCmd)),
+          h("li", null, h("span", { class: "t" }, "Press “Connect Claude”"), "at the top of the page after starting a Claude Code session. It's off by default, so ordinary visitors' browsers never scan local ports."),
           h("li", null, h("span", { class: "t" }, "Ask"), "in plain language — “am I a tax resident if I arrived on 10 March?” or “free English events this weekend”.")),
         h("div", { class: "table-wrap" }, h("table", { class: "status-table" },
           h("thead", null, h("tr", null, h("th", null, "Tool"), h("th", null, "What it does"))),

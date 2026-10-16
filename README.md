@@ -66,7 +66,22 @@ for t in tests/test_*.py; do python3 "$t" || break; done
 python3 scripts/export_site_data.py && for t in tests/test_*.mjs; do node "$t" || break; done
 ```
 
+### 線上版
+
+GitHub Pages：<https://kenny-snub-nose-monk.github.io/super-crawler/>
+（`.github/workflows/pages.yml`：main 有變動、或每週抓取跑完就重新匯出並部署）
+
 ### 讓 Claude 查這個網站（WebMCP）
+
+用線上版的話不需要 clone，在 Claude Code 加一次 relay（`-s user`：任何資料夾都能用）：
+
+```bash
+claude mcp add -s user webmcp-relay -- npx -y @mcp-b/webmcp-local-relay@5.1.0 --widget-origin https://kenny-snub-nose-monk.github.io
+```
+
+開一個 Claude Code 對話，再打開 <https://kenny-snub-nose-monk.github.io/super-crawler/?relay=1>。
+
+在本機跑的話：
 
 ```bash
 npx @mcp-b/webmcp-local-relay@5.1.0 --widget-origin http://localhost:8765
