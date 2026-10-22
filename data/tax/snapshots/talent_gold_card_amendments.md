@@ -2,7 +2,7 @@
 
 - 來源：https://talent.nat.gov.tw/en/life/taiwan-gold-card-new-amendments-stronger-advantages
 - 頁面標題：Taiwan Gold Card: New Amendments, Stronger Advantages
-- 頁面標示更新：2026-01-07
+- 頁面標示更新：2026-10-20
 
 ---
 
@@ -122,7 +122,7 @@ Established in 2018,
 
 the Taiwan Employment Gold Card Office
 
-marked a major step in welcoming global professionals to Taiwan. Building on that foundation,
+(now Talent Taiwan) marked a major step in welcoming global professionals to Taiwan. Building on that foundation,
 
 Talent Taiwan
 
@@ -234,7 +234,7 @@ help@talent.nat.gov.tw
 
 就業金卡辦公室
 
-，象徵著台灣在吸引國際專業人才上的重要里程碑。延續這項基礎，
+（即Talent Taiwan的前身），象徵著台灣在吸引國際專業人才上的重要里程碑。延續這項基礎，
 
 Talent Taiwan
 

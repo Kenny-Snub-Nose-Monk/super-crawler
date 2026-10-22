@@ -2,7 +2,7 @@
 
 - 來源：https://talent.nat.gov.tw/en/life/building-connections-networking-and-social-support-for-foreign-professionals
 - 頁面標題：Building Connections: Networking and Social Support for Foreign Professionals
-- 頁面標示更新：2026-07-02
+- 頁面標示更新：2026-10-20
 
 ---
 
@@ -14,11 +14,11 @@ Building a personal and professional network can be one of the most important st
 
 To support international talent in their transition, we have compiled a range of government-affiliated, community-managed and business-centered networks, where foreign professionals can exchange resources, or find events to join. These networks vary in scope and structure, and while some are managed by Talent Taiwan, others are independently operated and may not be moderated for content. Inclusion in this list is not an endorsement but a part of our commitment to provide resources for newcomers to Taiwan.
 
-Talent Taiwan and Gold Card Office
+Talent Taiwan
 
 Taiwan’s foreign talent ecosystem is supported by a growing set of public services aimed at helping professionals transition smoothly into life and work here.
 
-Supported by the National Development Council, Talent Taiwan is a national-level initiative aimed at supporting foreign nationals and new residents in settling into Taiwan – including the Taiwan Employment Gold Card Office, offering dedicated services for Gold Card holders. Foreign talent navigating their new chapter in Taiwan can access a range of resources through our official platforms, newsletters and community groups.
+Supported by the National Development Council, Talent Taiwan is a national-level initiative aimed at supporting professional foreign nationals and new residents in settling into Taiwan, offering dedicated services. Foreign talent navigating their new chapter in Taiwan can access a range of resources through our official platforms, newsletters and community groups.
 
 Talent Taiwan’s Social Media
 
@@ -34,7 +34,7 @@ Work Opportunities
 
 Substack
 
-Gold Card Office
+Employment Gold Card
 
 Gold Card Newsletter
 
@@ -182,11 +182,11 @@ Discord Taiwan
 
 為協助外籍人才順利適應，我們特別整理了一系列政府主導、社群自營與商業性質的交流平台，讓外籍人士能交換資訊、參與活動、拓展人脈。這些資源的性質與規模各不相同，有些是由 Talent Taiwan 親自營運，也有些是獨立經營，平台內容不一定會經過審核。 Talent Taiwan 分享這份名單，並不代表對特定平台背書，而是希望透過資源整合，協助剛來台灣的外籍人士找到合適的交流與社群管道。
 
-Talent Taiwan 與就業金卡辦公室
+Talent Taiwan
 
 為了協助國際專業人士順利落地台灣，台灣政府提供了多項公共資源與服務。
 
-Talent Taiwan 是由國發會支持的全國性計畫，致力於協助外籍人士與新住民落地台灣，其中也包含「就業金卡辦公室」，專門為金卡持有者提供專屬服務。外籍專業人士可透過我們的官方平台、電子報與社群活動，取得各類實用資訊，展開在台灣的新篇章。
+Talent Taiwan 是由國發會支持的全國性計畫，致力於協助外籍專業人士落地台灣。外籍專業人士可透過我們的官方平台、電子報與社群活動，取得各類實用資訊，展開在台灣的新篇章。
 
 Talent Taiwan 社群平台
 
@@ -202,7 +202,7 @@ Talent Taiwan 電子報
 
 Substack
 
-就業金卡辦公室
+就業金卡
 
 金卡電子報
 
@@ -214,7 +214,7 @@ Substack
 
 其他政府相關資源
 
-除了 Talent Taiwan 和就業金卡辦公室之外，台灣還有許多政府支持的計畫與平台，提供外籍人士拓展人脈、創業培育與國際合作的多元機會：
+除了 Talent Taiwan 之外，台灣還有許多政府支持的計畫與平台，提供外籍人士拓展人脈、創業培育與國際合作的多元機會：
 
 DIGI Gold Card Community
 
