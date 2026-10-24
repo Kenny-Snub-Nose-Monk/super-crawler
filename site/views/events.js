@@ -4,11 +4,11 @@
 // 過濾條件同步到網址；WebMCP 的 search_events 也是把條件放進網址再打開這一頁，
 // 所以 AI 助理查到的就是畫面上的這份清單。
 
-import { h, icon, dateInput } from "../lib/dom.js";
+import { h, dateInput } from "../lib/dom.js";
 import { queryEvents, normalizeParams } from "../query.js";
 import { windows } from "../lib/time.js";
-import { TYPE_META, plural } from "../lib/format.js";
-import { pagedRows, emptyState } from "./components.js";
+import { TYPE_META } from "../lib/format.js";
+import { agenda, emptyState } from "./components.js";
 
 const FLAGS = ["free_only", "signup_open", "exclude_online", "english", "new"];
 // 日期先給常用的時間窗；要自訂才露出日期欄（日期欄本身見 lib/dom.js 的 dateInput）
@@ -38,7 +38,10 @@ export function runQuery(events, { params, english, fresh, sort }, now = Date.no
 export function render({ params: sp, state, fromAgent }) {
   const q = paramsFromUrl(sp);
   const results = h("div");
-  const count = h("p", { class: "count", "aria-live": "polite" });
+  const countN = h("span", { class: "count-n" });
+  const countT = h("span", { class: "count-t" });
+  const count = h("p", { class: "count", "aria-live": "polite" }, countN, countT);
+  const activeN = h("span", { class: "rail-n" });
 
   const field = (name, label, el) => h("label", { class: "field" }, h("span", null, label), el);
   const kw = h("input", { type: "search", name: "keyword", value: q.params.keyword || "", placeholder: "e.g. jazz, market, climbing" });
@@ -65,11 +68,12 @@ export function render({ params: sp, state, fromAgent }) {
     h("option", { value: "新北市" }, "New Taipei City"));
   city.value = q.params.city || "";
   const types = new Set(q.params.types || []);
-  const typeChips = h("div", { class: "filters", role: "group", "aria-label": "Types" },
+  const typeChips = h("fieldset", { class: "check-list" },
+    h("legend", null, "Type"),
     Object.entries(TYPE_META).map(([t, m]) => {
       const box = h("input", { type: "checkbox", name: "types", value: t });
       box.checked = types.has(t);
-      return h("label", { class: "chip" }, box, icon(m.icon), m.en);
+      return h("label", { class: "toggle" }, box, m.en);
     }));
   const flag = (name, label, on) => {
     const el = h("input", { type: "checkbox", name });
@@ -82,17 +86,22 @@ export function render({ params: sp, state, fromAgent }) {
   sort.value = q.sort;
   const reset = h("button", { type: "button", class: "linkish" }, "Clear filters");
 
-  const form = h("form", { class: "filter-panel", autocomplete: "off" },
-    field("keyword", "Keyword", kw), h("label", { class: "field" }, h("span", null, "When"), when), field("city", "City", city),
+  const form = h("form", { class: "filter-rail", autocomplete: "off" },
+    field("keyword", "Keyword", kw), h("label", { class: "field" }, h("span", null, "When"), when),
     range,
-    h("div", { class: "wide" }, typeChips),
-    h("div", { class: "wide toggles" },
+    field("city", "City", city),
+    h("fieldset", { class: "check-list" },
+      h("legend", null, "Show only"),
       flag("english", "English-friendly", q.english),
-      flag("free_only", "Free only", Boolean(q.params.free_only)),
+      flag("free_only", "Free", Boolean(q.params.free_only)),
       flag("signup_open", "Still open for sign-up", Boolean(q.params.signup_open)),
-      flag("exclude_online", "In person only", Boolean(q.params.exclude_online)),
-      flag("new", "Found this week", q.fresh),
-      reset));
+      flag("exclude_online", "In person", Boolean(q.params.exclude_online)),
+      flag("new", "Found this week", q.fresh)),
+    typeChips,
+    reset);
+  // 手機上過濾條件收進一個可展開的區塊，桌面版一直打開在左欄
+  const rail = h("details", { class: "rail", open: true }, h("summary", null, "Filters", activeN), form);
+  if (window.matchMedia?.("(max-width: 900px)").matches) rail.open = false;
 
   const read = () => {
     const fd = new FormData(form);
@@ -104,8 +113,13 @@ export function render({ params: sp, state, fromAgent }) {
 
   const paint = (cur, { sync = true } = {}) => {
     const rows = runQuery(state.events, cur);
-    count.textContent = rows.length ? `${plural(rows.length, "event")} · soonest first, then ongoing` : "";
-    results.replaceChildren(rows.length ? pagedRows(rows, { pageSize: 40 }) : emptyState("Nothing matches these filters. Try removing one."));
+    countN.textContent = String(rows.length);
+    countT.textContent = rows.length === 1 ? "event" : "events";
+    const n = (cur.params.keyword ? 1 : 0) + (cur.params.start_after || cur.params.start_before ? 1 : 0) + (cur.params.city ? 1 : 0)
+      + (cur.params.types || []).length + ["free_only", "signup_open", "exclude_online"].filter((k) => cur.params[k]).length + (cur.english ? 1 : 0) + (cur.fresh ? 1 : 0);
+    activeN.textContent = n ? ` (${n} on)` : "";
+    results.replaceChildren(rows.length ? agenda(rows, { pageSize: 40 })
+      : emptyState("Nothing matches these filters. Try removing one, or clear them all.", null, h("button", { type: "button", class: "linkish", onclick: () => reset.click() }, "Clear filters")));
     if (sync) {
       const url = { ...cur.params, english: cur.english, new: cur.fresh, sort: cur.sort === "soonest" ? null : cur.sort };
       if (url.start_after && url.start_after.endsWith("T00:00:00+08:00")) url.start_after = url.start_after.slice(0, 10);
@@ -127,14 +141,17 @@ export function render({ params: sp, state, fromAgent }) {
   paint(q, { sync: false });
 
   const head = h("header", { class: "wrap page-head" },
-    h("p", { class: "eyebrow" }, "Taipei & New Taipei"),
-    h("h1", null, "All events"),
-    h("p", { class: "lede" }, "Collected every week from public listings. Your filters stay in the address bar, so you can share exactly this view."));
+    h("h1", null, "Events in Taipei"),
+    h("p", { class: "lede" }, "Taipei and New Taipei, collected every week from public listings. Your filters stay in the address bar, so you can share exactly this view."));
 
   return {
     title: "Events",
-    node: h("div", null, head, h("div", { class: "wrap" },
-      fromAgent ? h("p", { class: "agent-banner" }, "These filters were set by your AI assistant") : null,
-      form, h("h2", { class: "sr-only" }, "Results"), h("div", { class: "toolbar" }, count, h("label", { class: "sort" }, sort)), results)),
+    node: h("div", null, head, h("div", { class: "wrap browse" },
+      rail,
+      h("div", { class: "browse-main" },
+        fromAgent ? h("p", { class: "agent-banner" }, "These filters were set by your AI assistant") : null,
+        h("h2", { class: "sr-only" }, "Results"),
+        h("div", { class: "toolbar" }, count, h("label", { class: "sort" }, h("span", { class: "sr-only" }, "Sort"), sort)),
+        results))),
   };
 }

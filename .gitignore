@@ -12,3 +12,6 @@ logs/
 
 # 網站資料由 scripts/export_site_data.py 產生，部署時才匯出
 site/data/
+
+# impeccable 的審查截圖：每輪重新拍，不進版控
+.impeccable/review/

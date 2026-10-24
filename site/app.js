@@ -110,7 +110,7 @@ export function render({ fromAgent = false } = {}) {
     out = { title: "Something went wrong", node: errorNode(err) };
   }
   viewEl.replaceChildren(out.node);
-  document.title = out.title ? `${out.title} · Ma` : "Ma — Life in Taipei, made clear";
+  document.title = out.title ? `${out.title} · Ma` : "Ma — Taiwan tax for foreign professionals";
   const samePage = lastPath === route.path;
   if (!samePage && !out.keepScroll) window.scrollTo({ top: 0 });
   lastPath = route.path;
@@ -130,6 +130,7 @@ function highlightNav(path) {
   const section = path === "/" ? "home"
     : path.startsWith("/event") ? "events"
     : path.startsWith("/topic") ? "topics"
+    : path === "/tax/calculator" ? "calculator"
     : path.startsWith("/tax") || path.startsWith("/guide") ? "tax"
     : path.slice(1).split("/")[0];
   for (const a of document.querySelectorAll("[data-nav]")) {

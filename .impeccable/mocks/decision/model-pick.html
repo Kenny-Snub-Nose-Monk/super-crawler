@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&display=swap" rel="stylesheet">
+<style>
+:root{--g:#f4f5f6;--ink:#1c1d1f;--ink2:#5a5d63;--r:#e3002c;--b:#0070bd;--gr:#008659;--br:#c48c31;--o:#f8b61c}
+*{box-sizing:border-box;margin:0}
+html,body{width:1440px;height:900px;overflow:hidden;background:var(--g);color:var(--ink);font-family:Archivo,sans-serif}
+.top{background:var(--ink);color:#fff;display:flex;align-items:center;gap:40px;padding:0 56px;height:68px}
+.brand{font-weight:800;font-size:22px;display:flex;align-items:center;gap:10px}
+.brand i{width:26px;height:26px;border-radius:50%;border:5px solid var(--r);display:block}
+nav{display:flex;gap:28px;font-size:15px;font-weight:500;flex:1}
+nav a.on{color:var(--o)}
+.cc{font-size:14px;font-weight:600;background:#fff;color:var(--ink);padding:8px 14px;border-radius:4px}
+.panel{margin:44px 56px 0;background:#fff;border-radius:6px;display:grid;grid-template-columns:1.1fr 1fr;overflow:hidden}
+.ask{padding:48px 56px}
+.code{display:inline-flex;gap:8px;align-items:center;font-size:13px;font-weight:700;letter-spacing:.06em}
+.code b{background:var(--r);color:#fff;padding:3px 8px;border-radius:3px}
+h1{font-size:56px;line-height:1.02;font-weight:700;letter-spacing:-.025em;margin-top:18px}
+.in{margin-top:32px;display:flex;align-items:center;gap:14px}
+.in .box{width:220px;height:84px;border:3px solid var(--ink);border-radius:6px;font-size:56px;font-weight:800;display:flex;align-items:center;padding-left:20px}
+.in span{font-size:18px;color:var(--ink2)}
+.ans{background:var(--gr);color:#fff;padding:48px 56px;display:flex;flex-direction:column;justify-content:space-between}
+.ans .l{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.ans .v{font-size:72px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.ans p{font-size:17px;max-width:420px;line-height:1.5}
+.map{margin:40px 56px 0;position:relative;height:150px}
+.track{position:absolute;left:30px;right:30px;top:40px;height:10px;background:var(--b);border-radius:5px}
+.stns{position:relative;display:flex;justify-content:space-between}
+.st{display:flex;flex-direction:column;align-items:center;width:200px;text-align:center}
+.st i{width:30px;height:30px;border-radius:50%;background:#fff;border:6px solid var(--b);margin-top:30px}
+.st.on i{background:var(--o);border-color:var(--ink)}
+.st b{font-size:12px;margin-top:10px;letter-spacing:.06em;color:var(--b)}
+.st span{font-size:17px;font-weight:600;margin-top:2px}
+</style></head><body>
+<header class="top"><div class="brand"><i></i>Ma</div>
+<nav><a class="on">Tax</a><a>Guides</a><a>Calculator</a><a>Calendar</a><a>Events</a></nav><div class="cc">Connect Claude</div></header>
+<section class="panel"><div class="ask"><div class="code"><b>T1</b> Tax year 2026 · Step 1 of 5</div>
+<h1>How many days have you been in Taiwan this year?</h1>
+<div class="in"><div class="box">212</div><span>days so far · or add trips</span></div></div>
+<div class="ans"><div class="l">You are</div><div><div class="v">Resident</div><p>183 days crossed on 2 July. Taxed on Taiwan income at progressive rates, 5–40%.</p></div><div class="l">Next: 30 Oct · second refund batch</div></div></section>
+<section class="map"><div class="track"></div><div class="stns">
+<div class="st on"><i></i><b>T1</b><span>Days</span></div>
+<div class="st"><i></i><b>T2</b><span>Residency</span></div>
+<div class="st"><i></i><b>T3</b><span>Rates</span></div>
+<div class="st"><i></i><b>T4</b><span>Filing in May</span></div>
+<div class="st"><i></i><b>T5</b><span>Refunds</span></div>
+</div></section>
+</body></html>

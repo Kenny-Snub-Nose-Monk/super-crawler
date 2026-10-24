@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f5f5f2;--ink:#151515;--ink2:#55554f;--red:#e1251b;--rule:#c8c8c2;--cell:#e4e4df;--blue:#2b4c7e}
+*{box-sizing:border-box;margin:0}
+html,body{width:1440px;height:900px;overflow:hidden;background:var(--paper);color:var(--ink);font-family:Archivo,sans-serif}
+.top{display:grid;grid-template-columns:repeat(12,1fr);gap:24px;padding:22px 64px;border-bottom:2px solid var(--ink);align-items:baseline}
+.brand{grid-column:span 2;font-weight:800;font-size:22px;letter-spacing:-.02em}
+.brand b{color:var(--red)}
+nav{grid-column:3/span 7;display:flex;gap:32px;font-size:15px;font-weight:500}
+nav a{color:var(--ink);text-decoration:none}nav a.on{border-bottom:3px solid var(--red);padding-bottom:4px}
+.cc{grid-column:10/span 3;justify-self:end;font-size:14px;font-weight:600;border:1.5px solid var(--ink);padding:8px 14px}
+.main{display:grid;grid-template-columns:repeat(12,1fr);gap:24px;padding:48px 64px 0}
+.k{grid-column:1/span 12;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);display:flex;gap:40px;border-bottom:1px solid var(--rule);padding-bottom:10px}
+.k span:first-child{color:var(--red)}
+.q{grid-column:1/span 5;padding-top:36px}
+.q h1{font-size:64px;line-height:1;font-weight:700;font-stretch:88%;letter-spacing:-.03em}
+.field{margin-top:36px;display:flex;align-items:flex-end;gap:16px;border-bottom:3px solid var(--ink);padding-bottom:6px}
+.field .n{font-size:120px;line-height:.85;font-weight:800;font-stretch:80%;font-variant-numeric:tabular-nums;letter-spacing:-.04em}
+.field .u{font-size:20px;font-weight:600;padding-bottom:12px}
+.alt{margin-top:14px;font-size:15px;color:var(--ink2)}
+.alt a{color:var(--ink);font-weight:600}
+.grid{grid-column:7/span 6;padding-top:36px}
+.gh{display:flex;justify-content:space-between;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);margin-bottom:10px}
+.months{display:grid;grid-template-rows:repeat(12,22px);gap:4px;position:relative}
+.m{display:grid;grid-template-columns:34px repeat(31,1fr);gap:3px;align-items:center}
+.m i{font-style:normal;font-size:11px;font-weight:600;color:var(--ink2)}
+.m s{display:block;height:16px;background:var(--cell);text-decoration:none}
+.m s.f{background:var(--red)}
+.m s.x{background:transparent}
+.line{position:absolute;left:34px;right:0;top:139px;border-top:2px solid var(--ink)}
+.line b{position:absolute;right:0;top:-24px;font-size:12px;font-weight:700;background:var(--paper);padding-left:6px}
+.figs{grid-column:1/span 12;display:grid;grid-template-columns:repeat(12,1fr);gap:24px;margin-top:40px;border-top:2px solid var(--ink);padding-top:18px}
+.fig{grid-column:span 4}
+.fig .l{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.fig .v{font-size:44px;font-weight:700;font-stretch:85%;letter-spacing:-.02em;margin-top:6px}
+.fig .v.red{color:var(--red)}
+.fig .v sup{font-size:14px;color:var(--blue);font-weight:700;vertical-align:top;margin-left:4px}
+.fig p{font-size:14px;color:var(--ink2);margin-top:4px}
+</style></head><body>
+<header class="top"><div class="brand">Ma<b>.</b></div>
+<nav><a class="on">Tax</a><a>Guides</a><a>Calculator</a><a>Calendar</a><a>Events</a></nav>
+<div class="cc">Connect Claude</div></header>
+<main class="main">
+<div class="k"><span>Tax year 2026</span><span>Residency test · Income Tax Act Art. 7</span><span>Figures checked against official text weekly</span></div>
+<section class="q"><h1>How many days have you been in Taiwan this year?</h1>
+<div class="field"><span class="n">212</span><span class="u">days, 1 Jan – 23 Oct</span></div>
+<p class="alt">Not sure? <a>Add your trips instead</a> — entry and exit dates, we count them.</p></section>
+<section class="grid"><div class="gh"><span>2026, one cell per day</span><span>212 of 365</span></div>
+<div class="months">
+<div class="m"><i>Jan</i><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s></div>
+<div class="m"><i>Feb</i><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="x"></s><s class="x"></s><s class="x"></s></div>
+<div class="m"><i>Mar</i><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s></div>
+<div class="m"><i>Apr</i><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="x"></s></div>
+<div class="m"><i>May</i><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s></div>
+<div class="m"><i>Jun</i><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="x"></s></div>
+<div class="m"><i>Jul</i><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s></div>
+<div class="m"><i>Aug</i><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s><s class="f"></s></div>
+<div class="m"><i>Sep</i><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s class="x"></s></div>
+<div class="m"><i>Oct</i><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s></div>
+<div class="m"><i>Nov</i><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s class="x"></s></div>
+<div class="m"><i>Dec</i><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s><s></s></div>
+<div class="line"><b>183 · resident from 2 Jul</b></div>
+</div></section>
+<div class="figs">
+<div class="fig"><div class="l">Status for 2026</div><div class="v red">Resident<sup>N1</sup></div><p>Over 183 days in one tax year. Taxed on Taiwan income at 5–40%.</p></div>
+<div class="fig"><div class="l">Next deadline</div><div class="v">30 Oct<sup>N2</sup></div><p>Second refund batch is paid. Filing opens 1 May 2027.</p></div>
+<div class="fig"><div class="l">Then</div><div class="v">Estimate your tax →</div><p>Uses your residency. Every line shows its official source.</p></div>
+</div></main></body></html>
