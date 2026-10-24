@@ -3,7 +3,7 @@
 
 import { h } from "../lib/dom.js";
 import { sourceLabel, shortDate, plural, publisherEn, sourceTitle } from "../lib/format.js";
-import { sectionHead } from "./components.js";
+import { chapter } from "./report.js";
 
 const EVENT_SOURCES = {
   accupass: "Event pages' schema.org data (JSON-LD)",
@@ -20,7 +20,7 @@ const TOOLS = [
   ["get_event", "Full details of one event, opening its page."],
   ["search_guides", "Search the tax and life guides; answers come with the official sources behind them."],
   ["get_guide", "Read a whole guide (or one section) as plain text."],
-  ["check_tax_residency", "Days in Taiwan, or a list of trips → resident or not, with the counting rule applied."],
+  ["check_tax_residency", "Days in Taiwan, or a list of trips, turned into resident or not, with the counting rule applied."],
   ["estimate_tax", "Run the calculator — residency first, then the tax — and open it with your inputs."],
   ["get_tax_calendar", "What's due next: filing, refunds, announcements."],
   ["get_tax_facts", "The figures themselves (rates, thresholds, amounts) with their verification status and the original quotes."],
@@ -35,7 +35,6 @@ function pill(status) {
 export function render({ state }) {
   const tax = state.content.tax;
   const head = h("header", { class: "wrap page-head" },
-    h("p", { class: "eyebrow" }, "About the data"),
     h("h1", null, "Where everything comes from"),
     h("p", { class: "lede" }, "Ma is a static site. A crawler runs every Thursday night on GitHub Actions, collects public event listings and official tax pages, and commits what it found — so every change is visible in the project's history."));
 
@@ -78,32 +77,34 @@ export function render({ state }) {
   // 指令帶入目前網站的網址：本機是 http://localhost:8765，GitHub Pages 上是 github.io
   const relayCmd = `claude mcp add -s user webmcp-relay -- npx -y @mcp-b/webmcp-local-relay@5.1.0 --widget-origin ${location.origin}`;
 
+  // 手機上表格一列疊成一塊：每格帶著它的欄名
+  for (const wrap of [eventsTable, taxTable]) {
+    const heads = [...wrap.querySelectorAll("th")].map((th) => th.textContent);
+    for (const tr of wrap.querySelectorAll("tbody tr")) [...tr.children].forEach((td, i) => { td.dataset.label = heads[i] || ""; });
+    wrap.classList.add("stack-sm");
+  }
   return {
     title: "About the data",
     node: h("div", null, head,
-      h("section", { class: "wrap section" },
-        sectionHead("Event sources"),
-        h("p", { style: "max-width:720px;color:var(--ink-2)" }, "Each source has its own collector, so one site redesigning breaks only that source. We prefer the data a site already publishes for machines — structured data and its own APIs — over scraping page layouts, and every request checks robots.txt first."),
-        eventsTable),
-      h("section", { class: "wrap section" },
-        sectionHead("Tax sources"),
-        h("p", { style: "max-width:720px;color:var(--ink-2)" },
+      chapter("Event sources", h("div", null,
+        h("p", { class: "body-text" }, "Each source has its own collector, so one site redesigning breaks only that source. We prefer the data a site already publishes for machines — structured data and its own APIs — over scraping page layouts, and every request checks robots.txt first."),
+        eventsTable)),
+      chapter("Tax sources", h("div", null,
+        h("p", { class: "body-text" },
           `${plural(counts.ok || 0, "page")} saved, ${counts.empty || 0} official pages that are currently empty, ${counts.manual || 0} linked but not crawled (a bot wall, or a tool). `,
           `${verified} of ${Object.keys(state.facts).length} tax figures matched their official sentence at the last check${drifted.length ? `; ${drifted.length} are under review` : ""}.`),
-        taxTable),
-      h("section", { class: "wrap section" },
-        sectionHead("Ask your AI assistant"),
-        h("p", { style: "max-width:720px;color:var(--ink-2)" },
+        taxTable)),
+      chapter("Ask your AI assistant", h("div", null,
+        h("p", { class: "body-text" },
           "The page registers its own tools with WebMCP. With the local relay running, Claude Code can call them — and because the tools drive this page, you see the same results Claude sees."),
-        h("ol", { class: "steps", style: "max-width:720px" },
+        h("ol", { class: "steps" },
           h("li", null, h("span", { class: "t" }, "Add the relay to Claude Code (once)"), h("code", { style: "overflow-wrap:anywhere" }, relayCmd)),
           h("li", null, h("span", { class: "t" }, "Press “Connect Claude”"), "at the top of the page after starting a Claude Code session. It's off by default, so ordinary visitors' browsers never scan local ports."),
           h("li", null, h("span", { class: "t" }, "Ask"), "in plain language — “am I a tax resident if I arrived on 10 March?” or “free English events this weekend”.")),
         h("div", { class: "table-wrap" }, h("table", { class: "status-table" },
           h("thead", null, h("tr", null, h("th", null, "Tool"), h("th", null, "What it does"))),
-          h("tbody", null, TOOLS.map(([n, d]) => h("tr", null, h("td", null, h("code", null, n)), h("td", null, d))))))),
-      h("section", { class: "wrap section" },
-        sectionHead("Not tax advice"),
-        h("p", { style: "max-width:720px;color:var(--ink-2)" }, "The guides and calculator explain general rules for foreign professionals. Your situation may differ — confirm with the National Taxation Bureau, or a licensed accountant, before you file."))),
+          h("tbody", null, TOOLS.map(([n, d]) => h("tr", null, h("td", null, h("code", null, n)), h("td", null, d)))))))),
+      chapter("Not tax advice", h("div", null,
+        h("p", { class: "body-text" }, "The guides and calculator explain general rules for foreign professionals. Your situation may differ — confirm with the National Taxation Bureau, or a licensed accountant, before you file.")))),
   };
 }

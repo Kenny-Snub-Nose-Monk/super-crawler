@@ -1,12 +1,12 @@
 // 分類瀏覽：#/topics 是六個主題的入口，#/topic/<id> 是單一主題頁
 // （子分類分頁、快速過濾、本週精選、全部活動、相關閱讀）。
 
-import { h, icon } from "../lib/dom.js";
+import { h } from "../lib/dom.js";
 import { queryEvents } from "../query.js";
 import { windows } from "../lib/time.js";
 import { TOPICS, topicById, applySub } from "../lib/topics.js";
-import { plural } from "../lib/format.js";
-import { sectionHead, eventCard, pagedRows, emptyState, guideRow } from "./components.js";
+import { eventCard, agenda, emptyState, guideRow } from "./components.js";
+import { chapter } from "./report.js";
 import { pickScore } from "./home.js";
 
 const QUICK = [
@@ -22,18 +22,17 @@ const QUICK = [
 function indexPage(state) {
   const w = windows();
   const head = h("header", { class: "wrap page-head" },
-    h("p", { class: "eyebrow" }, "Browse"),
     h("h1", null, "Topics"),
-    h("p", { class: "lede" }, "Six ways into the city's week. Counts are for the next 30 days."));
-  const grid = h("div", { class: "topics" }, TOPICS.map((tp) => {
+    h("p", { class: "lede" }, "Six ways into the city's week. Counts are events in the next 30 days."));
+  // 一個主題一列：名字、說明、右邊是大號的數字
+  const list = h("ol", { class: "topic-list" }, TOPICS.map((tp) => {
     const n = queryEvents(state.events, { types: tp.types, start_before: w.next30.end }).length;
-    return h("a", { class: "topic", href: `#/topic/${tp.id}` },
-      h("span", { class: `topic-icon tint-${tp.tint}` }, icon(tp.icon)),
+    return h("li", null, h("a", { class: "topic", href: `#/topic/${tp.id}` },
       h("span", { class: "topic-name" }, tp.name),
-      h("span", { class: "topic-count" }, `${n} upcoming`),
-      h("p", { class: "topic-desc" }, tp.blurb));
+      h("span", { class: "topic-desc" }, tp.blurb),
+      h("span", { class: "topic-count" }, h("span", { class: "n" }, String(n)), h("span", { class: "u" }, "next 30 days"))));
   }));
-  return { title: "Topics", node: h("div", null, head, h("div", { class: "wrap section", style: "padding-top:8px" }, grid)) };
+  return { title: "Topics", node: h("div", null, head, h("div", { class: "wrap topics-wrap" }, list)) };
 }
 
 export function render({ args, params, state }) {
@@ -63,18 +62,21 @@ export function render({ args, params, state }) {
   };
 
   const listBox = h("div");
-  const countEl = h("p", { class: "count" });
+  const countN = h("span", { class: "count-n" });
+  const countT = h("span", { class: "count-t" });
+  const countEl = h("p", { class: "count" }, countN, countT);
   const picksBox = h("div");
 
   const paint = () => {
     const rows = filtered();
     const picks = rows.filter((e) => e.status === "upcoming" && e.starts_at && e.starts_at <= w.next7.end)
       .map((e, i) => ({ e, s: pickScore(e) - i * 0.002 })).sort((a, b) => b.s - a.s).slice(0, 3).map((x) => x.e);
-    picksBox.replaceChildren(picks.length ? h("div", { class: "section" },
-      sectionHead("Picks for the next 7 days"),
+    picksBox.replaceChildren(picks.length ? h("div", { class: "picks" },
+      h("h2", { class: "sub-h" }, "Picks for the next 7 days"),
       h("div", { class: "cards three" }, picks.map((ev) => eventCard(ev)))) : "");
-    countEl.textContent = `${plural(rows.length, "event")}${sub ? ` · ${topic.subs.find((s) => s.id === sub)?.name}` : ""}`;
-    listBox.replaceChildren(rows.length ? pagedRows(rows, { pageSize: 25 }) : emptyState("Nothing here with these filters.", topic.icon));
+    countN.textContent = String(rows.length);
+    countT.textContent = `${rows.length === 1 ? "event" : "events"}${sub ? ` in ${topic.subs.find((s) => s.id === sub)?.name}` : ""}`;
+    listBox.replaceChildren(rows.length ? agenda(rows, { pageSize: 25 }) : emptyState("Nothing here with these filters. Try turning one off."));
   };
 
   // 分頁籤的連結要帶著目前的快速篩選與排序 —— 篩選改了就重算一次
@@ -123,24 +125,20 @@ export function render({ args, params, state }) {
   paint();
 
   const related = state.guides.filter((g) => g.kind === "life");
-  const head = h("header", { class: "wrap topic-head" },
-    h("span", { class: `topic-icon tint-${topic.tint}` }, icon(topic.icon)),
-    h("div", null,
-      h("p", { class: "crumbs" }, h("a", { href: "#/topics" }, "Topics"), " / ", topic.name),
-      h("h1", null, topic.name),
-      h("p", null, topic.blurb)));
+  const head = h("header", { class: "wrap page-head" },
+    h("p", { class: "crumbs" }, h("a", { href: "#/topics" }, "Topics"), " / ", topic.name),
+    h("h1", null, topic.name),
+    h("p", { class: "lede" }, topic.blurb));
 
   return {
     title: topic.name,
     node: h("div", null, head,
-      h("div", { class: "wrap" }, tabs, chips),
+      h("div", { class: "wrap topic-controls" }, tabs, chips),
       h("div", { class: "wrap" }, picksBox),
-      h("div", { class: "wrap section" },
-        sectionHead("All events"),
-        h("div", { class: "toolbar" }, countEl, h("label", { class: "sort" }, sortSel)),
-        listBox),
-      related.length && topic.id === "social" ? h("div", { class: "wrap section" },
-        sectionHead("Guides"),
+      chapter("All events", h("div", null,
+        h("div", { class: "toolbar" }, countEl, h("label", { class: "sort" }, h("span", { class: "sr-only" }, "Sort"), sortSel)),
+        listBox)),
+      related.length && topic.id === "social" ? chapter("Guides",
         h("ol", { class: "guide-list" }, related.map((g, i) => guideRow(g, i + 1)))) : null),
   };
 }

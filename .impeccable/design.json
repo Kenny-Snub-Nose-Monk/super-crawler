@@ -1,0 +1,505 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-23T08:21:48+00:00",
+  "title": "Design System: Ma",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Coated Paper",
+        "canonical": "oklch(96.9% 0.004 106)",
+        "tonalRamp": [
+          "#0b0b09",
+          "#252523",
+          "#424240",
+          "#61615f",
+          "#828280",
+          "#a5a5a2",
+          "#c9c9c6",
+          "#efefec"
+        ]
+      },
+      "paper-2": {
+        "role": "neutral",
+        "displayName": "Second Sheet",
+        "canonical": "oklch(93.8% 0.008 107)",
+        "tonalRamp": [
+          "#0b0b08",
+          "#252521",
+          "#42423d",
+          "#62625c",
+          "#83837d",
+          "#a5a5a0",
+          "#c9c9c4",
+          "#efefe9"
+        ]
+      },
+      "sheet": {
+        "role": "neutral",
+        "displayName": "Fresh Sheet",
+        "canonical": "oklch(98.8% 0.003 106)",
+        "tonalRamp": [
+          "#0b0b0a",
+          "#252524",
+          "#424240",
+          "#616160",
+          "#828281",
+          "#a5a5a3",
+          "#c9c9c7",
+          "#eeeeec"
+        ]
+      },
+      "cell": {
+        "role": "neutral",
+        "displayName": "Empty Cell",
+        "canonical": "oklch(90.5% 0.009 107)",
+        "tonalRamp": [
+          "#0c0b07",
+          "#252520",
+          "#42423d",
+          "#62625c",
+          "#83837c",
+          "#a5a59f",
+          "#cacac3",
+          "#efefe8"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(19.6% 0.000 90)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Ink 2",
+        "canonical": "oklch(35.9% 0.007 107)",
+        "tonalRamp": [
+          "#0b0b08",
+          "#252522",
+          "#42423e",
+          "#61615d",
+          "#83837e",
+          "#a5a5a1",
+          "#c9c9c4",
+          "#efefea"
+        ]
+      },
+      "ink-3": {
+        "role": "neutral",
+        "displayName": "Ink 3",
+        "canonical": "oklch(47.3% 0.009 107)",
+        "tonalRamp": [
+          "#0c0b07",
+          "#252520",
+          "#42423d",
+          "#62625c",
+          "#83837c",
+          "#a5a59f",
+          "#cacac3",
+          "#efefe8"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Warm Rule",
+        "canonical": "oklch(83.7% 0.010 107)",
+        "tonalRamp": [
+          "#0c0b07",
+          "#252520",
+          "#42423d",
+          "#62625b",
+          "#83837c",
+          "#a5a59f",
+          "#cacac3",
+          "#efefe8"
+        ]
+      },
+      "red": {
+        "role": "primary",
+        "displayName": "Signal Red",
+        "canonical": "oklch(58.5% 0.221 29)",
+        "tonalRamp": [
+          "#3b0000",
+          "#620000",
+          "#890000",
+          "#b12118",
+          "#d94b3d",
+          "#ff715f",
+          "#ff9682",
+          "#ffbca7"
+        ]
+      },
+      "red-ink": {
+        "role": "primary",
+        "displayName": "Press Red",
+        "canonical": "oklch(49.1% 0.188 29)",
+        "tonalRamp": [
+          "#3b0000",
+          "#620000",
+          "#890000",
+          "#b12117",
+          "#d94b3c",
+          "#ff715f",
+          "#ff9682",
+          "#ffbca6"
+        ]
+      },
+      "red-soft": {
+        "role": "primary",
+        "displayName": "Red Tint",
+        "canonical": "oklch(93.7% 0.026 27)",
+        "tonalRamp": [
+          "#150706",
+          "#31201e",
+          "#4f3d3b",
+          "#6f5c59",
+          "#917d7a",
+          "#b59f9d",
+          "#dac3c0",
+          "#ffe8e5"
+        ]
+      },
+      "red-wash": {
+        "role": "primary",
+        "displayName": "Red Wash",
+        "canonical": "oklch(78.9% 0.093 24)",
+        "tonalRamp": [
+          "#270000",
+          "#48090c",
+          "#6b2b29",
+          "#8e4a47",
+          "#b36c67",
+          "#d98e88",
+          "#ffb2ac",
+          "#ffd7d0"
+        ]
+      },
+      "blue": {
+        "role": "secondary",
+        "displayName": "Report Blue",
+        "canonical": "oklch(41.7% 0.093 258)",
+        "tonalRamp": [
+          "#000431",
+          "#032251",
+          "#214172",
+          "#3f6295",
+          "#6083ba",
+          "#81a7df",
+          "#a4cbff",
+          "#c9f1ff"
+        ]
+      },
+      "blue-soft": {
+        "role": "secondary",
+        "displayName": "Note Tint",
+        "canonical": "oklch(92.3% 0.016 257)",
+        "tonalRamp": [
+          "#070b12",
+          "#20252d",
+          "#3d424a",
+          "#5c626a",
+          "#7d838c",
+          "#9fa6af",
+          "#c3cad3",
+          "#e8eff9"
+        ]
+      },
+      "green-ink": {
+        "role": "tertiary",
+        "displayName": "Ledger Green",
+        "canonical": "oklch(46.7% 0.103 153)",
+        "tonalRamp": [
+          "#001500",
+          "#003207",
+          "#005126",
+          "#287244",
+          "#4d9464",
+          "#70b886",
+          "#94dda9",
+          "#b9ffce"
+        ]
+      },
+      "blue-line": {
+        "role": "secondary",
+        "displayName": "Note Underline",
+        "canonical": "oklch(75.3% 0.045 260)",
+        "tonalRamp": [
+          "#020a1e",
+          "#18253b",
+          "#34425a",
+          "#53627b",
+          "#73839e",
+          "#95a6c2",
+          "#b9cae7",
+          "#def0ff"
+        ]
+      },
+      "red-on-ink": {
+        "role": "primary",
+        "displayName": "Red on Ink",
+        "canonical": "oklch(70.8% 0.184 27)",
+        "tonalRamp": [
+          "#3c0000",
+          "#630000",
+          "#8a0000",
+          "#b21c1e",
+          "#db4841",
+          "#ff6e63",
+          "#ff9486",
+          "#ffbaaa"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "hero-figure": {
+        "displayName": "Hero Figure",
+        "purpose": "The home day-count input only."
+      },
+      "display": {
+        "displayName": "Display",
+        "purpose": "Page questions, page heads and guide titles."
+      },
+      "figure": {
+        "displayName": "Figure",
+        "purpose": "Report figures in the three-up band; calculator status words."
+      },
+      "count-figure": {
+        "displayName": "Count Figure",
+        "purpose": "Result counts, Saved chapter counts and the big condensed day and date numerals."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Chapter titles and guide section heads."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Guide list titles, calendar items, row titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Interface text; guide prose at 17.5px/1.7, 68ch."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase label naming the figure, table or list directly below."
+      },
+      "note-mark": {
+        "displayName": "Note Mark",
+        "purpose": "Superscript F-numbers linking a figure to its official quote."
+      }
+    },
+    "shadows": [
+      {
+        "name": "popover-lift",
+        "value": "0 14px 36px rgba(21, 21, 21, .14)",
+        "purpose": "Fact popover only; floats free of the page flow."
+      },
+      {
+        "name": "toast-lift",
+        "value": "0 10px 30px rgba(21, 21, 21, .18)",
+        "purpose": "Agent action toast only."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(.16, 1, .3, 1)",
+        "purpose": "The only easing; fast ease-out, no bounce."
+      },
+      {
+        "name": "state",
+        "value": "160ms",
+        "purpose": "Button, relay, field baseline and chip colour changes."
+      },
+      {
+        "name": "cell",
+        "value": "180ms",
+        "purpose": "Year grid cell colour change."
+      },
+      {
+        "name": "arrow",
+        "value": "200ms",
+        "purpose": "Figure link nudge, mobile sticky bar slide."
+      },
+      {
+        "name": "grid-fill",
+        "value": "staggered over max 260ms; 0ms under prefers-reduced-motion",
+        "purpose": "Year grid fills cell by cell as the day count changes."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "desktop-tight",
+        "value": "1100px"
+      },
+      {
+        "name": "stack",
+        "value": "900px"
+      },
+      {
+        "name": "phone",
+        "value": "600px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ink slab for the main action; turns signal red on hover.",
+      "html": "<button class=\"ds-btn\">Estimate your tax</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;height:46px;padding:0 20px;border:0;border-radius:0;background:var(--ink);color:var(--paper);font:650 15.5px/1 var(--font);cursor:pointer;transition:background-color .16s var(--ease)}.ds-btn:hover{background:var(--red)}.ds-btn:focus-visible{outline:2px solid var(--red);outline-offset:2px}"
+    },
+    {
+      "name": "Outline Button (Connect Claude)",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "1.5px ink outline; fills ink on hover; when on, the square status dot turns red.",
+      "html": "<button class=\"ds-relay\" aria-pressed=\"false\"><span class=\"ds-relay-dot\"></span>Connect Claude</button>",
+      "css": ".ds-relay{display:inline-flex;align-items:center;gap:9px;height:38px;padding:0 14px;border:1.5px solid var(--ink);border-radius:0;background:transparent;color:var(--ink);font:650 14px/1 var(--font);cursor:pointer;transition:background-color .16s var(--ease),color .16s var(--ease)}.ds-relay-dot{width:8px;height:8px;background:var(--rule)}.ds-relay:hover,.ds-relay[aria-pressed=true]{background:var(--ink);color:var(--paper)}.ds-relay[aria-pressed=true] .ds-relay-dot{background:var(--red)}.ds-relay:focus-visible{outline:2px solid var(--red);outline-offset:2px}"
+    },
+    {
+      "name": "Segmented Control",
+      "kind": "chip",
+      "refersTo": "segment-selected",
+      "description": "Calculator choices inside one ink outline; selected fills ink.",
+      "html": "<div class=\"ds-seg\"><button aria-pressed=\"true\">I know my days</button><button aria-pressed=\"false\">Count from my trips</button></div>",
+      "css": ".ds-seg{display:inline-flex;border:1.5px solid var(--ink)}.ds-seg button{border:0;background:none;padding:8px 14px;font:500 14.5px/1.3 var(--font);color:var(--ink-2);cursor:pointer}.ds-seg button+button{box-shadow:inset 1.5px 0 0 var(--ink)}.ds-seg button:hover{color:var(--ink);background:var(--paper-2)}.ds-seg button[aria-pressed=true]{background:var(--ink);color:var(--paper);font-weight:650}.ds-seg button:focus-visible{outline:2px solid var(--red);outline-offset:2px}"
+    },
+    {
+      "name": "Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Square 44px field on fresh sheet; red outline on focus.",
+      "html": "<label class=\"ds-field\"><span>Annual salary (NT$)</span><input value=\"3,000,000\"></label>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:6px;font-family:var(--font)}.ds-field span{font-size:14px;font-weight:650;color:var(--ink-2)}.ds-field input{height:44px;padding:0 12px;border:1.5px solid var(--ink-3);border-radius:0;background:var(--sheet);font:400 15.5px var(--font);color:var(--ink);font-variant-numeric:tabular-nums}.ds-field input:focus{outline:2px solid var(--red);outline-offset:1px;border-color:var(--ink)}"
+    },
+    {
+      "name": "Masthead Navigation",
+      "kind": "nav",
+      "refersTo": "",
+      "description": "Wordmark with red square, links with a 3px red underline on the 2px ink rule.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-brand\" href=\"#\">Ma<i></i></a><a href=\"#\" aria-current=\"page\">Tax</a><a href=\"#\">Calculator</a><a href=\"#\">Events</a></nav>",
+      "css": ".ds-nav{display:flex;align-items:stretch;gap:28px;height:64px;border-bottom:2px solid var(--ink);background:var(--paper);font-family:var(--font)}.ds-nav a{display:flex;align-items:center;font-size:15px;font-weight:500;color:var(--ink-2);text-decoration:none;border-bottom:3px solid transparent;margin-bottom:-2px}.ds-nav a:hover{color:var(--ink)}.ds-nav a[aria-current=page]{color:var(--ink);font-weight:650;border-bottom-color:var(--red)}.ds-nav .ds-brand{align-items:center;font-size:26px;font-weight:800;font-stretch:85%;letter-spacing:-.03em;color:var(--ink)}.ds-brand i{width:7px;height:7px;background:var(--red);margin:10px 0 0 2px}.ds-nav a:focus-visible{outline:2px solid var(--red);outline-offset:2px}"
+    },
+    {
+      "name": "Report Figure Band",
+      "kind": "card",
+      "refersTo": "figure-value",
+      "description": "Three figures under a 2px rule; red only for the reader's answer; blue F-number note marks.",
+      "html": "<div class=\"ds-figs\"><div><p class=\"l\">Your status for 2026</p><p class=\"v red\">Resident<button class=\"ds-note\">F1</button></p><p class=\"t\">Past 183 days, so you're taxed like a local.</p></div><div><p class=\"l\">Next on the tax calendar</p><p class=\"v\">In 7 days<button class=\"ds-note\">F63</button></p><p class=\"t\">Second refund batch</p></div><a class=\"lnk\" href=\"#\"><p class=\"v\">Estimate your tax</p><p class=\"t\">Uses your 295 days.</p></a></div>",
+      "css": ".ds-figs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 24px;border-top:2px solid var(--ink);font-family:var(--font)}.ds-figs>*{padding:14px 0 6px;color:var(--ink);text-decoration:none}.ds-figs p{margin:0}.ds-figs .l{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}.ds-figs .v{margin-top:6px;font-size:40px;line-height:1.05;font-weight:700;font-stretch:85%;letter-spacing:-.025em}.ds-figs .v.red{color:var(--red)}.ds-figs .t{margin-top:8px;max-width:38ch;font-size:15px;line-height:1.5;color:var(--ink-2)}.ds-figs .lnk:hover .v{color:var(--red)}.ds-note{margin-left:.3em;padding:0 2px;border:0;background:none;cursor:pointer;font:700 13px/1 var(--font);font-stretch:100%;color:var(--blue);vertical-align:top;position:relative;top:.25em;font-variant-numeric:tabular-nums}.ds-note:hover{text-decoration:underline}.ds-note:focus-visible{outline:2px solid var(--red);outline-offset:2px}"
+    },
+    {
+      "name": "Year Grid",
+      "kind": "custom",
+      "refersTo": "year-cell",
+      "description": "Signature: one cell per day, filled red in order; the 183rd cell outlined with an overshooting bar (shown here for two months).",
+      "html": "<div class=\"ds-yg\"><div class=\"r\"><span>Jun</span><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"void\"></i></div><div class=\"r\"><span>Jul</span><i class=\"on\"></i><i class=\"on line\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on future\"></i><i class=\"on future\"></i><i class=\"on future\"></i><i class=\"on future\"></i><i class=\"on future\"></i><i class=\"on future\"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>",
+      "css": ".ds-yg{display:grid;gap:4px;font-family:var(--font)}.ds-yg .r{display:grid;grid-template-columns:34px repeat(31,minmax(0,1fr));gap:3px;align-items:center}.ds-yg span{font-size:11.5px;font-weight:650;color:var(--ink-3)}.ds-yg i{display:block;height:18px;background:var(--cell);transition:background-color .18s var(--ease)}.ds-yg i.on{background:var(--red)}.ds-yg i.on.future{background:var(--red-wash)}.ds-yg i.void{background:transparent}.ds-yg i.line{position:relative;background:var(--ink)}.ds-yg i.line::before{content:'';position:absolute;left:-3px;top:-9px;bottom:-9px;width:3px;background:var(--red);box-shadow:0 0 0 1.5px var(--paper)}.ds-yg i:hover{outline:1px solid var(--ink)}"
+    },
+    {
+      "name": "Day-Grouped Agenda",
+      "kind": "custom",
+      "refersTo": "day-numeral",
+      "description": "Signature: dated lists grouped by day under a sticky big numeral, time-only rows, red TODAY slab, 4px-ruled month heading.",
+      "html": "<div class=\"ds-ag\"><div class=\"day\"><h3 class=\"dh\"><span class=\"d\">24</span><span class=\"w\">Saturday, October<span class=\"rel\">Today</span></span></h3><ol class=\"rows\"><li><a href=\"#\"><span class=\"t\">14:00</span><span class=\"m\"><span class=\"ty\">Workshop · Meetup</span><span class=\"ti\">Pottery for beginners, in English</span></span></a></li><li><a href=\"#\"><span class=\"t\">19:30</span><span class=\"m\"><span class=\"ty\">Music · Accupass</span><span class=\"ti\">Jazz night at Blue Note Taipei</span></span></a></li></ol></div><h3 class=\"mh\">November 2026</h3><div class=\"day\"><h3 class=\"dh\"><span class=\"d\">1</span><span class=\"w\">Sunday, November</span></h3><ol class=\"rows\"><li><a href=\"#\"><span class=\"t\">All day</span><span class=\"m\"><span class=\"ty\">Market · KKTIX</span><span class=\"ti\">Songshan creative park design market</span></span></a></li></ol></div></div>",
+      "css": ".ds-ag{font-family:var(--font);color:var(--ink)}.ds-ag .day{display:grid;grid-template-columns:148px minmax(0,1fr);gap:0 24px;border-top:2px solid var(--ink)}.ds-ag .day+.day{margin-top:28px}.ds-ag .dh{margin:0;padding-top:12px;display:flex;flex-direction:column;font-weight:400;position:sticky;top:0;align-self:start}.ds-ag .d{font-size:64px;line-height:.9;font-weight:800;font-stretch:75%;letter-spacing:-.04em;font-variant-numeric:tabular-nums}.ds-ag .w{margin-top:8px;font-size:14px;font-weight:650;color:var(--ink-2)}.ds-ag .rel{display:block;width:fit-content;margin-top:6px;padding:2px 7px;background:var(--red);color:var(--paper);font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}.ds-ag .mh{margin:48px 0 0;padding:10px 0 12px;border-top:4px solid var(--ink);font-size:30px;font-weight:700;font-stretch:85%;letter-spacing:-.02em;line-height:1.1}.ds-ag .rows{list-style:none;margin:0;padding:0}.ds-ag li{border-bottom:1px solid var(--rule)}.ds-ag a{display:grid;grid-template-columns:76px minmax(0,1fr);gap:20px;padding:16px 0;color:var(--ink);text-decoration:none}.ds-ag .t{font-size:19px;font-weight:700;font-stretch:88%;font-variant-numeric:tabular-nums}.ds-ag .m{display:flex;flex-direction:column;gap:5px}.ds-ag .ty{font-size:13.5px;font-weight:600;color:var(--ink-3)}.ds-ag .ti{font-size:18px;font-weight:650;line-height:1.3;transition:color .16s var(--ease)}.ds-ag a:hover .ti{color:var(--red-ink)}.ds-ag a:focus-visible{outline:2px solid var(--red);outline-offset:2px}"
+    },
+    {
+      "name": "Typographic Event Card",
+      "kind": "card",
+      "refersTo": "tag",
+      "description": "Ruled column, no illustration: the date figure is the face; tags and a square bookmark.",
+      "html": "<article class=\"ds-card\"><a href=\"#\"><span class=\"top\"><span class=\"dt\"><span class=\"w\">Sat</span><span class=\"d\">24</span><span class=\"w\">Oct</span></span><span class=\"tm\">14:00</span></span><span class=\"bd\"><span class=\"ty\">Workshop</span><span class=\"ti\">Pottery for beginners, in English</span><span class=\"tags\"><span class=\"tag free\">Free</span><span class=\"tag en\">English-friendly</span><span class=\"tag unknown\">Price not listed</span></span></span></a><button class=\"save\" aria-pressed=\"false\" aria-label=\"Save\"><svg viewBox=\"0 0 24 24\"><path d=\"M7 4h10v17l-5-4-5 4z\"/></svg></button></article>",
+      "css": ".ds-card{position:relative;max-width:300px;border-top:2px solid var(--ink);font-family:var(--font)}.ds-card a{display:flex;flex-direction:column;padding-top:12px;color:var(--ink);text-decoration:none}.ds-card .top{display:flex;align-items:flex-end;gap:14px;padding-right:48px}.ds-card .dt{display:flex;flex-direction:column;line-height:1}.ds-card .w{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}.ds-card .d{margin:4px 0 3px;font-size:52px;font-weight:800;font-stretch:75%;letter-spacing:-.04em;font-variant-numeric:tabular-nums}.ds-card .tm{padding-bottom:4px;font-size:17px;font-weight:700;font-stretch:88%;font-variant-numeric:tabular-nums}.ds-card .bd{display:flex;flex-direction:column;gap:7px;margin-top:12px;padding:14px 0 4px;border-top:1px solid var(--rule)}.ds-card .ty{font-size:13px;font-weight:650;color:var(--ink-3)}.ds-card .ti{font-size:18px;font-weight:650;line-height:1.3;transition:color .16s var(--ease)}.ds-card a:hover .ti{color:var(--red-ink)}.ds-card .tags{display:flex;flex-wrap:wrap;gap:6px}.ds-card .tag{padding:2px 7px;border:1px solid var(--rule);font-size:12.5px;font-weight:650;color:var(--ink-2)}.ds-card .tag.free{border-color:var(--ink);color:var(--ink)}.ds-card .tag.en{border-color:var(--blue);color:var(--blue)}.ds-card .tag.unknown{border-style:dashed;color:var(--ink-3);font-weight:500}.ds-card .save{position:absolute;top:12px;right:0;display:grid;place-items:center;width:36px;height:36px;border:1px solid var(--rule);background:var(--paper);color:var(--ink-2);cursor:pointer}.ds-card .save svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:miter}.ds-card .save:hover{border-color:var(--ink);color:var(--ink)}.ds-card .save[aria-pressed=true]{color:var(--red);border-color:var(--red)}.ds-card .save[aria-pressed=true] svg{fill:currentColor}.ds-card a:focus-visible,.ds-card .save:focus-visible{outline:2px solid var(--red);outline-offset:2px}"
+    },
+    {
+      "name": "Fact Popover",
+      "kind": "custom",
+      "refersTo": "fact-popover",
+      "description": "Signature: opened from a note mark; status, value, official quote, source and check date.",
+      "html": "<div class=\"ds-pop\"><p class=\"s\"><b>F1</b>Checked against the official text</p><p class=\"v\">183 days</p><p class=\"l\">Days in Taiwan in a calendar year that make you a tax resident</p><p class=\"q\">Official text (in Chinese)</p><blockquote lang=\"zh-Hant\">“…居住合計滿一百八十三天者。”</blockquote><p class=\"src\"><a href=\"#\">Ministry of Finance, Income Tax Act</a> · checked 15 Oct 2026</p></div>",
+      "css": ".ds-pop{width:min(420px,100%);padding:16px 18px 18px;background:var(--sheet);border:1.5px solid var(--ink);box-shadow:0 14px 36px rgba(21,21,21,.14);font-family:var(--font);color:var(--ink)}.ds-pop p{margin:0}.ds-pop .s{display:flex;gap:10px;margin-bottom:8px;font-size:12.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)}.ds-pop .s b{color:var(--blue);letter-spacing:.02em}.ds-pop .v{margin-bottom:4px;font-size:28px;font-weight:800;font-stretch:85%;letter-spacing:-.02em;line-height:1.1}.ds-pop .l{margin-bottom:8px;font-size:15px;color:var(--ink-2)}.ds-pop .q{margin:12px 0 4px;font-size:12.5px;font-weight:650;color:var(--ink-3)}.ds-pop blockquote{margin:0;padding:10px 12px;background:var(--paper-2);font-size:15px}.ds-pop .src{margin-top:10px;font-size:13.5px;color:var(--ink-3)}.ds-pop a{color:var(--ink);text-underline-offset:3px;text-decoration-color:var(--rule)}.ds-pop a:hover{color:var(--red-ink);text-decoration-color:currentColor}.ds-pop a:focus-visible{outline:2px solid var(--red);outline-offset:2px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Annual Report Grid",
+    "overview": "The tax year is typeset like a Swiss-school annual report. One strict 12-column grid, figures set at report scale in condensed heavy Archivo, and every number carries a small blue note mark (F1, F24, F63) that opens the official sentence it comes from. The page is a sheet of coated white paper printed in ink black, with one signal red overprinted only where the reader's answer, filled days, or current position is.\n\nStructure comes from rules, not containers. A 2px ink rule opens every chapter, figure band, fieldset and result block; 1px warm-grey hairlines separate rows inside them. There are no cards, no rounded corners and no tinted panels except two quiet callout washes. Density is report-like: generous vertical air between chapters (72px), tight leading inside figures, numbers sized to be read across a room.\n\nMotion is brief and mechanical: 160 to 220ms with a fast ease-out, never a bounce, never a scroll reveal. The one signature movement is the year grid filling cell by cell (staggered over at most 260ms, instant under reduced motion) as the day count changes.\n\nScope of this record: every route is composed in this world. Round 1 built the home page, tax hub (#/tax), guides (#/guide/*) and calculator (#/tax/calculator); round 2 rebuilt events, event detail, topics, topic, saved, search and about as an extension of the same system. On the event surfaces the date is the visual: no illustrations, a big condensed day numeral instead.",
+    "keyCharacteristics": [
+      "One 12-column grid with 24px gaps; chapters put the title in columns 1 to 3 and the content in 4 to 12.",
+      "Condensed heavy numerals with tabular figures for every quantity.",
+      "Every figure footnoted with a blue F-number that opens its official quote.",
+      "Flat paper and ink; division by 2px and 1px rules only.",
+      "One red, used as an overprint for answers, filled days and \"you are here\".",
+      "Dated lists read as an agenda: one big day numeral per day, time-only rows, a heavier rule at each month."
+    ],
+    "rules": [
+      {
+        "name": "The One Red Rule",
+        "body": "Red marks the reader's answer, filled days and current position. It is never a section ground, a decorative stripe or a brand wash. If red appears, it should be answering \"what about me, now?\".",
+        "section": "colors"
+      },
+      {
+        "name": "The Blue Is Provenance Rule",
+        "body": "Report blue appears only where a figure points back to its source or its verification. A blue element that does not trace to a fact (or language access) is misusing the colour.",
+        "section": "colors"
+      },
+      {
+        "name": "The Small Red Text Rule",
+        "body": "Text under 24px uses Press Red, never Signal Red.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "Every number a reader might compare (days, money, dates, rates, counts, F-numbers) is set with tabular numerals.",
+        "section": "typography"
+      },
+      {
+        "name": "The Width Axis Rule",
+        "body": "Hierarchy comes from width and weight together: the bigger the number, the narrower the face. Reading text never narrows.",
+        "section": "typography"
+      },
+      {
+        "name": "The Rules Not Boxes Rule",
+        "body": "Nothing in the page flow casts a shadow or sits in a filled card. Group with a 2px rule above; separate with 1px hairlines.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do open every chapter, figure band, fieldset and result block with a 2px ink rule, and divide rows with 1px warm-rule hairlines.",
+      "Do put a note mark on every tax figure and keep \"needs review\" and \"not checked\" states visible in red-ink and ink-3.",
+      "Do set every comparable number in tabular numerals, narrowing the width axis as the size grows (75% for the hero figure, 85% for figures, 88% for headlines).",
+      "Do keep red for the reader's answer, filled days and current position, and use Press Red for red text under 24px.",
+      "Do lay new surfaces on the 12-column grid with 24px gaps and minmax(0, 1fr) tracks.",
+      "Do keep transitions to 160 to 220ms with the fast ease-out, and make them instant under reduced motion.",
+      "Do group dated lists by day: a big condensed day numeral in a sticky heading, time-only rows beneath, and a 4px ink rule at each month change.",
+      "Do let the date be the visual on event surfaces; cards and detail are typographic.",
+      "Do put a list's filters in a sticky rail in columns 1 to 3 that collapses to a closed details panel under 900px.",
+      "Do write unknown values out in plain words, set in ink-3, with a dashed border when they appear as a tag.",
+      "Do draw icons as inline SVG line icons (1.8 stroke, square caps, mitred joins) and disclosure marks in CSS."
+    ],
+    "donts": [
+      "Don't round corners; every surface, field and mark is square.",
+      "Don't cast shadows on anything in the page flow; only the popover and the toast float. Inset strokes used as rules are fine.",
+      "Don't paint colour gradients. A linear-gradient used to draw a solid ink rule is a rule, not a gradient.",
+      "Don't wrap content in cards or icon tiles; group with rules. A cost, a summary or an empty state is ruled, not boxed.",
+      "Don't put generated illustrations, gradient art or image placeholders on event lists, cards or detail.",
+      "Don't use text glyphs (arrows, plus and minus signs) as icons or disclosure marks.",
+      "Don't use blue for anything that is not provenance, verification or language access.",
+      "Don't add small uppercase lines above headings; uppercase labels name the figure, table or list directly beneath them.",
+      "Don't use green anywhere except the calculator's savings line."
+    ]
+  }
+}

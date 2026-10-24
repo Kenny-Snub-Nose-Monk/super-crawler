@@ -1,22 +1,14 @@
-// 首頁：一句話說清楚這是什麼、搜尋、三個一眼就懂的數字，然後是這個週末、主題、稅務。
+// 首頁：一進來就問「今年在台灣待了幾天」，格子跟著填，馬上說出居住者與否。
+// 下面是今年的稅務時程與關鍵數字、指南，最後才是這個週末的活動。
 
-import { h, html, icon } from "../lib/dom.js";
+import { h, icon } from "../lib/dom.js";
 import { queryEvents } from "../query.js";
-import { taipeiParts, windows } from "../lib/time.js";
-import { heroLight } from "../lib/motifs.js";
-import { TOPICS } from "../lib/topics.js";
-import { isEnglishFriendly, isOnline, formatPrice } from "../lib/format.js";
-import { sectionHead, eventCard, eventRow, guideRow } from "./components.js";
-import { nextCalendarItem } from "./tax.js";
-
-const HINTS = [
-  ["calendar", "This weekend", "this weekend"],
-  ["chat", "Free & in English", "free english"],
-  ["scale", "Am I a tax resident?", "183 days resident"],
-  ["card", "Gold Card tax break", "gold card tax"],
-  ["mountain", "Climbing", "climbing"],
-  ["music", "Jazz tonight", "jazz tonight"],
-];
+import { taipeiParts, windows, addDays } from "../lib/time.js";
+import { isEnglishFriendly, isOnline, formatPrice, shortDate } from "../lib/format.js";
+import { residency, resolveParams } from "../lib/tax.js";
+import { eventRow, guideRow } from "./components.js";
+import { nextCalendarItem, calendarList, keyFigures } from "./tax.js";
+import { yearGrid, dayOfYear, factMark, chapter, figure } from "./report.js";
 
 /** 給「精選」用的分數：英文友善、實體、資訊完整的排前面。沒有熱門度資料，所以不叫「最熱門」。 */
 export function pickScore(ev) {
@@ -47,109 +39,114 @@ export function weekendPicks(events, now = new Date(), limit = 6) {
   return { label, total: upcoming.length, events: ranked.slice(0, limit), window: label === "This weekend" ? w.weekend : w.next7 };
 }
 
-function glanceItem({ href, iconName, tint, num, label }) {
-  return h("a", { class: "glance-item", href },
-    h("span", { class: `glance-icon tint-${tint}` }, icon(iconName)),
-    h("div", null, h("div", { class: "glance-num" }, num), h("div", { class: "glance-label" }, label)));
+/** 天數 → 首頁的身分說明。今年還沒過完，所以要說「還差幾天、待到哪天就夠」。 */
+export function statusFor(days, { year, todayYmd, P, total }) {
+  const res = residency(days, P);
+  const line = P.residency_days.value;
+  const left = Math.max(0, total - dayOfYear(todayYmd));
+  if (res.resident) {
+    return { word: "Resident", tone: "red", text: `Past ${line} days, so you're taxed like a local: progressive rates on net income, and you file each May.` };
+  }
+  const need = line - res.days;
+  if (need <= left) {
+    const by = addDays(todayYmd, need);
+    return { word: "Not yet", tone: null, text: `${need} more days in Taiwan makes you a resident for ${year}. Staying without a break, that's ${shortDate(`${by}T12:00:00+08:00`)}.` };
+  }
+  return { word: "Non-resident", tone: null, text: `Fewer than ${line} days are possible in ${year} now. Your Taiwan salary is taxed by flat withholding.` };
 }
 
-export function render({ state }) {
+export function render({ state, params }) {
   const now = new Date();
   const t = taipeiParts(now);
-  const w = windows(now);
-  const dateLine = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Taipei", weekday: "long", day: "numeric", month: "long" }).format(now);
+  const tax = state.content.tax;
+  const year = Number(t.ymd.slice(0, 4));
+  const P = resolveParams(tax, year);
+  const grid = yearGrid({ year, todayYmd: t.ymd, line: P.residency_days.value });
 
-  // --- 主視覺 ---
-  const input = h("input", { type: "search", name: "q", placeholder: "Search events and tax", "aria-label": "Search", autocomplete: "off", enterkeyhint: "search" });
-  const form = h("form", { class: "searchbar", role: "search" }, icon("search"), input, h("button", { type: "submit" }, "Search"));
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    window.site.navigate("/search", { q: input.value.trim() });
+  // 預設：從 1 月 1 日起每天都在（入境當天不算，所以是今天是第幾天減一）
+  const elapsed = Math.max(0, dayOfYear(t.ymd) - 1);
+  const fromUrl = params.get("days");
+  const start = fromUrl !== null && fromUrl !== "" ? Math.max(0, Number(fromUrl) || 0) : elapsed;
+
+  const input = h("input", {
+    id: "days", class: "days-input", type: "number", inputmode: "numeric", min: "0", max: String(grid.total),
+    value: String(start), "aria-describedby": "days-hint",
   });
-  const hero = h("section", { class: "hero" },
-    html("div", { class: "hero-light", "aria-hidden": "true" }, heroLight()),
-    h("div", { class: "hero-inner" },
-      h("p", { class: "hero-date" }, `${dateLine} · Taipei`),
-      h("h1", null, "Life in Taipei,", h("br"), "made clear."),
-      h("p", { class: "hero-sub" }, "What's on this week — in English where possible — and straight answers on tax for people who just moved here."),
-      form,
-      h("div", { class: "hints" }, HINTS.map(([ic, label, q]) =>
-        h("a", { class: "hint", href: `#/search?q=${encodeURIComponent(q)}` }, icon(ic), label)))));
+  const unit = h("span", { class: "days-unit" });
+  const sizer = h("span", { class: "days-input days-sizer", "aria-hidden": "true" });
+  const hint = h("p", { class: "days-hint", id: "days-hint" });
 
-  // --- 一眼看完：三個數字 ---
-  const picks = weekendPicks(state.events, now);
-  const weekendWord = picks.label === "This weekend" ? "this weekend" : "in the next 7 days";
-  const englishCount = queryEvents(state.events, { start_after: picks.window.start, start_before: picks.window.end, tags: ["lang:en"] }, now.getTime())
-    .filter((e) => e.status === "upcoming").length;
-  const next = nextCalendarItem(state.content.tax.calendar, t.ymd);
-  // 週末不夠三場時改成「接下來七天」—— 連結也要跟著換，不能連到一個空的搜尋
+  const statusSlot = h("div", { class: "fig" });
+  const estimateLink = h("a", { class: "fig link" });
+
+  const paint = (days, { sync = true } = {}) => {
+    const d = Math.max(0, Math.min(grid.total, Math.floor(Number(days) || 0)));
+    grid.update(d);
+    // 欄寬跟著數字的實際寬度走，「days」才會緊貼在數字後面（用同字型的影子量）
+    sizer.textContent = String(input.value || d);
+    if (sizer.offsetWidth) input.style.width = `${sizer.offsetWidth + 6}px`;
+    unit.textContent = d === 1 ? "day" : "days";
+    hint.textContent = String(d) === String(elapsed) && fromUrl === null
+      ? "Filled in as if you've been here since 1 January. Change it to your own count."
+      : "Arrival days don't count; departure days do.";
+    const s = statusFor(d, { year, todayYmd: t.ymd, P, total: grid.total });
+    statusSlot.replaceChildren(
+      h("p", { class: "fig-l" }, `Your status for ${year}`),
+      h("p", { class: `fig-v${s.tone ? ` ${s.tone}` : ""}` }, s.word, factMark("residency_days", state)),
+      h("p", { class: "fig-t" }, s.text));
+    estimateLink.href = `#/tax/calculator?year=${year}&days=${d}`;
+    estimateLink.replaceChildren(
+      h("p", { class: "fig-v" }, "Estimate your tax", h("span", { class: "arrow" }, icon("arrow"))),
+      h("p", { class: "fig-t" }, `Uses your ${d} days. Every line shows the official source it comes from.`));
+    if (sync) window.site.navigate("/", { days: d }, { replace: true, render: false });
+  };
+  input.addEventListener("input", () => paint(input.value));
+
+  const next = nextCalendarItem(tax.calendar, t.ymd);
+  const deadline = next
+    ? h("div", { class: "fig" },
+      h("p", { class: "fig-l" }, "Next on the tax calendar"),
+      h("p", { class: "fig-v" }, next.whenLabel, next.item.fact ? factMark(next.item.fact, state) : null),
+      h("p", { class: "fig-t" }, next.item.title))
+    : figure({ label: "Next on the tax calendar", value: "Nothing due", text: "The calendar for next year appears once it's announced." });
+
+  const ask = h("section", { class: "wrap ask" },
+    h("div", { class: "ask-q" },
+      h("label", { for: "days" }, h("h1", null, `How many days have you been in Taiwan in ${year}?`)),
+      h("div", { class: "days-field" }, input, unit, sizer),
+      hint,
+      h("p", { class: "days-alt" }, "Not sure? ", h("a", { href: `#/tax/calculator?year=${year}&mode=trips` }, "Count from your trips instead"), ": add each arrival and departure and we'll do the counting.")),
+    h("div", { class: "ask-grid" }, grid.el),
+    h("div", { class: "figs" }, statusSlot, deadline, estimateLink));
+
+  paint(start, { sync: false });
+
+  // --- 今年的稅務 ---
+  const year2 = chapter(`Tax year ${year}`,
+    h("div", { class: "split" },
+      h("div", null, h("h3", { class: "sub-h" }, "Calendar"), calendarList(tax.calendar, t.ymd, { facts: state.facts }, { compact: true })),
+      h("div", null, h("h3", { class: "sub-h" }, "Key figures"), keyFigures(state, year))),
+    { aside: h("p", { class: "chapter-note" }, `Figures re-read from official pages every Thursday. Last check ${shortDate(tax.checked_at)}.`) });
+
+  // --- 指南 ---
+  const taxGuides = state.guides.filter((g) => g.kind === "tax");
+  const guides = chapter("Guides",
+    h("ol", { class: "guide-list" }, taxGuides.map((g, i) => guideRow(g, i + 1, { start: g.start_here }))),
+    { aside: h("a", { class: "chapter-link", href: "#/tax" }, "Tax overview", icon("arrow")) });
+
+  // --- 這個週末 ---
+  const picks = weekendPicks(state.events, now, 5);
   const allHref = picks.label === "This weekend"
     ? `#/search?q=${encodeURIComponent("this weekend")}`
     : `#/events?start_after=${picks.window.start.slice(0, 10)}&start_before=${picks.window.end.slice(0, 10)}&exclude_online=1`;
-  const glance = h("div", { class: "wrap" }, h("div", { class: "glance-strip" },
-    glanceItem({ href: allHref, iconName: "calendar", tint: "sun", num: String(picks.total), label: `events ${weekendWord}` }),
-    glanceItem({
-      href: `#/search?q=${encodeURIComponent(picks.label === "This weekend" ? "english this weekend" : "english")}`,
-      iconName: "chat", tint: "sky", num: String(englishCount), label: `English-friendly ${weekendWord}`,
-    }),
-    glanceItem({
-      href: "#/tax", iconName: "file", tint: "leaf",
-      num: next ? next.whenLabel : "Nothing due",
-      label: next ? next.item.title : "Tax calendar",
-    })));
-
-  // --- 這個週末 ---
-  const weekend = h("section", { class: "wrap section" },
-    sectionHead(picks.label, { href: allHref, more: `See all ${picks.total}` }),
-    picks.events.length ? h("div", { class: "cards three" }, picks.events.map((ev) => eventCard(ev, { now: now.getTime() })))
-      : h("p", { class: "muted" }, "Nothing listed yet — the next crawl runs on Thursday night."));
-
-  // --- 主題 ---
-  const topicCounts = TOPICS.map((tp) => queryEvents(state.events, { types: tp.types, start_before: w.next30.end }, now.getTime()).length);
-  const topics = h("section", { class: "wrap section" },
-    sectionHead("Browse by topic", { href: "#/topics", more: "All topics" }),
-    h("div", { class: "topics" }, TOPICS.map((tp, i) =>
-      h("a", { class: "topic", href: `#/topic/${tp.id}` },
-        h("span", { class: `topic-icon tint-${tp.tint}` }, icon(tp.icon)),
-        h("span", { class: "topic-name" }, tp.name),
-        h("span", { class: "topic-count" }, `${topicCounts[i]} in the next 30 days`)))));
-
-  // --- 稅務 ---
-  const taxGuides = state.guides.filter((g) => g.kind === "tax");
-  const verified = Object.values(state.facts).filter((f) => f.status === "verified").length;
-  const taxSection = h("section", { class: "wrap section" },
-    sectionHead("Tax, made clear", { href: "#/tax", more: "Tax overview" }),
-    h("p", { class: "section-sub" }, "Plain-English guides for foreign professionals. Every figure links to the official sentence behind it."),
-    h("div", { class: "tax-grid" },
-      h("ol", { class: "guide-list" }, taxGuides.map((g, i) => guideRow(g, i + 1, { start: g.start_here }))),
-      h("div", { style: "display:grid;gap:16px" },
-        h("a", { class: "tool-card", href: "#/tax/calculator" },
-          h("div", null,
-            h("h3", null, "Estimate your tax"),
-            h("p", null, "Residency first, then the numbers. Takes about a minute.")),
-          h("span", { class: "tool-icon" }, icon("calculator"))),
-        h("div", { class: "notice" },
-          h("span", { class: "glance-icon tint-leaf" }, icon("checkCircle")),
-          h("div", null,
-            h("h3", null, `${verified} figures checked this week`),
-            h("p", null, "Rates, thresholds and deadlines are re-read from official pages every Thursday.")),
-          null))));
-
-  // --- 這週新抓到的 ---
-  const fresh = state.events
-    .filter((e) => e.status === "upcoming" && e.first_seen && now - Date.parse(e.first_seen) < 7 * 86400000)
-    .sort((a, b) => pickScore(b) - pickScore(a))
-    .slice(0, 5);
-  const freshSection = fresh.length ? h("section", { class: "wrap section" },
-    sectionHead("Just found", { href: "#/events?new=1", more: "Everything new" }),
-    h("p", { class: "section-sub" }, "Added by this week's crawl."),
-    h("ol", { class: "rows" }, fresh.map((ev) => eventRow(ev, { now: now.getTime() })))) : null;
-
   const life = state.guides.find((g) => g.kind === "life");
-  const lifeSection = life ? h("section", { class: "wrap section" },
-    sectionHead("Finding your people"),
-    h("ol", { class: "guide-list" }, guideRow(life, 1))) : null;
+  const weekend = chapter(picks.label,
+    picks.events.length ? h("ol", { class: "rows" }, picks.events.map((ev) => eventRow(ev, { now: now.getTime() })))
+      : h("p", { class: "muted" }, "Nothing listed yet. The next crawl runs on Thursday night."),
+    { aside: h("div", null,
+      h("p", { class: "chapter-note" }, `${picks.total} events in Taipei and New Taipei, collected from public listings.`),
+      h("a", { class: "chapter-link", href: allHref }, `See all ${picks.total}`, icon("arrow")),
+      life ? h("a", { class: "chapter-link", href: `#/guide/${life.slug}` }, life.title, icon("arrow")) : null) });
 
-  const page = h("div", null, hero, glance, weekend, topics, taxSection, freshSection, lifeSection);
-  return { title: null, node: page };
+  return { title: null, node: h("div", { class: "home" }, ask, year2, guides, weekend), after: () => paint(input.value, { sync: false }) };
 }

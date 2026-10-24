@@ -5,7 +5,7 @@ import { h, icon, dateInput } from "../lib/dom.js";
 import { estimate, residency, countDays, resolveParams, latestArrivalForResidency } from "../lib/tax.js";
 import { taipeiParts } from "../lib/time.js";
 import { money, pct, shortDate } from "../lib/format.js";
-import { factTitle } from "../lib/guides.js";
+import { yearGrid, factMark } from "./report.js";
 
 const NUM_FIELDS = ["days", "salary", "months", "foreignPay", "otherIncome", "dependents", "minors", "elderly", "rent", "itemized", "overseasIncome"];
 const BOOL_FIELDS = ["married", "specialTalent", "leavingForGood"];
@@ -55,7 +55,19 @@ export function render({ params, state, fromAgent }) {
   const input = inputFromParams(params, taxData);
   const years = Object.keys(taxData.params.years).map(Number).sort();
 
-  const resultBox = h("div", { class: "result", "aria-live": "polite" });
+  const resultBox = h("div", { class: "result", id: "result", "aria-live": "polite" });
+  // 手機上結果在整張表單下面：打字時底部常駐一行，看得到天數、身分、稅額
+  const stickyDays = h("span", { class: "cs-days" });
+  const stickyWord = h("span", { class: "cs-word" });
+  const stickyTax = h("span", { class: "cs-tax" });
+  const sticky = h("a", { class: "calc-sticky", href: "#result", onclick: (e) => { e.preventDefault(); resultBox.scrollIntoView({ behavior: "smooth", block: "start" }); } },
+    stickyDays, stickyWord, stickyTax);
+  // 格子只在換年度時重建，數字變動時才會一格一格填
+  let grid = null;
+  const gridFor = (year) => {
+    if (!grid || grid.year !== year) grid = { year, ...yearGrid({ year, todayYmd: taipeiParts().ymd, compact: true }) };
+    return grid;
+  };
 
   // 第 4 步每個欄位下面的一行：這個欄位讓稅額變了多少，沒變的話為什麼
   const effectSlots = {};
@@ -65,7 +77,11 @@ export function render({ params, state, fromAgent }) {
     const P = resolveParams(taxData, input.year);
     const d = effectiveDays(input);
     const r = estimate({ ...input, days: d.days }, P);
-    paintResult(resultBox, r, P, d, input, state);
+    paintResult(resultBox, r, P, d, input, state, gridFor(r.year));
+    stickyDays.textContent = `${r.residency.days} days`;
+    stickyWord.textContent = r.residency.resident ? "Resident" : "Non-resident";
+    stickyWord.classList.toggle("resident", r.residency.resident);
+    stickyTax.textContent = r.grossIncome ? money(r.total) : "Add income";
     paintEffects(effectSlots, r, P, { ...input, days: d.days });
     if (syncUrl) window.site.navigate("/tax/calculator", paramsFromInput(input), { replace: true, render: false });
   };
@@ -115,7 +131,7 @@ export function render({ params, state, fromAgent }) {
         input.stays.length > 1 ? rm : h("span")));
     });
   };
-  const addStay = h("button", { type: "button", class: "linkish" }, "+ Add another stay");
+  const addStay = h("button", { type: "button", class: "linkish" }, icon("plus"), "Add another stay");
   addStay.addEventListener("click", () => { input.stays.push({ arrive: "", depart: null }); paintStays(); });
   const tripsBox = h("div", null, staysList, addStay,
     h("p", { class: "hint-text" }, "One row per stay. Trips abroad split a stay into two rows."));
@@ -157,18 +173,24 @@ export function render({ params, state, fromAgent }) {
         check("leavingForGood", "I am leaving Taiwan for good this year", "Exemptions and deductions shrink with your days here. Enter your actual days above.", { effect: true }))),
     h("p", { class: "muted", style: "font-size:14px;margin:4px 4px 0" },
       "An estimate, not tax advice. It doesn't cover itemized deductions in detail, joint filing with a working spouse, or foreign tax credits. ",
-      h("a", { href: "https://www.etax.nat.gov.tw/etwmain/etw158w/1502", target: "_blank", rel: "noopener" }, "MOF's official calculator ↗")));
+      h("a", { href: "https://www.etax.nat.gov.tw/etwmain/etw158w/1502", target: "_blank", rel: "noopener" }, "MOF's official calculator", icon("external"))));
 
   showMode();
   update({ syncUrl: false });
 
   const head = h("header", { class: "wrap page-head" },
-    h("p", { class: "crumbs", style: "margin-bottom:12px" }, h("a", { href: "#/tax" }, "Tax"), " / Calculator"),
+    h("p", { class: "crumbs" }, h("a", { href: "#/tax" }, "Tax"), " / Calculator"),
     h("h1", null, "Am I a resident — and what will I owe?"),
     h("p", { class: "lede" }, "Taiwan's official calculator assumes you already know whether you're a resident. This one starts there: count your days, then see the tax under the rules that actually apply to you."),
     fromAgent ? h("p", { class: "agent-banner" }, "Filled in by your AI assistant — change anything to recalculate") : null);
 
-  return { title: "Tax calculator", node: h("div", null, head, h("div", { class: "wrap calc" }, form, resultBox)) };
+  // 結果已經在畫面上時，底部那一行就收起來
+  const after = () => {
+    if (!("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(([en]) => sticky.classList.toggle("away", en.isIntersecting), { threshold: 0.05 });
+    io.observe(resultBox);
+  };
+  return { title: "Tax calculator", node: h("div", null, head, h("div", { class: "wrap calc" }, form, resultBox), sticky), after };
 }
 
 const EFFECT_FIELDS = { rent: 0, overseasIncome: 0, specialTalent: false, leavingForGood: false };
@@ -184,14 +206,14 @@ function paintEffects(slots, r, P, input) {
     slot.hidden = false;
     if (delta < 0) {
       slot.className = "effect saves";
-      slot.replaceChildren(icon("check"), h("span", null, `Lowers your tax by ${money(-delta)}.`));
+      slot.replaceChildren(h("span", null, `Lowers your tax by ${money(-delta)}.`));
     } else if (delta > 0) {
       slot.className = "effect adds";
-      slot.replaceChildren(icon("info"), h("span", null, `Adds ${money(delta)} to your tax.`));
+      slot.replaceChildren(h("span", null, `Adds ${money(delta)} to your tax.`));
     } else {
       slot.className = "effect none";
       const reason = (r.effects && r.effects[key]) || "Makes no difference with your other numbers.";
-      slot.replaceChildren(icon("info"), h("span", null, `No change. ${reason}`));
+      slot.replaceChildren(h("span", null, `No change. ${reason}`));
     }
   }
 }
@@ -200,14 +222,9 @@ function factIdFor(key, P) {
   return (P[key] && P[key].fact) || key;
 }
 
-function paintResult(box, r, P, d, input, state) {
+function paintResult(box, r, P, d, input, state, grid) {
   const res = r.residency;
-  const yearDays = 365;
-  const pctDays = Math.min(100, (res.days / yearDays) * 100);
-  const bar = h("div", { class: `days-bar${res.resident ? " resident" : ""}`, "aria-hidden": "true" },
-    h("div", { class: "fill", style: `width:${pctDays}%` }),
-    h("div", { class: "mark", style: `left:${(90 / yearDays) * 100}%` }, h("span", null, "90 days")),
-    h("div", { class: "mark", style: `left:${(183 / yearDays) * 100}%` }, h("span", null, "183 days")));
+  grid.update(res.days);
 
   let statusText;
   if (res.resident) statusText = "You're taxed like a local: progressive rates on net income, with exemptions and deductions. You file every May.";
@@ -215,43 +232,37 @@ function paintResult(box, r, P, d, input, state) {
   else statusText = "Your Taiwan salary is taxed by flat withholding. Pay from an overseas employer for work here isn't taxed at 90 days or fewer.";
   const latest = latestArrivalForResidency(input.year, P);
 
-  const statusCard = h("div", { class: "result-card" },
-    h("p", { class: "eyebrow" }, "Step 1 · Your status"),
-    h("span", { class: `status-chip ${res.resident ? "resident" : "nonresident"}` },
-      icon(res.resident ? "checkCircle" : "plane"), res.resident ? "Tax resident" : "Non-resident"),
+  const statusCard = h("section", { class: "result-card" },
+    h("h2", { class: "result-h" }, h("span", { class: "step-num" }, "A"), "Your status"),
+    h("p", { class: `status-word${res.resident ? " resident" : ""}` }, res.resident ? "Tax resident" : "Non-resident", factMark("residency_days", state)),
     h("p", { class: "status-line" }, h("strong", null, `${res.days} days`), ` in ${r.year}${d.counted != null ? ` (${d.counted} so far)` : ""}. `, statusText),
-    bar,
-    !res.resident ? h("p", { class: "hint-text", style: "margin:0" }, `${res.toResident} more days would make you a resident. Arriving by ${shortDate(`${latest}T00:00:00+08:00`)} and staying would do it.`) : null);
+    grid.el,
+    !res.resident ? h("p", { class: "hint-text" }, `${res.toResident} more days would make you a resident. Arriving by ${shortDate(`${latest}T00:00:00+08:00`)} and staying would do it.`) : null);
 
   const rows = r.lines.map((l) => {
     const fid = l.fact ? factIdFor(l.fact, P) : null;
-    const fact = fid ? state.facts[fid] : null;
-    const cite = fact ? h("a", {
-      class: "cite", href: (fact.sources[0] || {}).url || "#", target: "_blank", rel: "noopener",
-      title: factTitle(fact), "aria-label": `Source: ${factTitle(fact)}`,
-    }, fact.status === "verified" ? "✓" : "?") : null;
     return h("tr", { class: l.kind === "total" ? "total" : l.kind === "subtotal" ? "subtotal" : null },
-      h("td", null, l.label, cite),
+      h("td", null, l.label, fid ? factMark(fid, state) : null),
       h("td", null, l.kind === "deduction" ? `− ${money(-l.amount)}` : money(l.amount)));
   });
 
   if (!r.grossIncome) {
-    box.replaceChildren(statusCard, h("div", { class: "result-card" },
-      h("p", { class: "eyebrow" }, "Step 2 · Estimated tax"),
-      h("p", { style: "margin:6px 0 0;color:var(--ink-2)" }, "Add your salary (or other income) to see the tax for this status.")));
+    box.replaceChildren(statusCard, h("section", { class: "result-card" },
+      h("h2", { class: "result-h" }, h("span", { class: "step-num" }, "B"), "Estimated tax"),
+      h("p", { class: "status-line" }, "Add your salary (or other income) to see the tax for this status.")));
     return;
   }
-  const resultCard = h("div", { class: "result-card lit" },
-    h("p", { class: "eyebrow" }, `Step 2 · Estimated tax for ${r.year}`),
+  const resultCard = h("section", { class: "result-card" },
+    h("h2", { class: "result-h" }, h("span", { class: "step-num" }, "B"), `Estimated tax for ${r.year}`),
     h("p", { class: "big-number" }, money(r.total)),
-    h("div", { class: "rate-chips" },
-      h("span", { class: "tag" }, `${pct(r.effectiveRate, 1)} of income`),
-      h("span", { class: "tag" }, r.regime === "progressive" ? `Top bracket ${Math.round(r.marginalRate * 100)}%` : "Flat withholding")),
+    h("p", { class: "rate-line" },
+      h("span", null, `${pct(r.effectiveRate, 1)} of income`),
+      h("span", null, r.regime === "progressive" ? `Top bracket ${Math.round(r.marginalRate * 100)}%` : "Flat withholding")),
     h("table", { class: "breakdown" }, h("tbody", null, rows)),
-    h("p", { class: "file-line" }, icon("file"),
-      h("span", null, h("strong", null, r.mustFile ? "You file a return. " : "No return needed. "), r.deadline ? `Deadline: ${r.deadline}.` : "")),
-    r.notes.length ? h("ul", { class: "notes" }, r.notes.map((n) => h("li", null, icon("info"), h("span", null, n)))) : null,
-    h("p", { class: "muted", style: "font-size:13px;margin:14px 0 0" }, "✓ = checked against the official text this week. Hover or tap for the source."));
+    h("p", { class: "file-line" },
+      h("strong", null, r.mustFile ? "You file a return. " : "No return needed. "), r.deadline ? `Deadline: ${r.deadline}.` : ""),
+    r.notes.length ? h("ul", { class: "notes" }, r.notes.map((n) => h("li", null, n))) : null,
+    h("p", { class: "hint-text" }, "F-numbers are the official figures behind each line. Press one to read the source sentence. A figure marked “needs review” changed on the official page and waits for a person to re-check it."));
 
   box.replaceChildren(statusCard, resultCard);
 }

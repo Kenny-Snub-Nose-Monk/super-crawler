@@ -3,12 +3,12 @@
 // 文章裡的每一個稅務數字都可以點：會打開一張小卡，寫著這個數字出自哪份官方文件、
 // 哪天核對過，以及那一句官方原文。讀者不必相信我們，可以直接看原文。
 
-import { h, html, frag, icon } from "../lib/dom.js";
+import { h, frag } from "../lib/dom.js";
 import { inline } from "../lib/guides.js";
 import { queryEvents } from "../query.js";
 import { windows } from "../lib/time.js";
-import { shortDate, plural, publisherEn, sourceTitle, sourceLabelLine } from "../lib/format.js";
-import { motif } from "../lib/motifs.js";
+import { shortDate, plural, sourceTitle, sourceLabelLine } from "../lib/format.js";
+import { showFact } from "./report.js";
 import { eventRow, factCard, calcBlock, guideRow, saveButton, emptyState } from "./components.js";
 
 const PROMPTS = {
@@ -21,44 +21,7 @@ const PROMPTS = {
   "english-friendly-taipei": ["Find English-friendly events this weekend in Taipei.", "Are there language exchanges on Wednesday evenings?"],
 };
 
-const CALLOUT_ICONS = { tip: "bulb", warn: "alert", law: "scale", note: "info" };
-
-let popover = null;
-
-function closePopover() {
-  if (popover) { popover.remove(); popover = null; }
-}
-
-function showFact(fid, anchor, state) {
-  closePopover();
-  const fact = state.facts[fid];
-  if (!fact) return;
-  const quote = fact.quotes && fact.quotes[0];
-  const src = fact.sources.find((s) => quote && s.id === quote.source) || fact.sources[0];
-  popover = h("div", { class: "fact-pop", role: "dialog", "aria-label": fact.label },
-    h("p", { class: "eyebrow" }, fact.status === "verified" ? "Checked against the official text" : fact.status === "drifted" ? "Under review — the official page changed" : "Not automatically checked"),
-    h("p", { class: "fact-pop-v" }, fact.display),
-    h("p", { class: "fact-pop-l" }, fact.label),
-    fact.note ? h("p", { class: "fact-pop-note" }, fact.note) : null,
-    quote ? h("p", { class: "quote-label" }, /[一-鿿]/.test(quote.quote) ? "Official text (in Chinese)" : "Official text") : null,
-    quote ? h("blockquote", { lang: /[一-鿿]/.test(quote.quote) ? "zh-Hant" : "en" }, `“${quote.quote}”`) : null,
-    src ? h("p", { class: "fact-pop-src" },
-      h("a", { href: src.url, target: "_blank", rel: "noopener", title: src.title }, `${publisherEn(src.publisher)} — ${sourceTitle(src)} ↗`),
-      fact.checked_at ? h("span", null, ` · checked ${shortDate(fact.checked_at)}`) : null) : null);
-  document.body.append(popover);
-  const r = anchor.getBoundingClientRect();
-  const top = window.scrollY + r.bottom + 10;
-  const left = Math.min(Math.max(16, window.scrollX + r.left - 20), window.scrollX + document.documentElement.clientWidth - popover.offsetWidth - 16);
-  popover.style.top = `${top}px`;
-  popover.style.left = `${left}px`;
-}
-
-// 一個全域的監聽就好：點小卡以外、也不是點另一個數字時關掉
-document.addEventListener("click", (e) => {
-  if (popover && !popover.contains(e.target) && !e.target.closest("[data-fact]")) closePopover();
-});
-document.addEventListener("keydown", (e) => { if (e.key === "Escape") closePopover(); });
-window.addEventListener("hashchange", closePopover);
+const CALLOUT_LABELS = { tip: "Tip", warn: "Watch out", law: "The law", note: "Note" };
 
 function liveStats(keys, state) {
   const w = windows();
@@ -81,7 +44,7 @@ function eventsBlock(spec, state) {
     types: spec.types, tags: spec.tags, start_after: w.start, start_before: w.end, exclude_online: spec.exclude_online,
   }).filter((e) => e.status === "upcoming").slice(0, spec.limit || 4);
   return h("div", { style: "margin:20px 0 26px" },
-    spec.title ? h("p", { class: "eyebrow" }, spec.title) : null,
+    spec.title ? h("h3", { class: "sub-h" }, spec.title) : null,
     rows.length ? h("ol", { class: "rows" }, rows.map((ev) => eventRow(ev))) : emptyState("Nothing listed in this window right now."));
 }
 
@@ -91,12 +54,26 @@ function block(b, ctx, state) {
   if (b.steps) return h("ol", { class: "steps" }, b.steps.map((s) => h("li", null, h("span", { class: "t" }, s.title), inline(s.text || "", ctx))));
   if (b.callout) {
     const kind = b.callout.kind || "tip";
-    return h("div", { class: `callout ${kind}` }, icon(CALLOUT_ICONS[kind] || "info"),
+    return h("div", { class: `callout ${kind}` }, h("span", { class: "callout-kind" }, CALLOUT_LABELS[kind] || "Note"),
       h("div", null,
         b.callout.title ? h("p", { class: "callout-title" }, b.callout.title) : null,
         h("p", null, inline(b.callout.text || "", ctx))));
   }
-  if (b.stats) return h("div", { class: "stats" }, b.stats.map((s) => h("div", { class: "stat" }, h("div", { class: "v" }, inline(String(s.value), ctx)), h("div", { class: "l" }, s.label))));
+  if (b.stats) {
+    // 數字是整句（「NT$100 at a service station」）時，數字留在數字的位置，後半句移到說明
+    return h("div", { class: "stats" }, b.stats.map((s) => {
+      const v = h("div", { class: "v" }, inline(String(s.value), ctx));
+      let rest = "";
+      const m = v.textContent.match(/^(\S*\d\S*)\s+(.+)$/);
+      const fact = v.querySelector(".fact");
+      if (m && v.textContent.length > 14) {
+        if (fact && fact.textContent === v.textContent) fact.textContent = m[1];
+        else v.textContent = m[1];
+        rest = m[2];
+      }
+      return h("div", { class: "stat" }, v, h("div", { class: "l" }, rest ? `${s.label}, ${rest}` : s.label));
+    }));
+  }
   if (b.table) {
     return h("div", { class: "table-wrap" }, h("table", { class: "g-table" },
       h("thead", null, h("tr", null, b.table.head.map((c) => h("th", { scope: "col" }, inline(c, ctx))))),
@@ -139,26 +116,23 @@ export function render({ args, params, state, fromAgent }) {
     if (el) { e.stopPropagation(); showFact(el.dataset.fact, el, state); }
   }, true);
 
-  const hero = h("header", { class: "band" },
-    h("div", { class: "wrap guide-hero" },
-      h("div", null,
-        h("p", { class: "crumbs", style: "margin-bottom:12px" },
-          g.kind === "tax" ? h("a", { href: "#/tax" }, "Tax") : h("a", { href: "#/topics" }, "Life in Taipei"), " / Guide"),
-        h("h1", null, g.title),
-        g.subtitle ? h("p", { class: "subtitle" }, g.subtitle) : null,
-        h("div", { class: "meta-chips" },
-          h("span", { class: "meta-chip" }, icon("clock"), `${g.reading_minutes} min read`),
-          h("span", { class: "meta-chip" }, icon("calendar"), `Updated ${shortDate(`${g.updated}T12:00:00+08:00`)}`),
-          g.sources ? h("span", { class: "meta-chip" }, icon("file"), plural(g.sources.length, "official source")) : null,
-          h("span", { class: "guide-save" }, saveButton("guides", g.slug, g.title)))),
-      html("div", { class: "guide-art", "aria-hidden": "true" }, motif(g.kind === "tax" ? "tax" : "social", g.slug, { w: 520, h: 360 }))));
+  const hero = h("header", { class: "wrap guide-hero" },
+    h("p", { class: "crumbs" },
+      g.kind === "tax" ? h("a", { href: "#/tax" }, "Tax") : h("a", { href: "#/topics" }, "Life in Taipei"), " / Guide"),
+    h("h1", null, g.title),
+    g.subtitle ? h("p", { class: "subtitle" }, g.subtitle) : null,
+    h("div", { class: "guide-meta" },
+      h("span", null, `${g.reading_minutes} min read`),
+      h("span", null, `Updated ${shortDate(`${g.updated}T12:00:00+08:00`)}`),
+      g.sources ? h("span", null, plural(g.sources.length, "official source")) : null,
+      h("span", { class: "guide-save" }, saveButton("guides", g.slug, g.title))));
 
   if (fromAgent) article.append(h("p", { class: "agent-banner" }, "Opened by your AI assistant"));
   if (g.takeaways) {
     article.append(h("aside", { class: "keypoints" },
       h("h2", null, "Key points"),
       g.summary ? h("p", { class: "lead" }, inline(g.summary, ctx)) : null,
-      h("ul", null, g.takeaways.map((t) => h("li", null, icon("check"), h("span", null, inline(t, ctx)))))));
+      h("ul", null, g.takeaways.map((t) => h("li", null, inline(t, ctx))))));
   }
   g.sections.forEach((sec, i) => {
     article.append(h("section", { class: "g-section", id: `s-${sec.id}`, dataset: { section: sec.id } },
@@ -170,7 +144,7 @@ export function render({ args, params, state, fromAgent }) {
   if (g.sources && g.sources.length) {
     const srcs = g.sources.map((sid) => state.content.tax.sources.find((s) => s.id === sid)).filter(Boolean);
     article.append(h("section", { class: "g-section", id: "s-sources" },
-      h("h2", null, h("span", { class: "num" }, icon("file")), "Sources"),
+      h("h2", null, "Sources"),
       h("p", null, "We keep a copy of each page and re-read it every week. Click any underlined figure above to see the exact official sentence behind it."),
       h("ul", { class: "sources-list" }, srcs.map((s) => {
         const st = sourceStatus(s);
@@ -186,10 +160,9 @@ export function render({ args, params, state, fromAgent }) {
   const prompts = PROMPTS[g.slug] || [];
   if (prompts.length) {
     article.append(h("aside", { class: "ask-card" },
-      h("span", { class: "ask-icon" }, icon("chat")),
       h("div", null,
         h("h3", null, "Still have a question?"),
-        h("p", null, "Press “Connect Claude” at the top of the page, then ask in your own words. Claude answers from these guides and figures, runs the calculator and opens the page it used. Click a prompt to copy it."),
+        h("p", null, "On a computer with Claude Code, press “Connect Claude” at the top of the page, then ask in your own words. Claude answers from these guides and figures, runs the calculator and opens the page it used. Click a prompt to copy it."),
         h("div", { class: "prompt-chips" }, prompts.map((p) => {
           const b = h("button", { type: "button", class: "prompt-chip" }, p);
           b.addEventListener("click", async () => {
@@ -217,7 +190,7 @@ export function render({ args, params, state, fromAgent }) {
     return h("li", null, a);
   });
   const toc = h("nav", { class: "toc", "aria-label": "On this page" },
-    h("p", { class: "eyebrow" }, "On this page"), h("ol", null, tocLinks));
+    h("h2", { class: "toc-h" }, "On this page"), h("ol", null, tocLinks));
 
   const node = h("div", null, hero, h("div", { class: "wrap guide-layout" }, toc, article));
 
