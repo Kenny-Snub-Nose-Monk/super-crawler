@@ -15,7 +15,7 @@ const EVENT_SOURCES = {
   talent_taiwan: "The site's own events API (bilingual)",
 };
 
-const TOOLS = [
+export const TOOLS = [
   ["search_events", "Find events by date, type, keyword, price, language and city — the Events page shows the same list."],
   ["get_event", "Full details of one event, opening its page."],
   ["search_guides", "Search the tax and life guides; answers come with the official sources behind them."],

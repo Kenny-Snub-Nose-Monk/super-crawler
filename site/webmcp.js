@@ -465,8 +465,8 @@ function setupRelayToggle() {
   btn.setAttribute("aria-pressed", String(on));
   label.textContent = on ? "Claude connected" : "Connect Claude";
   btn.title = on
-    ? "This page's tools are offered to your local Claude Code through the WebMCP relay. Click to disconnect."
-    : "Offer this page's tools to your local Claude Code through the WebMCP relay (run the relay first — see About the data).";
+    ? "This page's tools are offered to your local Claude through the WebMCP relay. Click to disconnect."
+    : "Offer this page's tools to your local Claude through the WebMCP relay (set it up first: see Connect Claude on the home page).";
   if (on) loadRelayEmbed();
   btn.addEventListener("click", () => {
     try { localStorage.setItem(RELAY_KEY, on ? "off" : "on"); } catch { /* 無痕模式：只影響這次 */ }

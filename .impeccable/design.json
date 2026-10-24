@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-23T08:21:48+00:00",
+  "generatedAt": "2026-10-24T00:00:00+00:00",
   "title": "Design System: Ma",
   "extensions": {
     "colorMeta": {
@@ -263,23 +263,23 @@
     "typographyMeta": {
       "hero-figure": {
         "displayName": "Hero Figure",
-        "purpose": "The home day-count input only."
+        "purpose": "The day-count input at the top of #/tax only; the home question input is an 80px sibling."
       },
       "display": {
         "displayName": "Display",
-        "purpose": "Page questions, page heads and guide titles."
+        "purpose": "Page questions, page heads, the home headline and guide titles; one size down for a question under a page title."
       },
       "figure": {
         "displayName": "Figure",
-        "purpose": "Report figures in the three-up band; calculator status words."
+        "purpose": "Report figures in the three- and four-up bands; calculator and home question status words."
       },
       "count-figure": {
         "displayName": "Count Figure",
-        "purpose": "Result counts, Saved chapter counts and the big condensed day and date numerals."
+        "purpose": "Result counts, Saved chapter counts, the big condensed day and date numerals, home question numerals and install step numerals."
       },
       "headline": {
         "displayName": "Headline",
-        "purpose": "Chapter titles and guide section heads."
+        "purpose": "Chapter titles, guide section heads, home question titles (32px, 44px lead) and install step titles (22px)."
       },
       "title": {
         "displayName": "Title",
@@ -296,6 +296,10 @@
       "note-mark": {
         "displayName": "Note Mark",
         "purpose": "Superscript F-numbers linking a figure to its official quote."
+      },
+      "code": {
+        "displayName": "Code",
+        "purpose": "System monospace for commands, config and file paths in code call-outs and inline code only."
       }
     },
     "shadows": [
@@ -335,6 +339,11 @@
         "name": "grid-fill",
         "value": "staggered over max 260ms; 0ms under prefers-reduced-motion",
         "purpose": "Year grid fills cell by cell as the day count changes."
+      },
+      {
+        "name": "copy-confirm",
+        "value": "1600ms",
+        "purpose": "Copy button reads \"Copied\" before returning to \"Copy\"."
       }
     ],
     "breakpoints": [
@@ -373,7 +382,7 @@
       "name": "Segmented Control",
       "kind": "chip",
       "refersTo": "segment-selected",
-      "description": "Calculator choices inside one ink outline; selected fills ink.",
+      "description": "Calculator choices inside one ink outline; selected fills ink. Also the Claude Code / Claude Desktop client switch, where an untested option says so in its label.",
       "html": "<div class=\"ds-seg\"><button aria-pressed=\"true\">I know my days</button><button aria-pressed=\"false\">Count from my trips</button></div>",
       "css": ".ds-seg{display:inline-flex;border:1.5px solid var(--ink)}.ds-seg button{border:0;background:none;padding:8px 14px;font:500 14.5px/1.3 var(--font);color:var(--ink-2);cursor:pointer}.ds-seg button+button{box-shadow:inset 1.5px 0 0 var(--ink)}.ds-seg button:hover{color:var(--ink);background:var(--paper-2)}.ds-seg button[aria-pressed=true]{background:var(--ink);color:var(--paper);font-weight:650}.ds-seg button:focus-visible{outline:2px solid var(--red);outline-offset:2px}"
     },
@@ -397,7 +406,7 @@
       "name": "Report Figure Band",
       "kind": "card",
       "refersTo": "figure-value",
-      "description": "Three figures under a 2px rule; red only for the reader's answer; blue F-number note marks.",
+      "description": "Three figures under a 2px rule; red only for the reader's answer; blue F-number note marks. A four-up variant describes the product; a band that opens a chapter body drops its own 2px rule.",
       "html": "<div class=\"ds-figs\"><div><p class=\"l\">Your status for 2026</p><p class=\"v red\">Resident<button class=\"ds-note\">F1</button></p><p class=\"t\">Past 183 days, so you're taxed like a local.</p></div><div><p class=\"l\">Next on the tax calendar</p><p class=\"v\">In 7 days<button class=\"ds-note\">F63</button></p><p class=\"t\">Second refund batch</p></div><a class=\"lnk\" href=\"#\"><p class=\"v\">Estimate your tax</p><p class=\"t\">Uses your 295 days.</p></a></div>",
       "css": ".ds-figs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 24px;border-top:2px solid var(--ink);font-family:var(--font)}.ds-figs>*{padding:14px 0 6px;color:var(--ink);text-decoration:none}.ds-figs p{margin:0}.ds-figs .l{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}.ds-figs .v{margin-top:6px;font-size:40px;line-height:1.05;font-weight:700;font-stretch:85%;letter-spacing:-.025em}.ds-figs .v.red{color:var(--red)}.ds-figs .t{margin-top:8px;max-width:38ch;font-size:15px;line-height:1.5;color:var(--ink-2)}.ds-figs .lnk:hover .v{color:var(--red)}.ds-note{margin-left:.3em;padding:0 2px;border:0;background:none;cursor:pointer;font:700 13px/1 var(--font);font-stretch:100%;color:var(--blue);vertical-align:top;position:relative;top:.25em;font-variant-numeric:tabular-nums}.ds-note:hover{text-decoration:underline}.ds-note:focus-visible{outline:2px solid var(--red);outline-offset:2px}"
     },
@@ -432,16 +441,32 @@
       "description": "Signature: opened from a note mark; status, value, official quote, source and check date.",
       "html": "<div class=\"ds-pop\"><p class=\"s\"><b>F1</b>Checked against the official text</p><p class=\"v\">183 days</p><p class=\"l\">Days in Taiwan in a calendar year that make you a tax resident</p><p class=\"q\">Official text (in Chinese)</p><blockquote lang=\"zh-Hant\">“…居住合計滿一百八十三天者。”</blockquote><p class=\"src\"><a href=\"#\">Ministry of Finance, Income Tax Act</a> · checked 15 Oct 2026</p></div>",
       "css": ".ds-pop{width:min(420px,100%);padding:16px 18px 18px;background:var(--sheet);border:1.5px solid var(--ink);box-shadow:0 14px 36px rgba(21,21,21,.14);font-family:var(--font);color:var(--ink)}.ds-pop p{margin:0}.ds-pop .s{display:flex;gap:10px;margin-bottom:8px;font-size:12.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)}.ds-pop .s b{color:var(--blue);letter-spacing:.02em}.ds-pop .v{margin-bottom:4px;font-size:28px;font-weight:800;font-stretch:85%;letter-spacing:-.02em;line-height:1.1}.ds-pop .l{margin-bottom:8px;font-size:15px;color:var(--ink-2)}.ds-pop .q{margin:12px 0 4px;font-size:12.5px;font-weight:650;color:var(--ink-3)}.ds-pop blockquote{margin:0;padding:10px 12px;background:var(--paper-2);font-size:15px}.ds-pop .src{margin-top:10px;font-size:13.5px;color:var(--ink-3)}.ds-pop a{color:var(--ink);text-underline-offset:3px;text-decoration-color:var(--rule)}.ds-pop a:hover{color:var(--red-ink);text-decoration-color:currentColor}.ds-pop a:focus-visible{outline:2px solid var(--red);outline-offset:2px}"
+    },
+    {
+      "name": "Question Rows",
+      "kind": "custom",
+      "refersTo": "question-numeral-lead",
+      "description": "Signature (home): numbered questions answered in place; the lead row carries a red numeral, a working day input and a live status with its F-mark.",
+      "html": "<ol class=\"ds-q\"><li class=\"lead\"><span class=\"n\">1</span><div><h2>Am I a tax resident in 2026?</h2><p class=\"x\">183 days in one tax year decides almost everything. Enter your days so far.</p></div><div><div class=\"days\"><input value=\"212\" aria-label=\"Days in 2026\"><span>days in 2026</span></div><p class=\"w red\">Resident<button class=\"note\">F1</button></p><p class=\"s\">Past 183 days, so you're taxed like a local.</p><a href=\"#\">See your year day by day, and what's due</a></div></li><li><span class=\"n\">2</span><div><h2>What's on this weekend?</h2><p class=\"x\">Collected every Thursday from seven public sources.</p></div><div><p class=\"fig\"><b>48</b><span>events this weekend · 19 English-friendly</span></p><a href=\"#\">See what's on this weekend</a></div></li><li><span class=\"n\">3</span><div><h2>Can Claude do this for me?</h2><p class=\"x\">Yes. Connect Claude Code or Claude Desktop.</p></div><div><a class=\"big\" href=\"#\">Connect Claude in a few steps</a></div></li></ol>",
+      "css": ".ds-q{list-style:none;margin:0;padding:0;border-top:2px solid var(--ink);font-family:var(--font);color:var(--ink)}.ds-q li{display:grid;grid-template-columns:96px minmax(0,1fr) minmax(0,480px);gap:0 32px;align-items:start;padding:14px 0;border-bottom:1px solid var(--rule)}.ds-q .n{font-size:60px;line-height:.85;font-weight:800;font-stretch:75%;letter-spacing:-.04em;font-variant-numeric:tabular-nums}.ds-q h2{margin:0;font-size:32px;line-height:1.08;font-weight:700;font-stretch:88%;letter-spacing:-.02em}.ds-q .x{margin:8px 0 0;max-width:48ch;font-size:16px;line-height:1.5;color:var(--ink-3)}.ds-q li.lead{padding:20px 0 22px}.ds-q li.lead .n{font-size:96px;color:var(--red)}.ds-q li.lead h2{font-size:44px}.ds-q .days{display:flex;align-items:flex-end;gap:12px;border-bottom:3px solid var(--ink);transition:border-color .16s cubic-bezier(.16,1,.3,1)}.ds-q .days:focus-within{border-bottom-color:var(--red)}.ds-q input{width:3.3ch;padding:0;border:0;outline:none;background:transparent;color:var(--ink);font:800 80px/.86 var(--font);font-stretch:75%;letter-spacing:-.04em;font-variant-numeric:tabular-nums}.ds-q .days span{padding-bottom:10px;font-size:18px;font-weight:650}.ds-q .w{margin:12px 0 0;font-size:38px;line-height:1;font-weight:800;font-stretch:82%;letter-spacing:-.03em}.ds-q .w.red{color:var(--red)}.ds-q .note{border:0;background:none;padding:0 2px;color:var(--blue);font:700 13px/1 var(--font);vertical-align:top;cursor:pointer}.ds-q .s{margin:8px 0 0;font-size:15px;line-height:1.5;color:var(--ink-2)}.ds-q a{display:block;width:fit-content;margin-top:12px;font-size:15.5px;font-weight:650;color:var(--ink);text-underline-offset:3px}.ds-q a:hover{color:var(--red-ink)}.ds-q a.big{margin-top:4px;font-size:24px;font-weight:700;font-stretch:90%;text-decoration-thickness:2px;text-underline-offset:6px}.ds-q a.big:hover{color:var(--ink);text-decoration-color:var(--red)}.ds-q a:focus-visible{outline:2px solid var(--red);outline-offset:2px}.ds-q .fig{display:flex;align-items:baseline;gap:12px;margin:0}.ds-q .fig b{font-size:64px;line-height:.9;font-weight:800;font-stretch:75%;letter-spacing:-.04em;font-variant-numeric:tabular-nums}.ds-q .fig span{font-size:15px;color:var(--ink-2)}"
+    },
+    {
+      "name": "Install Step with Code Call-out",
+      "kind": "custom",
+      "refersTo": "code-call",
+      "description": "Signature (Connect Claude): one thing per numbered step; commands in a 1px ink-framed call-out with a Copy button, wrapping only between tokens with a hanging indent.",
+      "html": "<ol class=\"ds-steps\"><li><span class=\"n\">2</span><div><h3>Add Ma to Claude Code</h3><p>Run this once. <code>-s user</code> makes it available in every folder.</p><figure class=\"ds-code cmd\"><figcaption><span>Terminal</span><button type=\"button\">Copy</button></figcaption><pre><code><span class=\"t\">claude</span> <span class=\"t\">mcp</span> <span class=\"t\">add</span> <span class=\"t\">-s</span> <span class=\"t\">user</span> <span class=\"t\">webmcp-relay</span> <span class=\"t\">--</span> <span class=\"t\">npx</span> <span class=\"t\">-y</span> <span class=\"t\">@mcp-b/webmcp-local-relay@5.1.0</span> <span class=\"t\">--widget-origin</span> <span class=\"t\">https://example.github.io</span></code></pre></figure></div></li></ol>",
+      "css": ".ds-steps{list-style:none;margin:0;padding:0;border-top:2px solid var(--ink);font-family:var(--font);color:var(--ink)}.ds-steps li{display:grid;grid-template-columns:84px minmax(0,1fr);gap:0 24px;padding:20px 0 24px;border-bottom:1px solid var(--rule)}.ds-steps .n{font-size:72px;line-height:.82;font-weight:800;font-stretch:72%;letter-spacing:-.05em;font-variant-numeric:tabular-nums}.ds-steps li>div{min-width:0}.ds-steps h3{margin:4px 0 6px;font-size:22px;font-weight:700;font-stretch:90%}.ds-steps p{margin:0 0 10px;max-width:68ch;color:var(--ink-2)}.ds-steps p code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--paper-2);padding:1px 4px;white-space:nowrap}.ds-code{margin:12px 0 4px;border:1px solid var(--ink);background:var(--sheet)}.ds-code figcaption{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 6px 6px 12px;border-bottom:1px solid var(--rule);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}.ds-code button{padding:5px 12px;border:1px solid var(--ink);background:transparent;color:var(--ink);font:650 13px/1.3 var(--font);letter-spacing:0;text-transform:none;cursor:pointer;transition:background-color .16s cubic-bezier(.16,1,.3,1),color .16s cubic-bezier(.16,1,.3,1)}.ds-code button:hover{background:var(--ink);color:var(--paper)}.ds-code button:focus-visible{outline:2px solid var(--red);outline-offset:2px}.ds-code pre{margin:0;padding:12px;white-space:pre;overflow-x:auto}.ds-code.cmd pre{white-space:pre-wrap;overflow-wrap:normal;word-break:normal;padding-left:calc(12px + 2ch);text-indent:-2ch}.ds-code .t{white-space:nowrap}.ds-code code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;line-height:1.55;color:var(--ink)}"
     }
   ],
   "narrative": {
     "northStar": "The Annual Report Grid",
-    "overview": "The tax year is typeset like a Swiss-school annual report. One strict 12-column grid, figures set at report scale in condensed heavy Archivo, and every number carries a small blue note mark (F1, F24, F63) that opens the official sentence it comes from. The page is a sheet of coated white paper printed in ink black, with one signal red overprinted only where the reader's answer, filled days, or current position is.\n\nStructure comes from rules, not containers. A 2px ink rule opens every chapter, figure band, fieldset and result block; 1px warm-grey hairlines separate rows inside them. There are no cards, no rounded corners and no tinted panels except two quiet callout washes. Density is report-like: generous vertical air between chapters (72px), tight leading inside figures, numbers sized to be read across a room.\n\nMotion is brief and mechanical: 160 to 220ms with a fast ease-out, never a bounce, never a scroll reveal. The one signature movement is the year grid filling cell by cell (staggered over at most 260ms, instant under reduced motion) as the day count changes.\n\nScope of this record: every route is composed in this world. Round 1 built the home page, tax hub (#/tax), guides (#/guide/*) and calculator (#/tax/calculator); round 2 rebuilt events, event detail, topics, topic, saved, search and about as an extension of the same system. On the event surfaces the date is the visual: no illustrations, a big condensed day numeral instead.",
+    "overview": "The tax year is typeset like a Swiss-school annual report. One strict 12-column grid, figures set at report scale in condensed heavy Archivo, and every number carries a small blue note mark (F1, F24, F63) that opens the official sentence it comes from. The page is a sheet of coated white paper printed in ink black, with one signal red overprinted only where the reader's answer, filled days, or current position is.\n\nStructure comes from rules, not containers. A 2px ink rule opens every chapter, figure band, fieldset and result block; 1px warm-grey hairlines separate rows inside them. There are no cards, no rounded corners and no tinted panels except two quiet callout washes; the one framed object is the code call-out, a 1px ink frame around text the reader copies. Each block boundary carries exactly one rule: where a sub-head's underline or a chapter's opening rule already marks the edge, the block below drops its own. Density is report-like: generous vertical air between chapters (72px), tight leading inside figures, numbers sized to be read across a room.\n\nMotion is brief and mechanical: 160 to 220ms with a fast ease-out, never a bounce, never a scroll reveal. The one signature movement is the year grid filling cell by cell (staggered over at most 260ms, instant under reduced motion) as the day count changes.\n\nScope of this record: every route is composed in this world. Round 1 built the tax hub (#/tax), guides (#/guide/*) and calculator (#/tax/calculator); round 2 rebuilt events, event detail, topics, topic, saved, search and about as an extension of the same system. Round 3 turned the home page (#/) into an intro: a headline, three numbered question rows answered in place (the day count with its status and F-mark, this weekend's live count, a link down to Connect Claude), then a \"What Ma is\" chapter (four-figure band and a principles list) and a \"Connect Claude\" chapter (client switch, numbered install steps with copyable commands, the tools table, a \"Good to know\" list). The full day-count tool (hero input, year grid, status band) moved to the top of #/tax, under the page title. On the event surfaces the date is the visual: no illustrations, a big condensed day numeral instead.",
     "keyCharacteristics": [
       "One 12-column grid with 24px gaps; chapters put the title in columns 1 to 3 and the content in 4 to 12.",
       "Condensed heavy numerals with tabular figures for every quantity.",
       "Every figure footnoted with a blue F-number that opens its official quote.",
-      "Flat paper and ink; division by 2px and 1px rules only.",
+      "Flat paper and ink; division by 2px and 1px rules only, one rule per block boundary.",
       "One red, used as an overprint for answers, filled days and \"you are here\".",
       "Dated lists read as an agenda: one big day numeral per day, time-only rows, a heavier rule at each month."
     ],
@@ -475,6 +500,11 @@
         "name": "The Rules Not Boxes Rule",
         "body": "Nothing in the page flow casts a shadow or sits in a filled card. Group with a 2px rule above; separate with 1px hairlines.",
         "section": "elevation"
+      },
+      {
+        "name": "The One Rule Per Boundary Rule",
+        "body": "A block edge carries one rule. A table or list under a sub-head, or a figure band opening a chapter body, drops its own top rule because the line above already marks the edge.",
+        "section": "elevation"
       }
     ],
     "dos": [
@@ -488,13 +518,20 @@
       "Do let the date be the visual on event surfaces; cards and detail are typographic.",
       "Do put a list's filters in a sticky rail in columns 1 to 3 that collapses to a closed details panel under 900px.",
       "Do write unknown values out in plain words, set in ink-3, with a dashed border when they appear as a tag.",
-      "Do draw icons as inline SVG line icons (1.8 stroke, square caps, mitred joins) and disclosure marks in CSS."
+      "Do draw icons as inline SVG line icons (1.8 stroke, square caps, mitred joins) and disclosure marks in CSS.",
+      "Do keep one rule per block boundary: a table or list under a sub-head, or a figure band opening a chapter body, drops its own top rule.",
+      "Do make every command copyable from a code call-out with a Copy button, copying the exact string, with site-specific values filled from the page's own origin.",
+      "Do mark an untested path in the control that chooses it and in a warn callout before its steps, not after.",
+      "Do answer the reader's question in place on intro surfaces: a working input or a live count beside the question, not a feature card that links away.",
+      "Do split device-dependent copy into desktop-only and phone-only lines rather than one hedged sentence."
     ],
     "donts": [
       "Don't round corners; every surface, field and mark is square.",
       "Don't cast shadows on anything in the page flow; only the popover and the toast float. Inset strokes used as rules are fine.",
       "Don't paint colour gradients. A linear-gradient used to draw a solid ink rule is a rule, not a gradient.",
-      "Don't wrap content in cards or icon tiles; group with rules. A cost, a summary or an empty state is ruled, not boxed.",
+      "Don't wrap content in cards or icon tiles; group with rules. A cost, a summary or an empty state is ruled, not boxed. The code call-out's 1px frame is reserved for copyable text.",
+      "Don't stack two rules at one boundary (a sub-head underline over a table's top rule, a chapter rule over a band's rule).",
+      "Don't let a command break inside a token or reflow JSON; wrap single-line commands between tokens with a hanging indent and let JSON scroll.",
       "Don't put generated illustrations, gradient art or image placeholders on event lists, cards or detail.",
       "Don't use text glyphs (arrows, plus and minus signs) as icons or disclosure marks.",
       "Don't use blue for anything that is not provenance, verification or language access.",

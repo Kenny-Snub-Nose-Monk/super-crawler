@@ -83,6 +83,11 @@ typography:
     letterSpacing: "0.02em"
     fontFeature: "tnum"
     fontVariation: "'wdth' 100"
+  code:
+    fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+    fontSize: "14px"
+    fontWeight: 400
+    lineHeight: 1.55
 rounded:
   none: "0px"
 spacing:
@@ -200,6 +205,28 @@ components:
     rounded: "{rounded.none}"
     padding: "16px 18px 18px"
     width: "min(420px, calc(100vw - 32px))"
+  question-numeral:
+    textColor: "{colors.ink}"
+    width: "96px"
+  question-numeral-lead:
+    textColor: "{colors.red}"
+  step-numeral:
+    textColor: "{colors.ink}"
+    width: "84px"
+  code-call:
+    backgroundColor: "{colors.sheet}"
+    textColor: "{colors.ink}"
+    typography: "{typography.code}"
+    rounded: "{rounded.none}"
+    padding: "12px"
+  copy-button:
+    backgroundColor: "transparent"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.none}"
+    padding: "5px 12px"
+  copy-button-hover:
+    backgroundColor: "{colors.ink}"
+    textColor: "{colors.paper}"
 ---
 
 # Design System: Ma
@@ -210,17 +237,17 @@ components:
 
 The tax year is typeset like a Swiss-school annual report. One strict 12-column grid, figures set at report scale in condensed heavy Archivo, and every number carries a small blue note mark (F1, F24, F63) that opens the official sentence it comes from. The page is a sheet of coated white paper printed in ink black, with one signal red overprinted only where the reader's answer, filled days, or current position is.
 
-Structure comes from rules, not containers. A 2px ink rule opens every chapter, figure band, fieldset and result block; 1px warm-grey hairlines separate rows inside them. There are no cards, no rounded corners and no tinted panels except two quiet callout washes. Density is report-like: generous vertical air between chapters (72px), tight leading inside figures, numbers sized to be read across a room.
+Structure comes from rules, not containers. A 2px ink rule opens every chapter, figure band, fieldset and result block; 1px warm-grey hairlines separate rows inside them. There are no cards, no rounded corners and no tinted panels except two quiet callout washes; the one framed object is the code call-out, a 1px ink frame around text the reader copies. Each block boundary carries exactly one rule: where a sub-head's underline or a chapter's opening rule already marks the edge, the block below drops its own. Density is report-like: generous vertical air between chapters (72px), tight leading inside figures, numbers sized to be read across a room.
 
 Motion is brief and mechanical: 160 to 220ms with a fast ease-out, never a bounce, never a scroll reveal. The one signature movement is the year grid filling cell by cell (staggered over at most 260ms, instant under reduced motion) as the day count changes.
 
-Scope of this record: every route is composed in this world. Round 1 built the home page, tax hub (#/tax), guides (#/guide/*) and calculator (#/tax/calculator); round 2 rebuilt events, event detail, topics, topic, saved, search and about as an extension of the same system. On the event surfaces the date is the visual: no illustrations, a big condensed day numeral instead.
+Scope of this record: every route is composed in this world. Round 1 built the tax hub (#/tax), guides (#/guide/*) and calculator (#/tax/calculator); round 2 rebuilt events, event detail, topics, topic, saved, search and about as an extension of the same system. Round 3 turned the home page (#/) into an intro: a headline, three numbered question rows answered in place (the day count with its status and F-mark, this weekend's live count, a link down to Connect Claude), then a "What Ma is" chapter (four-figure band and a principles list) and a "Connect Claude" chapter (client switch, numbered install steps with copyable commands, the tools table, a "Good to know" list). The full day-count tool (hero input, year grid, status band) moved to the top of #/tax, under the page title. On the event surfaces the date is the visual: no illustrations, a big condensed day numeral instead.
 
 **Key Characteristics:**
 - One 12-column grid with 24px gaps; chapters put the title in columns 1 to 3 and the content in 4 to 12.
 - Condensed heavy numerals with tabular figures for every quantity.
 - Every figure footnoted with a blue F-number that opens its official quote.
-- Flat paper and ink; division by 2px and 1px rules only.
+- Flat paper and ink; division by 2px and 1px rules only, one rule per block boundary.
 - One red, used as an overprint for answers, filled days and "you are here".
 - Dated lists read as an agenda: one big day numeral per day, time-only rows, a heavier rule at each month.
 
@@ -229,10 +256,10 @@ Scope of this record: every route is composed in this world. Round 1 built the h
 Coated paper, ink, one overprint red, and a muted report blue reserved for provenance.
 
 ### Primary
-- **Signal Red** (red): the overprint. Filled days in the year grid, the "Resident" answer, the 183-day line once crossed, the active nav underline, the "next" calendar pill and "Start here" flag, the current-section square in the guide contents, step counters, square list bullets, focus outlines and text selection. On the event surfaces: the TODAY / TOMORROW slab on a day heading, the "On now" date figure on event detail, the "New" tag, a pressed bookmark, and the reader's own query in the search heading.
+- **Signal Red** (red): the overprint. Filled days in the year grid, the "Resident" answer, the 183-day line once crossed, the active nav underline, the "next" calendar pill and "Start here" flag, the current-section square in the guide contents, step counters, the lead question's numeral on the home page, square list bullets, focus outlines and text selection. On the event surfaces: the TODAY / TOMORROW slab on a day heading, the "On now" date figure on event detail, the "New" tag, a pressed bookmark, and the reader's own query in the search heading.
 - **Press Red** (red-ink): red for small text, where Signal Red would fall under 4.5:1. Next calendar date, drifted figures, hover on titles and links, guide section numbers, the active-filter count on the filter rail, "On now" and "Until" on ongoing rows.
 - **Red Wash** (red-wash): projected days in the year grid (filled days that fall after today).
-- **Red Tint** (red-soft): warning callouts, search-hit highlight, the row flash after an agent action.
+- **Red Tint** (red-soft): warning callouts (including the UNTESTED note on an unverified setup path), search-hit highlight, the row flash after an agent action.
 - **Red on Ink** (red-on-ink): the one red for text on an ink ground, where Press Red would vanish. Today only the "Resident" word in the phone calculator's ink summary bar.
 
 ### Secondary
@@ -246,7 +273,7 @@ Coated paper, ink, one overprint red, and a muted report blue reserved for prove
 ### Neutral
 - **Coated Paper** (paper): the page ground, masthead and dock.
 - **Second Sheet** (paper-2): callout and quote grounds, future empty cells in the year grid, segmented-control hover, inline code.
-- **Fresh Sheet** (sheet): surfaces the reader writes on or that float: form fields, search bar, the fact popover.
+- **Fresh Sheet** (sheet): surfaces the reader writes on or that float: form fields, search bar, the fact popover, the code call-out.
 - **Empty Cell** (cell): past empty day cells and empty comparison bars.
 - **Ink** (ink): text, 2px rules, primary buttons, selected states.
 - **Ink 2** (ink-2): secondary text, ledes, table body.
@@ -264,21 +291,22 @@ Coated paper, ink, one overprint red, and a muted report blue reserved for prove
 
 **Display Font:** Archivo, variable width 62 to 125 and weight 400 to 800 (with Noto Sans TC for Chinese content, then system sans)
 **Body Font:** Archivo at normal width
-**Label/Mono Font:** none distinct; labels are Archivo bold, uppercase, tracked
+**Label/Mono Font:** none distinct for labels (Archivo bold, uppercase, tracked); system monospace only for commands, file paths and inline code
 
 **Character:** One family carries the whole report. The width axis does the hierarchy: figures and headings narrow to 75 to 88% and go heavy, so large numbers stay compact and columnar, while reading text stays at full width.
 
 ### Hierarchy
-- **Hero Figure** (800, clamp(96px, 10.5vw, 152px), 0.86, width 75%): the home day-count input only. Tabular numerals.
+- **Hero Figure** (800, clamp(96px, 10.5vw, 152px), 0.86, width 75%): the day-count input at the top of #/tax only. Tabular numerals. The home page's first question uses a smaller sibling input (80px, same width and baseline treatment).
 - **Big Number** (800, clamp(52px, 5.6vw, 76px), 0.95, width 78%): the calculator's estimated tax.
-- **Display** (700, clamp(38px, 4.7vw, 66px), 1.02, width 85%): page questions and guide titles; page heads use clamp(40px, 5.4vw, 72px) at line-height 1.
-- **Count Figure** (800, 56px, 0.9, width 75%, tabular; 44px under 600px): the count beside a filtered list ("212 events"), Saved chapter counts, and the family of big condensed numerals: the agenda day numeral (64px, 44px on phones), topic counts (48px), event card dates (52px), the event detail date (120px, 88px on phones).
-- **Figure** (700, clamp(30px, 3.1vw, 44px), 1.05, width 85%): report figures in the three-up band. Status words in the calculator go to 44px at 800.
-- **Headline** (700, 28px, 1.1, width 88%): chapter titles; guide section heads run 30px with a red numeral. Month headings and topic names run 30px at width 85%; the event title is clamp(30px, 3.8vw, 48px) at 88%; the search heading clamp(34px, 4.4vw, 58px) at 85%; the search summary sentence 24px at 88%.
+- **Display** (700, clamp(38px, 4.7vw, 66px), 1.02, width 85%): page questions and guide titles; page heads use clamp(40px, 5.4vw, 72px) at line-height 1; the home headline clamp(40px, 4.2vw, 60px) at line-height 1, capped at 24ch. A page question that sits under a page title steps one size down (clamp(30px, 3.3vw, 46px)), as on #/tax.
+- **Count Figure** (800, 56px, 0.9, width 75%, tabular; 44px under 600px): the count beside a filtered list ("212 events"), Saved chapter counts, and the family of big condensed numerals: the agenda day numeral (64px, 44px on phones), topic counts (48px), event card dates (52px), the event detail date (120px, 88px on phones), the home question numerals (60px; 96px on the lead row), the weekend count in a question row (64px), and install step numerals (72px at width 72%, 48px on phones).
+- **Figure** (700, clamp(30px, 3.1vw, 44px), 1.05, width 85%): report figures in the three- and four-up bands. Status words in the calculator go to 44px at 800; the home question's status word runs 38px 800 at width 82%.
+- **Headline** (700, 28px, 1.1, width 88%): chapter titles; guide section heads run 30px with a red numeral. Month headings and topic names run 30px at width 85%; the event title is clamp(30px, 3.8vw, 48px) at 88%; the search heading clamp(34px, 4.4vw, 58px) at 85%; the search summary sentence 24px at 88%. Home question titles run 32px at 88% (44px on the lead row, 25px / 30px on phones); install step titles 22px at 90%.
 - **Title** (650, 20px, 1.25, width 95%): guide list titles, calendar items (16.5px), event row and card titles (18px). Row times run 19px 700 at width 88%.
 - **Body** (400, 17px, 1.55; 16px under 600px): interface text. Guide prose runs 17.5px at 1.7, capped at 68ch.
 - **Label** (700, 13px, 0.06em tracking, uppercase): figure labels, sub-heads over tables and lists, the grid caption, contents heading, callout kind. Always belongs to the figure or block directly below it.
 - **Note Mark** (700, 12px, width 100%, tabular, superscript; 13px beside figures): F-numbers.
+- **Code** (system monospace, 14px, 1.55; 13px on phones): commands and config in code call-outs; inline code runs 0.9em on a second-sheet ground.
 
 ### Named Rules
 **The Tabular Rule.** Every number a reader might compare (days, money, dates, rates, counts, F-numbers) is set with tabular numerals.
@@ -289,7 +317,9 @@ Coated paper, ink, one overprint red, and a muted report blue reserved for prove
 
 A centred wrap of 1320px plus a 48px gutter on each side (32px under 1100px, 16px under 600px). Chapters and the home question sit on a 12-column grid with 24px column gaps and zero row gap. Each chapter opens with a full-width 2px ink rule, then title and aside note in columns 1 to 3, content in 4 to 12; under 900px both stack to full width. Chapters are 72px apart (56px under 900px); page heads start 56px below the masthead (36px on phones).
 
-The home first viewport: question and hero input in columns 1 to 5, year grid in columns 7 to 12, then a full-width band of three figures under a 2px rule. Figure bands are always three equal columns, stacking to one with 1px rules between them under 900px. Guides use a 220px sticky contents column beside a 720px reading column; the calculator uses a form column beside a 460px sticky result column. Every single-column grid uses minmax(0, 1fr) so nothing scrolls sideways at 375px.
+The home first viewport: the headline and a one-line lede, then a list of three question rows under a 2px rule. Each row is a three-track grid (96px numeral, the question and its line of text, an answer column up to 480px, 32px gaps) with a hairline beneath; the lead row is taller. Under 900px the answer drops under the question (64px numeral track), and under 600px it spans the full width (44px numeral track). The day-count tool on #/tax keeps the original composition: question and hero input in columns 1 to 5, year grid in columns 7 to 12, then a full-width band of three figures under a 2px rule. Figure bands are three equal columns, or four in the "What Ma is" chapter; three-up stacks to one with 1px rules between under 900px, four-up goes to two columns under 900px and one under 600px.
+
+Install steps are a two-track list (84px numeral, body; 44px on phones) under a 2px rule. Copy that depends on the device is split, not hedged: desktop-only text and controls (the Connect button, the relay) hide under 600px, and phone-only lines appear there instead ("Setting this up needs a computer"). Guides use a 220px sticky contents column beside a 720px reading column; the calculator uses a form column beside a 460px sticky result column. Every single-column grid uses minmax(0, 1fr) so nothing scrolls sideways at 375px.
 
 The events page is a browse grid on the same 12 columns: the filter rail in columns 1 to 3 (sticky 84px below the top, scrolling inside itself), the count, sort and agenda in 4 to 12. An agenda day is a 148px heading column beside its rows, 24px apart, under a 2px rule; days sit 28px apart and a month heading opens 48px above the next month. Event detail is a reading column beside a 340px aside (64px gap). Topic rows split 4 / 6 / 2 (name, description, count). Event cards run four across, three under 1100px, two under 900px, one under 600px.
 
@@ -312,7 +342,7 @@ The only cast shadows belong to the two layers that float free of the page: the 
 
 ## Shapes
 
-Square everything (0px radius, enforced on form fields). Marks are solid squares: the 7px brand dot, 8px list bullets, the relay status dot, the verified square, the toast mark. Strokes come in a fixed set: 1px hairline, 1.5px control outline, 2px block rule, 3px active underline (nav, tabs) and input baseline, 4px month rule (the heaviest line, used only where the agenda changes month). A dashed 1px border marks an unknown value on a tag. SVG line icons use square caps and mitred joins at 1.8 stroke; disclosure marks are drawn in CSS (the filter rail's 2px chevron).
+Square everything (0px radius, enforced on form fields). Marks are solid squares: the 7px brand dot, 8px list bullets, the relay status dot, the verified square, the toast mark. Strokes come in a fixed set: 1px hairline (and the 1px ink frame of a code call-out and its Copy button), 1.5px control outline, 2px block rule, 3px active underline (nav, tabs) and input baseline, 4px month rule (the heaviest line, used only where the agenda changes month). A dashed 1px border marks an unknown value on a tag. SVG line icons use square caps and mitred joins at 1.8 stroke; disclosure marks are drawn in CSS (the filter rail's 2px chevron).
 
 ## Components
 
@@ -327,12 +357,14 @@ Plain ink slabs and ink outlines; they change colour, never shape.
 - **Style:** one 1.5px ink outline with 1.5px inset dividers; options 8px by 14px at 14.5px.
 - **State:** selected fills ink with paper text at 650 weight; hover takes the second sheet.
 
+- **Client switch:** the same control choosing between two setups (Claude Code / Claude Desktop) that share one set of numbered steps. An untested option says so in its own label ("Claude Desktop · untested"), and choosing it swaps the note beneath to a warn callout labelled UNTESTED before the steps.
+
 ### Chips
 - **Style:** 36px tall, 1px warm-rule border, transparent, ink-2 text.
 - **State:** hover borders ink; selected fills ink with paper text. Flag labels ("Start here", "In 7 days") are red-filled 12px uppercase slabs.
 
 ### Cards / Containers
-There are no boxed cards. Blocks are a 2px top rule plus content (figures, result blocks, fieldsets, key points, comparisons, the event cost block, the search summary, empty states). Callouts are the one filled container: second-sheet ground (red tint for warnings), 16px by 18px padding, a 100px uppercase kind label column.
+There are no boxed cards. Blocks are a 2px top rule plus content (figures, result blocks, fieldsets, key points, comparisons, the event cost block, the search summary, empty states). Callouts are the one filled container: second-sheet ground (red tint for warnings), 16px by 18px padding, a 100px uppercase kind label column. The code call-out is the one framed object (see below); nothing else takes a border box.
 
 ### Inputs / Fields
 - **Style:** 44px, 1.5px ink-3 border, square, fresh-sheet ground, tabular numerals.
@@ -348,6 +380,20 @@ Masthead 64px, paper ground, 2px ink rule beneath, sticky. Wordmark "Ma" at 26px
 
 ### Report figure
 Label (uppercase 13px), value (figure scale, red only when it is the reader's answer), a note mark, and one line of explanation capped at 38ch. As a link, the value turns red on hover.
+
+- **Four-figure band:** the same figure in four equal columns, for the facts that describe the product (official pages, figures checked, guides, events). When a band opens a chapter body it drops its own 2px rule and top padding, because the chapter rule above already marks the edge.
+
+### Question rows (signature, home)
+A numbered list of the questions a reader brings, each answered in place. Row: condensed numeral (count-figure family, ink), the question at 32px with one ink-3 line of explanation (48ch), and an answer column. The lead row is dominant: 96px numeral in Signal Red, 44px question (a label for the day input), and a working day input on a 3px ink baseline (red on focus) with the unit beside it; under it the status word (38px, red for "Resident") carrying its F-mark, one ink-2 sentence, and a link to the full year on #/tax. Other rows answer with a live count (64px numeral and a 15px unit line) and a link, or with a single 24px link underlined 2px in ink (red on hover). Typing updates the status word and F-mark in place.
+
+### Install steps (signature, Connect Claude)
+An ordered list under a 2px rule; each step is one thing. A condensed ink numeral (72px, width 72%) beside a 22px title and ink-2 text capped at 68ch; hairline between steps. Steps that need a computer carry phone-only copy saying so. Platform paths sit in a small two-column definition list (84px label in ink-3, monospace value).
+
+### Code call-out
+Copyable text at full size. A 1px ink frame on fresh sheet; a caption bar (12px uppercase ink-3 label naming where it goes, "TERMINAL" or the file name) with a Copy button at the right, a hairline beneath, then the code at 14px monospace with 12px padding. Copy is a 1px ink outline button that fills ink on hover, reads "Copied" for 1.6s, and falls back to "Select and copy" when the clipboard is unavailable; it copies the exact original string. Single-line commands wrap only between tokens, never inside one, with a 2ch hanging indent so a wrapped line still reads as one command; JSON keeps its indentation and scrolls sideways rather than reflowing. Commands are origin-aware: values such as the allowed site origin are filled from the page's own address, never left as a placeholder.
+
+### Plain list
+A list of short bold-led statements (principles, "Good to know"): a 1px ink rule on top, hairline rows of 12px padding, ink-2 text capped at 78ch with the lead phrase in ink. Under an uppercase sub-head it drops its own top rule, since the sub-head's underline is the boundary.
 
 ### Year grid (signature)
 Twelve month rows of 31 cells (18px tall, 3px gaps; 11px on phones, 9px compact). Past empty cells are Empty Cell, future empty cells Second Sheet, filled days Signal Red, projected filled days Red Wash, today outlined 2px ink. The 183rd cell has an inset ink outline and a 3px vertical bar that overshoots the row; when crossed the bar and key text turn red and the count reads in Press Red. Cells fill in order over at most 260ms.
@@ -394,12 +440,19 @@ A superscript blue F-number (its stable position in the facts catalogue, identic
 - **Do** put a list's filters in a sticky rail in columns 1 to 3 that collapses to a closed details panel under 900px.
 - **Do** write unknown values out in plain words, set in ink-3, with a dashed border when they appear as a tag.
 - **Do** draw icons as inline SVG line icons (1.8 stroke, square caps, mitred joins) and disclosure marks in CSS.
+- **Do** keep one rule per block boundary: a table or list under a sub-head, or a figure band opening a chapter body, drops its own top rule.
+- **Do** make every command copyable from a code call-out with a Copy button, copying the exact string, with site-specific values filled from the page's own origin.
+- **Do** mark an untested path in the control that chooses it and in a warn callout before its steps, not after.
+- **Do** answer the reader's question in place on intro surfaces: a working input or a live count beside the question, not a feature card that links away.
+- **Do** split device-dependent copy into desktop-only and phone-only lines rather than one hedged sentence.
 
 ### Don't:
 - **Don't** round corners; every surface, field and mark is square.
 - **Don't** cast shadows on anything in the page flow; only the popover and the toast float. Inset strokes used as rules are fine.
 - **Don't** paint colour gradients. A linear-gradient used to draw a solid ink rule is a rule, not a gradient.
-- **Don't** wrap content in cards or icon tiles; group with rules. A cost, a summary or an empty state is ruled, not boxed.
+- **Don't** wrap content in cards or icon tiles; group with rules. A cost, a summary or an empty state is ruled, not boxed. The code call-out's 1px frame is reserved for copyable text.
+- **Don't** stack two rules at one boundary (a sub-head underline over a table's top rule, a chapter rule over a band's rule).
+- **Don't** let a command break inside a token or reflow JSON; wrap single-line commands between tokens with a hanging indent and let JSON scroll.
 - **Don't** put generated illustrations, gradient art or image placeholders on event lists, cards or detail.
 - **Don't** use text glyphs (arrows, plus and minus signs) as icons or disclosure marks.
 - **Don't** use blue for anything that is not provenance, verification or language access.

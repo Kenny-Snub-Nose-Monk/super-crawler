@@ -5,7 +5,8 @@ import { taipeiParts, daysBetween } from "../lib/time.js";
 import { shortDate, plural } from "../lib/format.js";
 import { inline } from "../lib/guides.js";
 import { guideRow, factCard, eventRow } from "./components.js";
-import { factMark, chapter, figure } from "./report.js";
+import { factMark, chapter } from "./report.js";
+import { residencyAsk } from "./residency.js";
 
 /** 行事曆裡今天之後的第一件事 */
 export function nextCalendarItem(items, todayYmd) {
@@ -50,33 +51,24 @@ export function keyFigures(state, year) {
     })));
 }
 
-export function render({ state }) {
+export function render({ state, params }) {
   const today = taipeiParts().ymd;
   const year = Number(today.slice(0, 4));
   const ctx = { facts: state.facts };
   const taxGuides = state.guides.filter((g) => g.kind === "tax");
   const start = taxGuides.find((g) => g.start_here) || taxGuides[0];
   const tax = state.content.tax;
-  const next = nextCalendarItem(tax.calendar, today);
-
   const head = h("header", { class: "wrap page-head" },
     h("h1", null, "Tax in Taiwan"),
     h("p", { class: "lede" },
       "Whether you file, how much you pay and which rules apply all start with one question: how many days you spend here. ",
-      "Every figure is traced to an official source and re-checked every week."),
-    h("div", { class: "figs" },
-      figure({ value: h("span", null, "Am I a resident?", h("span", { class: "arrow" }, icon("arrow"))), text: "Count your days, then estimate the tax under the rules that apply to you.", href: "#/tax/calculator" }),
-      next
-        ? h("div", { class: "fig" },
-          h("p", { class: "fig-l" }, "Next on the calendar"),
-          h("p", { class: "fig-v" }, next.whenLabel, next.item.fact ? factMark(next.item.fact, state) : null),
-          h("p", { class: "fig-t" }, next.item.title))
-        : figure({ label: "Next on the calendar", value: "Nothing due" }),
-      figure({ label: "Figures checked", value: `${Object.values(state.facts).filter((f) => f.status === "verified").length} of ${Object.keys(state.facts).length}`, text: `Re-read from official pages on ${shortDate(tax.checked_at)}.` })));
+      "Every figure is traced to an official source and re-checked every week."));
+  // 天數工具（原本在首頁）：問題、格子、身分與下一個期限
+  const ask = residencyAsk({ state, params, route: "/tax" });
 
   const reading = chapter("Guides",
     h("ol", { class: "guide-list" }, taxGuides.map((g, i) => guideRow(g, i + 1, { start: g === start }))),
-    { aside: h("p", { class: "chapter-note desktop-only" }, "On a computer with Claude Code, press “Connect Claude” at the top of the page and ask. Claude answers from the same guides, figures and calculator, and shows where each answer comes from.") });
+    { aside: h("p", { class: "chapter-note desktop-only" }, "On a computer, connect Claude Code or Claude Desktop (see the home page) and ask. Claude answers from the same guides, figures and calculator, and shows where each answer comes from.") });
 
   const calendar = chapter("Tax calendar",
     h("div", { class: "split" },
@@ -111,5 +103,5 @@ export function render({ state }) {
         `If a page changes, the figures that depend on it are marked “needs review” until a person re-checks them. Last check: ${shortDate(tax.checked_at)}.`),
       h("a", { class: "chapter-link", href: "#/about" }, "See every source and its status", icon("arrow"))));
 
-  return { title: "Tax", node: h("div", null, head, reading, calendar, seminarSection, help, fresh) };
+  return { title: "Tax", node: h("div", null, head, ask.node, reading, calendar, seminarSection, help, fresh), after: ask.after };
 }

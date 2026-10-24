@@ -73,6 +73,8 @@ GitHub Pages：<https://kenny-snub-nose-monk.github.io/super-crawler/>
 
 ### 讓 Claude 查這個網站（WebMCP）
 
+網站首頁的「Connect Claude」一節有給一般讀者看的完整步驟（Claude Code 與 Claude Desktop）；下面是給開發者的版本。
+
 用線上版的話不需要 clone，在 Claude Code 加一次 relay（`-s user`：任何資料夾都能用）：
 
 ```bash

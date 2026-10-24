@@ -156,7 +156,7 @@ a:hover > .i, .fig.link:hover .arrow > .i { transform: translateX(3px); }
 .ask { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 0 24px; padding-top: 56px; }
 .ask-q { grid-column: 1 / span 5; }
 .ask-q label { display: block; cursor: text; }
-.ask-q h1 { margin: 0; font-size: clamp(38px, 4.7vw, 66px); line-height: 1.02; font-weight: 700; font-stretch: 85%; letter-spacing: -.035em; }
+.ask-q .ask-title { margin: 0; font-size: clamp(38px, 4.7vw, 66px); line-height: 1.02; font-weight: 700; font-stretch: 85%; letter-spacing: -.035em; }
 .days-field { display: flex; align-items: flex-end; gap: 14px; margin-top: 36px; border-bottom: 3px solid var(--ink); transition: border-color .16s var(--ease); }
 .days-field:focus-within { border-bottom-color: var(--red); }
 .days-input {
@@ -169,6 +169,9 @@ a:hover > .i, .fig.link:hover .arrow > .i { transform: translateX(3px); }
 .days-hint { margin: 12px 0 0; font-size: 15px; color: var(--ink-3); }
 .days-alt { margin: 18px 0 0; max-width: 46ch; font-size: 15.5px; color: var(--ink-2); }
 .days-alt a { font-weight: 650; }
+/* 稅務頁：頁面標題下面的天數工具，問題小一級 */
+.page-head + .ask { padding-top: 36px; }
+.page-head + .ask .ask-title { font-size: clamp(30px, 3.3vw, 46px); }
 .ask-grid { grid-column: 7 / -1; padding-top: 10px; min-width: 0; }
 .ask .figs { grid-column: 1 / -1; margin-top: 56px; }
 
@@ -629,6 +632,82 @@ a:hover > .i, .fig.link:hover .arrow > .i { transform: translateX(3px); }
 
 .calc-sticky { display: none; }
 
+/* --- 首頁（介紹頁）：三個問題 --- */
+
+.intro-head { padding-block: 48px 0; }
+.intro-head h1 { margin: 0; max-width: 24ch; font-size: clamp(40px, 4.2vw, 60px); line-height: 1; font-weight: 700; font-stretch: 85%; letter-spacing: -.035em; }
+.intro-head .lede { margin: 16px 0 0; max-width: 72ch; font-size: 19px; line-height: 1.5; color: var(--ink-2); }
+.q-list { list-style: none; margin: 34px 0 0; padding: 0; border-top: 2px solid var(--ink); }
+.q { display: grid; grid-template-columns: 96px minmax(0, 1fr) minmax(0, 480px); gap: 0 32px; align-items: start; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+.q-n { font-size: 60px; line-height: .85; font-weight: 800; font-stretch: 75%; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.q-title { margin: 0; font-size: 32px; line-height: 1.08; font-weight: 700; font-stretch: 88%; letter-spacing: -.02em; }
+.q-title label { cursor: text; }
+.q-text { margin: 8px 0 0; max-width: 48ch; font-size: 16px; line-height: 1.5; color: var(--ink-3); }
+.q.lead { padding: 20px 0 22px; }
+.q.lead .q-n { font-size: 96px; color: var(--red); }
+.q.lead .q-title { font-size: 44px; }
+.q-days { display: flex; align-items: flex-end; gap: 12px; border-bottom: 3px solid var(--ink); transition: border-color .16s var(--ease); }
+.q-days:focus-within { border-bottom-color: var(--red); }
+.q-days-input { width: 3.3ch; min-width: 0; padding: 0; border: 0; outline: none; background: transparent; color: var(--ink); font: 800 80px/.86 var(--font); font-stretch: 75%; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.q-unit { padding-bottom: 10px; font-size: 18px; font-weight: 650; }
+.q-days { position: relative; }
+.q-sizer { position: absolute; left: 0; top: 0; width: auto; visibility: hidden; white-space: pre; pointer-events: none; }
+.q-status { margin-top: 12px; }
+.q-word { margin: 0; font-size: 38px; line-height: 1; font-weight: 800; font-stretch: 82%; letter-spacing: -.03em; }
+.q-word.red { color: var(--red); }
+.q-word .note-mark { font-size: 13px; vertical-align: top; position: relative; top: .25em; }
+.q-note { margin: 8px 0 0; font-size: 15px; line-height: 1.5; color: var(--ink-2); }
+.q-link { display: block; width: fit-content; margin-top: 12px; font-size: 15.5px; font-weight: 650; }
+.q-link.big { margin-top: 4px; font-size: 24px; font-weight: 700; font-stretch: 90%; text-decoration-color: var(--ink); text-decoration-thickness: 2px; text-underline-offset: 6px; }
+.q-link.big:hover { text-decoration-color: var(--red); }
+.q-fig { display: flex; align-items: baseline; gap: 12px; margin: 0; }
+.q-fig .n { font-size: 64px; line-height: .9; font-weight: 800; font-stretch: 75%; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.q-fig .u { font-size: 15px; color: var(--ink-2); }
+.figs.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.plain-list { list-style: none; margin: 28px 0 0; padding: 0; border-top: 1px solid var(--ink); }
+.plain-list li { padding: 12px 0; border-bottom: 1px solid var(--rule); max-width: 78ch; color: var(--ink-2); }
+.plain-list strong { color: var(--ink); }
+.principles { margin-top: 36px; }
+
+/* 連接 Claude：步驟一步一件事，指令用原尺寸 */
+.lead-text { font-size: 19px; line-height: 1.5; color: var(--ink); }
+.client-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin: 24px 0 8px; }
+.client-note { margin: 0 0 8px; font-size: 15px; color: var(--ink-2); }
+.client-note p { margin: 0; }
+.client-note .callout { margin: 0 0 8px; }
+.phone-only { display: none; }
+.install-steps { list-style: none; margin: 16px 0 0; padding: 0; border-top: 2px solid var(--ink); }
+.install-step { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 0 24px; padding: 20px 0 24px; border-bottom: 1px solid var(--rule); }
+.step-n { font-size: 72px; line-height: .82; font-weight: 800; font-stretch: 72%; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
+.step-body { min-width: 0; }
+.step-body h3 { margin: 4px 0 6px; font-size: 22px; font-weight: 700; font-stretch: 90%; }
+.step-body p { margin: 0 0 10px; max-width: 68ch; color: var(--ink-2); }
+.step-body .btn { margin-top: 4px; }
+.step-body code, .plain-list code, .paths code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .9em; background: var(--paper-2); padding: 1px 4px; overflow-wrap: anywhere; }
+.code-call { margin: 12px 0 4px; border: 1px solid var(--ink); background: var(--sheet); }
+.code-call figcaption { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 6px 6px 12px; border-bottom: 1px solid var(--rule); font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.copy-btn { padding: 5px 12px; border: 1px solid var(--ink); background: transparent; color: var(--ink); font-size: 13px; font-weight: 650; letter-spacing: 0; text-transform: none; cursor: pointer; }
+.copy-btn:hover { background: var(--ink); color: var(--paper); }
+.code-call pre { margin: 0; padding: 12px; white-space: pre; overflow-x: auto; }
+/* 一行指令：只在空白處換行，接續的行縮排，看得出還是同一行 */
+.code-call.cmd pre { white-space: pre-wrap; overflow-wrap: normal; word-break: normal; padding-left: calc(12px + 2ch); text-indent: -2ch; }
+.step-body .code-call code { background: none; padding: 0; font-size: 14px; }
+.code-call .tok { white-space: nowrap; }
+.step-body p code, .plain-list code { white-space: nowrap; }
+.code-call.cmd pre { overflow-x: auto; }
+.code-call code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 14px; line-height: 1.55; color: var(--ink); }
+.paths { margin: 8px 0 0; }
+.paths > div { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 12px; padding: 6px 0; font-size: 15px; }
+.paths dt { font-weight: 650; color: var(--ink-3); }
+.paths dd { margin: 0; }
+.tools-h { margin-top: 44px; }
+/* 一個區塊邊界只留一條線：小標下面的線就是表格／清單的頂線 */
+.sub-h + .table-wrap .status-table, .sub-h + .plain-list { border-top: 0; }
+.sub-h + .table-wrap { margin-top: 0; }
+.sub-h + .plain-list { margin-top: 0; }
+.chapter-body > div > .figs:first-child { border-top: 0; }
+.chapter-body > div > .figs:first-child .fig { padding-top: 0; }
+
 /* --- 代理人（WebMCP）提示 --- */
 
 .agent-toast {
@@ -706,6 +785,10 @@ a:hover > .i, .fig.link:hover .arrow > .i { transform: translateX(3px); }
   .chapter-head { margin-bottom: 20px; }
   .chapter-note { max-width: 60ch; }
   .split { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  .q { grid-template-columns: 64px minmax(0, 1fr); gap: 12px 20px; }
+  .q-act { grid-column: 2; }
+  .figs.four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .figs.four .fig + .fig { border-top: 0; }
   .rail, .browse-main { grid-column: 1 / -1; }
   .rail { position: static; max-height: none; overflow: visible; margin-bottom: 28px; }
   .rail > summary { pointer-events: auto; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 15px; letter-spacing: .02em; color: var(--ink); padding: 4px 0 10px; }
@@ -759,7 +842,8 @@ a:hover > .i, .fig.link:hover .arrow > .i { transform: translateX(3px); }
   body { font-size: 16px; }
   /* 本機 relay 只有桌面版的 Claude Code 用得到；手機上就不放了 */
   .relay, .desktop-only { display: none; }
-  .ask-q h1 { font-size: 36px; }
+  .phone-only { display: block; }
+  .ask-q .ask-title { font-size: 36px; }
   .days-field { margin-top: 26px; }
   .days-input { font-size: 104px; }
   .days-unit { font-size: 19px; padding-bottom: 10px; }
@@ -791,6 +875,21 @@ a:hover > .i, .fig.link:hover .arrow > .i { transform: translateX(3px); }
   .ed-line { font-size: 19px; }
   .event-layout { padding-top: 36px; }
   .search-head h1 { font-size: 34px; }
+  .intro-head { padding-top: 36px; }
+  .intro-head h1 { font-size: 38px; }
+  .q { grid-template-columns: 44px minmax(0, 1fr); gap: 10px 14px; padding: 18px 0; }
+  .q-n { font-size: 44px; }
+  .q.lead .q-n { font-size: 56px; }
+  .q-title { font-size: 25px; }
+  .q.lead .q-title { font-size: 30px; }
+  .q-act { grid-column: 1 / -1; }
+  .q-days-input { font-size: 80px; }
+  .figs.four { grid-template-columns: minmax(0, 1fr); }
+  .figs.four .fig + .fig { border-top: 1px solid var(--rule); }
+  .install-step { grid-template-columns: 44px minmax(0, 1fr); gap: 0 14px; }
+  .step-n { font-size: 48px; }
+  .code-call code { font-size: 13px; }
+  .paths > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
   .facts-list > div { grid-template-columns: 88px minmax(0, 1fr); gap: 12px; }
   .fact-cards { grid-template-columns: minmax(0, 1fr); }
   .guide-list .t { font-size: 18px; }
