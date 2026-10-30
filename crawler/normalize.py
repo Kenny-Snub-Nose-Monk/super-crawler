@@ -380,6 +380,71 @@ def parse_location(address: Optional[str]) -> tuple[Optional[str], Optional[str]
     return city, None
 
 
+# 國外。Accupass 的地址欄以國名開頭、後面直接黏著地名（「新加坡National Gallery Singapore」
+# 「中國Xinjiang南疆」「NepalBāgmatī尼泊爾」），其他來源是英文地址最後一段（"…, India"）。
+# 只認這兩個位置 —— 地址中間的國名多半是機構名：中國文化大學、中國信託、China Airlines 都在台北。
+# 「中國」後面還不能接中文字（中國文化大學、中國科技大學）；英文國名在開頭時，
+# 後面要接大寫、非 ASCII、逗號或結尾（NepalB… 算，China Airlines 不算），所以英文這段不能忽略大小寫。
+_COUNTRIES_EN = (r"Singapore|China|Hong\s*Kong|Macau|Japan|(?:South\s+)?Korea|Malaysia|Thailand|"
+                 r"Vietnam|Philippines|Indonesia|India|Nepal|United\s+States|USA")
+_FOREIGN_RE = re.compile(
+    r"^\s*(?:新加坡|中國(?![一-鿿])|香港|澳門|日本|韓國|馬來西亞|泰國|越南|菲律賓|印尼|印度|尼泊爾|美國)"
+    rf"|^\s*(?:{_COUNTRIES_EN})(?=[A-ZÀ-￿,]|\s*$)"
+    rf"|,\s*(?:{_COUNTRIES_EN})\s*$")
+
+
+def outside_target_area(city: Optional[str], address: Optional[str]) -> bool:
+    """地址明講在雙北以外（別的縣市、國外）就回 True。
+
+    縣市已經解成雙北的不看地址 —— 「台灣台北市 … China Airlines」這種要留著。
+    什麼都看不出來的回 False：寧可多留一筆，不要把地址寫得很爛的雙北活動濾掉。
+    需要它是因為各 collector 的縣市過濾只擋「解得出、而且不是雙北」的，
+    解不出縣市的（台中、新竹、新加坡、尼泊爾的地址都解不出來）全被放行，
+    然後以「台北的活動」出現在網站上。
+    """
+    if city in ("臺北市", "新北市"):
+        return False
+    if city:
+        return True
+    text = address or ""
+    if not text or _TPE_TOKEN_RE.search(text):
+        return False
+    return bool(_OTHER_CITY_RE.search(text) or _OTHER_CITY_ZH_RE.search(text) or _FOREIGN_RE.search(text))
+
+
+# 場地欄（schema.org location.name）是主辦方自己打的字，常常塞進別的東西：
+# 交通說明、「活動地點：」這種標籤、一個網址，甚至整段活動介紹。
+_VENUE_LABEL_RE = re.compile(
+    r"^(?:活動地點|講座地點|上課地點|集合地點|地點|地址|Google\s*地圖|Google\s*搜尋|Google\s*Maps)\s*[:：]\s*",
+    re.IGNORECASE)
+_VENUE_DIRECTIONS_RE = re.compile(r"^(?:大眾運輸|交通方式|交通資訊|交通)\s*[:：]")
+_VENUE_MAX = 60          # 超過這個長度就不太像一個地名了
+_VENUE_HARD_MAX = 100    # 連第一個分句都切不出來、又超過這個長度的，當成介紹文字丟掉
+
+
+def clean_venue(venue: Optional[str]) -> Optional[str]:
+    """把場地欄整理成「一個地名」；整理不出來就回 None，畫面會改顯示地址。
+
+    真實樣本：
+      「Google地圖: 都蘭海角咖啡」            → 都蘭海角咖啡
+      「大眾運輸：捷運新店站→ 新店客運…」      → None（只有交通說明）
+      「「MOJO 1921」咖啡廳（…）：捷運中山站…」→ 冒號前那一段
+      "An Iconic Setting for … National Gallery Singapore, one of …"（260 字）→ None
+    """
+    v = (venue or "").strip()
+    if not v or re.match(r"https?://", v, re.IGNORECASE):
+        return None
+    if _VENUE_DIRECTIONS_RE.match(v):
+        return None
+    v = _VENUE_LABEL_RE.sub("", v).strip()
+    if len(v) <= _VENUE_MAX:
+        return v or None
+    head = re.split(r"[：:；;。]", v, maxsplit=1)[0].strip()
+    if head != v and 2 <= len(head) <= _VENUE_MAX:
+        return head
+    return v if len(v) <= _VENUE_HARD_MAX else None
+
+
 # --- 費用 -------------------------------------------------------------
 
 _FREE_HINTS = ["免費", "免票", "自由入場", "free entry", "free admission", "no charge"]

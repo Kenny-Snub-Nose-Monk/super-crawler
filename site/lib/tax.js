@@ -16,7 +16,9 @@ const TALENT_SHARE = 0.5;
 
 /** 天數 → 身分。band 是三個稅務上有差別的區間。 */
 export function residency(days, P) {
-  const d = Math.max(0, Math.floor(Number(days) || 0));
+  // 一年最多 365／366 天 —— 網址或 AI 工具給了 400 也不能照算
+  const cap = P.year ? daysInYear(P.year) : 366;
+  const d = Math.min(cap, Math.max(0, Math.floor(Number(days) || 0)));
   const resident = d >= P.residency_days.value;
   const band = d <= 90 ? "le90" : resident ? "resident" : "mid";
   const labels = {
@@ -138,7 +140,7 @@ export function estimate(input, P) {
   const elderly = int0(input.elderly);
   const otherIncome = n0(input.otherIncome);
   const leaving = Boolean(input.leavingForGood);
-  const yearDays = isLeap(P.year) ? 366 : 365;
+  const yearDays = daysInYear(P.year);
   const f = leaving ? Math.min(1, res.days / yearDays) : 1;
 
   const grossSalary = salary + foreignPay;
@@ -257,6 +259,10 @@ function isLeap(y) {
   return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
 }
 
+export function daysInYear(y) {
+  return isLeap(y) ? 366 : 365;
+}
+
 function fmt(n) {
   return new Intl.NumberFormat("en-US").format(n);
 }
@@ -276,4 +282,26 @@ export function latestArrivalForResidency(year, P) {
   const need = P.residency_days.value;
   // 計入 (arrive, 12/31]，所以要 12/31 − arrive ≥ need
   return addDays(`${year}-12-31`, -need);
+}
+
+/**
+ * 還不是居住者的話，今年還有沒有機會 —— 試算的提示用。不能只給「最晚 7/1 抵達」：
+ * 10 月底才打開試算的人看到一個已經過去的日期，會以為自己還有救。
+ *   past       年度已經過完，身分定了
+ *   arrive_by  年度還沒開始：最晚哪天抵達、之後一直待著就夠
+ *   reachable  今年：剩下的日子還夠，by 是從今天起天天都在、哪天會滿
+ *   too_late   今年：剩下的日子全待著也不夠
+ * ahead 是「今天之後已經算進 days 的天數」（行程模式推估到年底的那段），那些日子不能再算一次。
+ */
+export function residencyOutlook(days, year, todayYmd, P, { ahead = 0 } = {}) {
+  const res = residency(days, P);
+  const need = res.toResident;
+  if (res.resident) return { kind: "resident", need: 0 };
+  const thisYear = Number(todayYmd.slice(0, 4));
+  if (year < thisYear) return { kind: "past", need };
+  if (year > thisYear) return { kind: "arrive_by", need, by: latestArrivalForResidency(year, P) };
+  // 計入 (today, 12/31]：今天已經在 days 裡了
+  const free = Math.max(0, daysBetween(todayYmd, `${year}-12-31`) - ahead);
+  if (need <= free) return { kind: "reachable", need, free, by: addDays(todayYmd, need) };
+  return { kind: "too_late", need, free };
 }

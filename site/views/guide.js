@@ -9,7 +9,7 @@ import { queryEvents } from "../query.js";
 import { windows } from "../lib/time.js";
 import { shortDate, plural, sourceTitle, sourceLabelLine } from "../lib/format.js";
 import { showFact } from "./report.js";
-import { eventRow, factCard, calcBlock, guideRow, saveButton, emptyState } from "./components.js";
+import { eventRow, factCard, calcBlock, guideRow, saveButton, emptyState, notFound } from "./components.js";
 
 const PROMPTS = {
   "tax-in-taiwan": ["I moved to Taipei in March 2026 on a Gold Card. Do I file a tax return next May?", "What changes if I leave Taiwan for good in November?"],
@@ -103,7 +103,10 @@ function sourceStatus(s) {
 
 export function render({ args, params, state, fromAgent }) {
   const g = state.guidesBySlug[args[0]];
-  if (!g) return { title: "Guide not found", node: h("div", { class: "wrap" }, emptyState("That guide doesn't exist.")) };
+  if (!g) {
+    return notFound("Guide not found", "There's no guide at this address. The link may be mistyped, or the guide was renamed.",
+      [["#/tax", "See all tax guides"], ["#/tax/calculator", "Open the tax calculator"], ["#/search", "Search the site"]]);
+  }
   const ctx = { facts: state.facts, onFact: null };
   const article = h("article", { class: "guide-body" });
   ctx.onFact = (fid, el) => {

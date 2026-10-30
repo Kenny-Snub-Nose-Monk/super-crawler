@@ -326,6 +326,7 @@ a:hover > .i, .fig.link:hover .arrow > .i { transform: translateX(3px); }
 .more-btn:hover { background: var(--ink); color: var(--paper); }
 .empty { padding: 28px 0; color: var(--ink-2); border-top: 2px solid var(--ink); border-bottom: 1px solid var(--rule); }
 .empty p { margin: 0 0 8px; max-width: 60ch; font-size: 17px; }
+.empty .empty-links { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 14px 0 0; font-weight: 650; }
 
 /* --- 主題 --- */
 
@@ -394,6 +395,8 @@ a:hover > .i, .fig.link:hover .arrow > .i { transform: translateX(3px); }
 .sort select { height: 40px; width: auto; }
 .field input:focus, .field select:focus, .sort select:focus { outline: 2px solid var(--red); outline-offset: 1px; border-color: var(--ink); }
 .field input::placeholder { color: var(--ink-3); }
+.field input[aria-invalid="true"] { border-color: var(--red); }
+.field-error { margin: 0; font-size: 14px; font-weight: 650; color: var(--red-ink); }
 .date-range { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field > span { font-size: 14px; font-weight: 650; color: var(--ink-2); }

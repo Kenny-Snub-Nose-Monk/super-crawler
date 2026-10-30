@@ -94,7 +94,9 @@ export function render({ params: sp, state, fromAgent }) {
       h("legend", null, "Show only"),
       flag("english", "English-friendly", q.english),
       flag("free_only", "Free", Boolean(q.params.free_only)),
-      flag("signup_open", "Still open for sign-up", Boolean(q.params.signup_open)),
+      // 參數名還是 signup_open（WebMCP 與 Python 共用），但沒有任何來源給報名截止日，
+      // 實際上一律退回用開始時間判斷 —— 標籤照它真正做的事寫，不承諾「還能報名」
+      flag("signup_open", "Hasn't started yet", Boolean(q.params.signup_open)),
       flag("exclude_online", "In person", Boolean(q.params.exclude_online)),
       flag("new", "Found this week", q.fresh)),
     typeChips,
