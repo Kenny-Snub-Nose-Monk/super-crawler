@@ -35,6 +35,7 @@ from collections import Counter
 from typing import Iterable, Iterator, Optional
 
 from ..jsonld import _LD_RE, event_from_jsonld, find_all_events
+from ..normalize import outside_target_area
 from ..schema import Event
 from .base import Collector
 
@@ -119,8 +120,11 @@ class MeetupCollector(Collector):
                 self.dropped["跨主題重複"] += 1
                 continue
             seen.add(ev.uid)
-            # 解析不出縣市的先留著 —— 寧可多，不要漏
+            # 解析不出縣市的先留著 —— 寧可多，不要漏；地址明講在別的縣市（Taoyuan City…）的除外
             if ev.city and self.cities and ev.city not in self.cities:
+                self.dropped["非目標縣市"] += 1
+                continue
+            if ev.city is None and "online" not in ev.tags and outside_target_area(None, ev.address):
                 self.dropped["非目標縣市"] += 1
                 continue
             yield ev

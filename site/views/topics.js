@@ -5,7 +5,7 @@ import { h } from "../lib/dom.js";
 import { queryEvents } from "../query.js";
 import { windows } from "../lib/time.js";
 import { TOPICS, topicById, applySub } from "../lib/topics.js";
-import { eventCard, agenda, emptyState, guideRow } from "./components.js";
+import { eventCard, agenda, emptyState, guideRow, notFound } from "./components.js";
 import { chapter } from "./report.js";
 import { pickScore } from "./home.js";
 
@@ -38,7 +38,10 @@ function indexPage(state) {
 export function render({ args, params, state }) {
   if (!args.length) return indexPage(state);
   const topic = topicById(args[0]);
-  if (!topic) return { title: "Topic", node: h("div", { class: "wrap" }, emptyState("No such topic.")) };
+  if (!topic) {
+    return notFound("Topic not found", "There's no topic at this address. The link may be mistyped.",
+      [["#/topics", "See all topics"], ["#/events", "Browse all events"]]);
+  }
 
   const w = windows();
   const sub = params.get("sub") || "";

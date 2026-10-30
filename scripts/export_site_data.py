@@ -5,9 +5,12 @@
     site/data/content.json   指南、稅務 facts（含核對狀態）、試算參數、行事曆、來源索引
 
 網站是純靜態頁，查詢與試算都在瀏覽器裡做（site/query.js、site/lib/tax.js），
-所以這裡不過濾、不計算稅 —— 只做三件事：
+所以這裡不計算稅 —— 只做三件事：
 
-  1. 活動狀態以「匯出當下」重算一次，標題整句英文或有英文標題的補上 lang:en
+  1. 活動狀態以「匯出當下」重算一次，標題整句英文或有英文標題的補上 lang:en；
+     場地欄整理成一個地名，而且有兩種活動不放上網站（events.jsonl 照留）：
+     地址明講在雙北以外的實體活動、以及期間長達兩年以上的「常駐刊登」
+     （場地出租、一直掛著的線上課程 —— 2021 年開始到 2036 年的那種，掛著「On now」）
   2. 稅務 facts 對快照核對一次，把結果（已核對／待複核／未核對）一起帶過去
   3. 檢查指南裡的每一個引用都存在 —— {{fact:x}}、[[guide:y]]、來源 id。
      引用壞掉就失敗退出：網站上出現一個字面的 {{fact:x}} 比整頁沒更新更糟。
@@ -22,13 +25,14 @@ from __future__ import annotations
 import json
 import re
 import sys
+from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import yaml
 
-from crawler.normalize import now_iso, script_language_tags
+from crawler.normalize import clean_venue, now_iso, outside_target_area, script_language_tags
 from crawler.schema import EventType
 from crawler.store import EventStore
 from crawler.tax.collect import SnapshotStore
@@ -50,15 +54,37 @@ def site_tags(ev) -> list[str]:
     return list(ev.tags) + [t for t in dict.fromkeys(extra) if t not in ev.tags]
 
 
+# 超過這個天數的「活動」不是一場活動，是一則常駐的廣告。不用 90 天這種短門檻：
+# 博物館的特展常常掛一年半（昆蟲特展 2025/10 → 2027/4），每週一次的語言交換也會一次刊登一年多。
+STANDING_LISTING_DAYS = 730
+
+
+def standing_listing(ev) -> bool:
+    if not ev.starts_at or not ev.ends_at:
+        return False
+    span = datetime.fromisoformat(ev.ends_at) - datetime.fromisoformat(ev.starts_at)
+    return span.days > STANDING_LISTING_DAYS
+
+
 def export_events() -> dict:
     store = EventStore()
     store.refresh_status()           # 只改記憶體裡的狀態，不寫回 events.jsonl
     events = []
+    dropped = {"outside": 0, "standing": 0}
     for ev in store.all():
+        if "online" not in ev.tags and outside_target_area(ev.city, ev.address):
+            dropped["outside"] += 1
+            continue
+        if standing_listing(ev):
+            dropped["standing"] += 1
+            continue
         d = ev.to_dict()
         d["tags"] = site_tags(ev)
+        # 舊資料是 clean_venue 出現前抓的；新抓的已經整理過，再整理一次也不會變
+        d["venue"] = clean_venue(ev.venue)
         events.append(d)
     events.sort(key=lambda e: (e["starts_at"] or "9999", e["uid"]))
+    print(f"  活動：不放上網站 —— 雙北以外 {dropped['outside']} 筆、常駐刊登 {dropped['standing']} 筆")
     return {"generated_at": now_iso(), "types": [t.value for t in EventType], "events": events}
 
 

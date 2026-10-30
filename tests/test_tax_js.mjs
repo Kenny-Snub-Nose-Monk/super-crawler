@@ -7,7 +7,7 @@
 //
 // 跑法： node tests/test_tax_js.mjs
 import { readFileSync, existsSync } from "node:fs";
-import { residency, countDays, progressive, estimate, resolveParams, latestArrivalForResidency } from "../site/lib/tax.js";
+import { residency, countDays, progressive, estimate, resolveParams, latestArrivalForResidency, residencyOutlook } from "../site/lib/tax.js";
 import { inputFromParams, paramsFromInput } from "../site/views/calculator.js";
 
 const path = new URL("../site/data/content.json", import.meta.url);
@@ -149,6 +149,30 @@ console.log("\n有填但沒有改變稅額的欄位要說出原因（試算頁�
   check("整年在台勾離台：說明只改期限", /deadline/.test(fx({ leavingForGood: true }).effects.leavingForGood || ""));
   const nr = fx({ days: 150, rent: 240000, specialTalent: true });
   check("非居住者：四個欄位都說明只適用居住者", ["rent", "overseasIncome", "specialTalent", "leavingForGood"].every((k) => /residents/.test(nr.effects[k] || "")));
+}
+
+console.log("\n12. 不合理的輸入（UX 評測 3.1：400 天照算、負數年薪默默當沒填）");
+check("400 天 → 以 365 天計，不是「400 days in 2026」", residency(400, P26).days === 365, residency(400, P26).days);
+check("999 天也一樣", estimate({ days: 999, salary: 1200000 }, P26).residency.days === 365);
+{
+  const sp = new URLSearchParams("year=2026&days=400&salary=-500000&rent=-1");
+  const i = inputFromParams(sp, content.tax);
+  check("網址的天數超過一年 → 365", i.days === 365, i.days);
+  check("網址的負數 → 0", i.salary === 0 && i.rent === 0, `${i.salary} ${i.rent}`);
+}
+
+console.log("\n13. 還能不能成為居住者（UX 評測 3.1：10 月底還建議「7/1 前抵達」）");
+{
+  const o = (days, year, today, opt) => residencyOutlook(days, year, today, P26, opt);
+  check("10/30、50 天：今年已不可能", o(50, 2026, "2026-10-30").kind === "too_late");
+  check("10/30、50 天：剩 62 天", o(50, 2026, "2026-10-30").free === 62, o(50, 2026, "2026-10-30").free);
+  check("10/30、150 天：還差 33 天，12/2 滿", (() => { const r = o(150, 2026, "2026-10-30"); return r.kind === "reachable" && r.by === "2026-12-02"; })());
+  check("2/1、0 天：還來得及", o(0, 2026, "2026-02-01").kind === "reachable");
+  check("還沒開始的年度：最晚 7/1 抵達", (() => { const r = o(0, 2027, "2026-10-30"); return r.kind === "arrive_by" && r.by === "2027-07-01"; })());
+  check("過完的年度：身分定了", o(100, 2025, "2026-10-30").kind === "past");
+  check("居住者：不用建議", o(200, 2026, "2026-10-30").kind === "resident");
+  // 行程模式：還在台灣的人，年底前的天數已經算進去了，不能再算一次
+  check("行程模式 9/1 起一直在：推到年底 121 天、已經沒有空檔 → 不可能", o(121, 2026, "2026-10-30", { ahead: 62 }).kind === "too_late");
 }
 
 console.log(failures.length ? `\n${failures.length} 個失敗` : "\n全部通過");

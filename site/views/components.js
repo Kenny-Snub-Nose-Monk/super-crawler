@@ -202,6 +202,17 @@ export function emptyState(text, _icon, action) {
   return h("div", { class: "empty" }, h("p", null, text), action || null);
 }
 
+/** 找不到的活動／指南／主題：說清楚發生什麼，再給幾條回得去的路，不要只剩一行字 */
+export function notFound(title, text, links) {
+  return {
+    title,
+    node: h("div", null,
+      h("header", { class: "wrap page-head" }, h("h1", null, title)),
+      h("div", { class: "wrap" }, emptyState(text, null,
+        h("p", { class: "empty-links" }, links.map(([href, label]) => h("a", { href }, label, icon("arrow"))))))),
+  };
+}
+
 export function guideRow(g, n, { start = false } = {}) {
   return h("li", { class: start ? "start" : null },
     h("a", { href: `#/guide/${g.slug}` },

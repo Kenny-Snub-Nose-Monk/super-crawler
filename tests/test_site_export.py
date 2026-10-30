@@ -7,11 +7,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from crawler.normalize import script_language_tags
+from crawler.normalize import clean_venue, outside_target_area, script_language_tags
 from crawler.tax.collect import SnapshotStore, load_sources
 from crawler.tax.facts import load_facts
 from crawler.schema import Event
-from scripts.export_site_data import build_tax, load_guides, site_tags, validate
+from scripts.export_site_data import build_tax, load_guides, site_tags, standing_listing, validate
 
 
 def main():
@@ -83,6 +83,48 @@ def main():
     check("六篇稅務指南", len(tax_guides) == 6, [g["slug"] for g in tax_guides])
     check("總覽排第一且標 start_here", tax_guides[0]["slug"] == "tax-in-taiwan" and tax_guides[0].get("start_here"))
     check("每篇都有出處", all(g.get("sources") for g in tax_guides))
+
+    print("\n6. 活動地點（UX 評測 3.1：Where 欄出現介紹文字、新加坡的活動被當成台北活動）")
+    sg = ("An Iconic Setting for Meaningful Connections Hosted at National Gallery Singapore, one of Singapore's most "
+          "prestigious cultural landmarks, Tai-Sin 2026 brings founders, investors and business leaders together in a "
+          "setting designed for high-value conversations.")
+    check("一整段介紹 → 不當場地", clean_venue(sg) is None)
+    check("「Google地圖:」標籤拿掉", clean_venue("Google地圖: 都蘭海角咖啡") == "都蘭海角咖啡")
+    check("只有交通說明 → 不當場地",
+          clean_venue("大眾運輸：捷運新店站→ 新店客運烏來線（849號）（每20分鐘一班）→車程約15分鐘伸丈板站下車往回走一小段到文山農場入口") is None)
+    check("場地＋冒號＋交通 → 留冒號前",
+          clean_venue("「MOJO 1921」咖啡廳（面對當代藝術館正門口，在右手邊那棟）：捷運中山站 1 號出口，走路 4 分鐘（或接中山地下街 R4 號出口，走路 1 分鐘）")
+          == "「MOJO 1921」咖啡廳（面對當代藝術館正門口，在右手邊那棟）")
+    check("網址 → 不當場地", clean_venue("https://maps.app.goo.gl/xwjEySctoAEaGkCw8") is None)
+    check("長但正常的場地名留著",
+          clean_venue("Technology Building & 1F, Sixth Academic Building, National Taipei University of Technology")
+          == "Technology Building & 1F, Sixth Academic Building, National Taipei University of Technology")
+    check("一般場地不動", clean_venue("Songshan Cultural and Creative Park") == "Songshan Cultural and Creative Park")
+
+    # (city, address, 期望 outside, 這一列在測什麼) —— 地址都是 events.jsonl 裡的真實樣本
+    for city, addr, want, what in [
+        (None, "新加坡National Gallery Singapore", True, "新加坡（國名黏著場地名）"),
+        (None, "中國Xinjiang南疆", True, "中國"),
+        (None, "NepalBāgmatī尼泊爾", True, "尼泊爾"),
+        (None, "No. 656號, Jianxing Rd, Jianxing Village, North District, 404, Taichung City, Taiwan", True, "台中（英文）"),
+        (None, "東河鄉都蘭村舊部路14-10號, Taitung County, Taiwan", True, "台東"),
+        (None, "No.460 Kengguo Rd. Luzhu District Taoyuan City Taiwan, Taoyuan City", True, "桃園"),
+        (None, "Room. 2, 5th Floor, No. 575, Linsen North Road., Taipei", False, "只有裸的 Taipei → 看不出來，留著"),
+        (None, "樓 之 1, No. 155號3, Section 1, Keelung Rd", False, "基隆路不是基隆市"),
+        (None, "", False, "沒有地址 → 留著"),
+        (None, "Ghaziabad, Uttar Pradesh, India", True, "英文地址最後一段是國名"),
+        (None, "中國文化大學推廣部大夏館", False, "中國文化大學在台北"),
+        (None, "China Airlines Building, Nanjing E Rd", False, "China Airlines 不是中國"),
+        ("臺北市", "台灣台北市 China Airlines Building", False, "已經解成雙北 → 不看地址"),
+        ("臺中市", "台中市西屯區", True, "解成別的縣市"),
+    ]:
+        check(f"{what}", outside_target_area(city, addr) is want, addr)
+
+    print("\n7. 常駐刊登不放上網站（UX 評測 3.1：2021 → 2036 的活動掛著「On now」）")
+    mk = lambda s, e: Event(source_platform="accupass", source_id="s", source_url="https://s", title="t", starts_at=s, ends_at=e)
+    check("2021 → 2036 → 常駐", standing_listing(mk("2021-05-24T15:00:00+08:00", "2036-12-31T16:00:00+08:00")))
+    check("一年半的博物館特展 → 照常顯示", not standing_listing(mk("2025-10-18T09:00:00+08:00", "2027-04-30T17:00:00+08:00")))
+    check("沒有結束時間 → 照常顯示", not standing_listing(mk("2026-11-01T19:00:00+08:00", None)))
 
     print(f"\n{len(failures)} 個失敗" if failures else "\n全部通過")
     sys.exit(1 if failures else 0)

@@ -27,6 +27,7 @@ import re
 from typing import Iterator, Optional
 
 from ..jsonld import event_from_jsonld, find_event
+from ..normalize import outside_target_area
 from ..schema import Event
 from .base import Collector
 
@@ -94,8 +95,12 @@ class AccupassCollector(Collector):
             self.sleep()
             if ev is None:
                 continue
-            # 縣市過濾：地址解析不出縣市的先留著（寧可多，不要漏）
+            # 縣市過濾：地址解析不出縣市的先留著（寧可多，不要漏）——
+            # 除非地址明講在別的縣市或國外（台中、新竹、新加坡……解不出縣市，但看得出不是雙北）
             if ev.city and self.cities and ev.city not in self.cities:
+                skipped_city += 1
+                continue
+            if ev.city is None and "online" not in ev.tags and outside_target_area(None, ev.address):
                 skipped_city += 1
                 continue
             kept += 1

@@ -323,7 +323,11 @@ async function register() {
         year: P.year, days: res.days, days_counted_so_far: d.counted, days_projected_to_year_end: d.projected,
         assumptions: d.assumed ? [d.assumed] : [],
         status: res.resident ? "resident" : "non-resident", band: res.band, days_short_of_residency: res.toResident,
-        latest_arrival_to_be_resident_if_staying: latestArrivalForResidency(P.year, P),
+        // 日期已經過了就給 null —— 不然 AI 會建議一個回不去的抵達日
+        latest_arrival_to_be_resident_if_staying: (() => {
+          const latest = latestArrivalForResidency(P.year, P);
+          return latest >= taipeiParts().ymd ? latest : null;
+        })(),
         what_it_means: meaning,
         rules: ["residency_days", "day_counting", "foreign_employer_90", "foreign_employer_over_90_rate"].map((id) => factOut(state.facts[id])),
         page_url: location.href,

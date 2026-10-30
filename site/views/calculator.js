@@ -2,7 +2,7 @@
 // WebMCP 的 estimate_tax / check_tax_residency 也是把參數放進網址再打開這一頁。
 
 import { h, icon, dateInput } from "../lib/dom.js";
-import { estimate, residency, countDays, resolveParams, latestArrivalForResidency } from "../lib/tax.js";
+import { estimate, residency, countDays, resolveParams, residencyOutlook, daysInYear } from "../lib/tax.js";
 import { taipeiParts } from "../lib/time.js";
 import { money, pct, shortDate } from "../lib/format.js";
 import { yearGrid, factMark } from "./report.js";
@@ -14,7 +14,12 @@ const BOOL_FIELDS = ["married", "specialTalent", "leavingForGood"];
 export function inputFromParams(params, taxData) {
   const P = resolveParams(taxData, params.get("year"));
   const input = { year: P.year };
-  for (const k of NUM_FIELDS) if (params.get(k)) input[k] = Number(params.get(k));
+  // 網址可以被手改：負數當 0、天數不超過那一年的天數，跟輸入欄擋下來的範圍一樣
+  for (const k of NUM_FIELDS) {
+    const n = Number(params.get(k));
+    if (params.get(k) && Number.isFinite(n)) input[k] = Math.max(0, n);
+  }
+  if (input.days != null) input.days = Math.min(input.days, daysInYear(P.year));
   for (const k of BOOL_FIELDS) input[k] = params.get(k) === "1";
   input.mode = params.get("mode") === "trips" ? "trips" : "days";
   input.stays = (params.get("stays") || "").split(",").filter(Boolean).map((s) => {
@@ -86,10 +91,31 @@ export function render({ params, state, fromAgent }) {
     if (syncUrl) window.site.navigate("/tax/calculator", paramsFromInput(input), { replace: true, render: false });
   };
 
+  // 不合理的數字（負數、超過一年的天數、不是數字）只顯示錯誤，不拿去算 ——
+  // 結果停在上一個合理的值，網址也不跟著變
   const num = (key, label, opts = {}) => {
+    const errId = `${key}-error`;
     const el = h("input", { type: "number", inputmode: "numeric", min: "0", step: opts.step || "1", value: input[key] ?? "", placeholder: opts.placeholder || "0", name: key });
-    el.addEventListener("input", () => { input[key] = el.value === "" ? null : Number(el.value); update(); });
-    return h("div", { class: "field" }, h("label", { class: "field" }, h("span", null, label), el),
+    const err = h("p", { class: "field-error", id: errId, hidden: true });
+    const problem = () => {
+      if (el.validity.badInput) return "Enter a number.";
+      if (el.value === "") return null;
+      const v = Number(el.value);
+      if (v < 0) return "Can't be negative.";
+      if (opts.max && v > opts.max()) return opts.maxMessage();
+      return null;
+    };
+    el.addEventListener("input", () => {
+      const p = problem();
+      err.textContent = p || "";
+      err.hidden = !p;
+      if (p) { el.setAttribute("aria-invalid", "true"); el.setAttribute("aria-describedby", errId); return; }
+      el.removeAttribute("aria-invalid"); el.removeAttribute("aria-describedby");
+      input[key] = el.value === "" ? null : Number(el.value);
+      update();
+    });
+    if (opts.max) el.max = String(opts.max());
+    return h("div", { class: "field" }, h("label", { class: "field" }, h("span", null, label), el), err,
       opts.hint ? h("p", { class: "hint-text", style: "margin:0" }, opts.hint) : null, opts.effect ? effectSlot(key) : null);
   };
   const check = (key, label, hint, { effect = false } = {}) => {
@@ -113,7 +139,12 @@ export function render({ params, state, fromAgent }) {
   };
 
   // --- 天數 ---
-  const daysField = num("days", "Days in Taiwan this year", { hint: "Arrival days don't count; departure days do." });
+  const daysField = num("days", "Days in Taiwan this year", {
+    hint: "Arrival days don't count; departure days do.",
+    max: () => daysInYear(input.year),
+    maxMessage: () => `${input.year} has ${daysInYear(input.year)} days. Enter ${daysInYear(input.year)} or fewer.`,
+  });
+  const daysInputEl = daysField.querySelector("input");
   const staysList = h("ul", { class: "stays" });
   const paintStays = () => {
     staysList.replaceChildren();
@@ -145,7 +176,14 @@ export function render({ params, state, fromAgent }) {
     h("fieldset", null,
       h("legend", null, h("span", { class: "step-num" }, "1"), "Your days"),
       h("div", { style: "display:flex;flex-wrap:wrap;gap:12px;margin-bottom:18px" },
-        seg(years.map((y) => [y, `Tax year ${y}`]), input.year, (y) => { input.year = Number(y); if (input.mode === "trips") paintStays(); update(); }, "Tax year"),
+        seg(years.map((y) => [y, `Tax year ${y}`]), input.year, (y) => {
+          input.year = Number(y);
+          if (input.mode === "trips") paintStays();
+          // 閏年與平年的上限不同：換年度時天數欄重新檢查一次（合理的話它會自己 update）
+          daysInputEl.max = String(daysInYear(input.year));
+          daysInputEl.dispatchEvent(new Event("input"));
+          update();
+        }, "Tax year"),
         seg([["days", "I know my days"], ["trips", "Count from my trips"]], input.mode, (m) => { input.mode = m; showMode(); update(); }, "How to count")),
       daysField, tripsBox),
     h("fieldset", null,
@@ -230,14 +268,24 @@ function paintResult(box, r, P, d, input, state, grid) {
   if (res.resident) statusText = "You're taxed like a local: progressive rates on net income, with exemptions and deductions. You file every May.";
   else if (res.band === "mid") statusText = "Your Taiwan salary is taxed by flat withholding. Over 90 days, pay from an overseas employer for work here is taxable too.";
   else statusText = "Your Taiwan salary is taxed by flat withholding. Pay from an overseas employer for work here isn't taxed at 90 days or fewer.";
-  const latest = latestArrivalForResidency(input.year, P);
+  const outlook = residencyOutlook(res.days, r.year, taipeiParts().ymd, P,
+    { ahead: d.counted != null ? d.projected - d.counted : 0 });
+  const day = (ymd) => shortDate(`${ymd}T00:00:00+08:00`);
+  const outlookText = {
+    past: `${r.year} is over, so this status is final.`,
+    arrive_by: `Arriving by ${day(outlook.by)} and staying would make you a resident.`,
+    reachable: input.mode === "trips"
+      ? `${outlook.need} more days in Taiwan before 31 December would make you a resident.`
+      : `${outlook.need} more days would make you a resident. Staying from today without a break, that's ${day(outlook.by)}.`,
+    too_late: `${P.residency_days.value} days in ${r.year} is no longer possible${outlook.free ? `: only ${outlook.free} days of the year are left` : ""}. The estimate below uses non-resident rules.`,
+  }[outlook.kind];
 
   const statusCard = h("section", { class: "result-card" },
     h("h2", { class: "result-h" }, h("span", { class: "step-num" }, "A"), "Your status"),
     h("p", { class: `status-word${res.resident ? " resident" : ""}` }, res.resident ? "Tax resident" : "Non-resident", factMark("residency_days", state)),
     h("p", { class: "status-line" }, h("strong", null, `${res.days} days`), ` in ${r.year}${d.counted != null ? ` (${d.counted} so far)` : ""}. `, statusText),
     grid.el,
-    !res.resident ? h("p", { class: "hint-text" }, `${res.toResident} more days would make you a resident. Arriving by ${shortDate(`${latest}T00:00:00+08:00`)} and staying would do it.`) : null);
+    outlookText ? h("p", { class: "hint-text" }, outlookText) : null);
 
   const rows = r.lines.map((l) => {
     const fid = l.fact ? factIdFor(l.fact, P) : null;

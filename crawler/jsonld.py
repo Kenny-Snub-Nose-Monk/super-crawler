@@ -12,7 +12,7 @@ import json
 import re
 from typing import Any, Iterator, Optional
 
-from .normalize import (classify, detect_free, detect_languages,
+from .normalize import (classify, clean_venue, detect_free, detect_languages,
                         parse_location, strip_html, to_taipei_iso)
 from .schema import Event, EventStatus
 from .venues import lookup as lookup_venue
@@ -197,7 +197,7 @@ def event_from_jsonld(node: dict, *, source_platform: str, source_id: str,
     location = node.get("location") or {}
     if not isinstance(location, dict):
         location = {}
-    venue = _text(location.get("name"))
+    venue = clean_venue(_text(location.get("name")))
     address = _address(location.get("address"))
     city, district = parse_location(address)
     # 地址解不出行政區時退回場地表。順序是刻意的：地址是結構化資料，

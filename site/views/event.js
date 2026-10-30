@@ -7,7 +7,7 @@ import {
   typeMeta, sourceLabel, shortDate, isEnglishFriendly, safeUrl, dateParts,
 } from "../lib/format.js";
 import { topicOfType } from "../lib/topics.js";
-import { saveButton, eventCard, tags, emptyState, displayTitle } from "./components.js";
+import { saveButton, eventCard, tags, notFound, displayTitle } from "./components.js";
 import { chapter } from "./report.js";
 
 // 只留字母（含中文）與數字。不能用 \W：JS 的 \W 把中文也當成「非文字」刪掉，
@@ -46,7 +46,8 @@ function icsFor(ev) {
 export function render({ args, state, fromAgent }) {
   const ev = state.events.find((e) => e.uid === args[0]);
   if (!ev) {
-    return { title: "Event not found", node: h("div", { class: "wrap section" }, emptyState("This event is no longer listed. It may have ended or been removed by its source.")) };
+    return notFound("Event not found", "This event is no longer listed. It may have ended or been removed by its source.",
+      [["#/events", "Browse all events"], ["#/topics", "Explore by topic"], ["#/saved", "Your saved events"]]);
   }
   const when = formatWhen(ev);
   const price = formatPrice(ev);
