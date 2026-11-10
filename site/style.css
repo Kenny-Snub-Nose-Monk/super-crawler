@@ -422,7 +422,7 @@ a:hover > .i, .fig.link:hover .arrow > .i { transform: translateX(3px); }
 
 .search-head { padding-block: 52px 8px; }
 .search-head h1 { margin: 0 0 22px; font-size: clamp(34px, 4.4vw, 58px); line-height: 1.02; font-weight: 700; font-stretch: 85%; letter-spacing: -.035em; overflow-wrap: anywhere; }
-.search-head h1 .q { color: var(--red); }
+.search-head h1 .q-term { color: var(--red); }
 .searchbar { margin-top: 0; display: flex; align-items: center; gap: 10px; max-width: 820px; height: 56px; padding: 0 6px 0 16px; border: 2px solid var(--ink); background: var(--sheet); }
 .searchbar:focus-within { outline: 2px solid var(--red); outline-offset: 1px; }
 .searchbar > .i { color: var(--ink-3); width: 20px; height: 20px; }

@@ -35,7 +35,7 @@ export function render({ params, state, fromAgent }) {
   });
 
   const head = h("header", { class: "wrap search-head" },
-    h("h1", null, q ? h("span", null, "Results for ", h("span", { class: "q" }, `“${q}”`)) : "Search events and guides"),
+    h("h1", null, q ? h("span", null, "Results for ", h("span", { class: "q-term" }, `“${q}”`)) : "Search events and guides"),
     form,
     parsed.chips.length ? h("div", { class: "interpreted" }, "Searching for",
       parsed.chips.map((c) => h("a", { class: "chip on", href: `#/search?q=${encodeURIComponent(withoutChip(parsed, c.key))}`, title: "Remove" }, c.label, h("span", { class: "x", "aria-hidden": "true" }, " ×"))),
