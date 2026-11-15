@@ -161,9 +161,13 @@ export function sourceLabel(platform) {
   return SOURCE_LABELS[platform] || platform;
 }
 
-export function isNew(ev, now = Date.now(), days = 7) {
-  return ev.first_seen && now - Date.parse(ev.first_seen) < days * 86400000;
+/** 「New」= 最近一次每週更新才新增的活動。怎麼算見 scripts/export_site_data.py 的 new_in_latest_run */
+export function isNew(ev) {
+  return ev.is_new === true;
 }
+
+export const NEW_LABEL = "New this week";
+export const NEW_HINT = "Added in the latest weekly update";
 
 const NT = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 export function money(n) {

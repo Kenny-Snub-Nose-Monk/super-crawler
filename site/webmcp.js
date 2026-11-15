@@ -140,7 +140,7 @@ async function register() {
         free_only: { type: "boolean", description: "Only events known to be free. Events with unknown price are excluded." },
         signup_open: { type: "boolean", description: "Only events still open for sign-up. When the deadline is unknown, the start time is used — tell the user this may be imprecise." },
         exclude_online: { type: "boolean", description: "In-person events only." },
-        new_this_week: { type: "boolean", description: "Only events first found by this week's crawl." },
+        new_this_week: { type: "boolean", description: "Only events added in the latest weekly update (not counting the first batch from a newly added source)." },
         limit: { type: "integer", minimum: 1, maximum: MAX_LIMIT, description: `Max results returned (default ${DEFAULT_LIMIT}); total tells you how many matched.` },
       },
       additionalProperties: false,

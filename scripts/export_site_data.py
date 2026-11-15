@@ -66,9 +66,59 @@ def standing_listing(ev) -> bool:
     return span.days > STANDING_LISTING_DAYS
 
 
+# 同一次抓取裡各個來源的時間戳差幾分鐘到半小時；隔超過這麼久才算下一次抓取
+RUN_GAP_HOURS = 12
+
+
+def crawl_runs(stamps) -> list[datetime]:
+    """把 first_seen / last_seen 的時間戳分成一次一次的抓取，回傳每次抓取最早的時間（由舊到新）。"""
+    times = sorted({datetime.fromisoformat(s) for s in stamps if s})
+    starts: list[datetime] = []
+    prev = None
+    for t in times:
+        if prev is None or (t - prev).total_seconds() > RUN_GAP_HOURS * 3600:
+            starts.append(t)
+        prev = t
+    return starts
+
+
+def new_in_latest_run(events) -> tuple[set[str], str | None]:
+    """網站上的「New」：最近一次抓取才第一次出現的活動。
+
+    以抓取的批次為準，不看使用者的時鐘 —— 以前是「first_seen 在 7 天內」，抓取晚一天
+    整批 New 就消失、一週多抓一次又兩批都算。另外，一個來源第一次被抓的那一批不算新：
+    那是把它既有的刊登一次補進來（例如新接上的來源一次進來 40 幾筆），不是新公告的活動。
+
+    回傳 (New 的 uid 集合, 最近一次抓取的開始時間)。
+    """
+    events = list(events)
+    runs = crawl_runs([s for ev in events for s in (ev.first_seen, ev.last_seen)])
+    if not runs:
+        return set(), None
+    latest = runs[-1]
+
+    def run_of(stamp: str) -> int:
+        t = datetime.fromisoformat(stamp)
+        return max(i for i, start in enumerate(runs) if start <= t)
+
+    first_run_of_source: dict[str, int] = {}
+    for ev in events:
+        if ev.first_seen:
+            i = run_of(ev.first_seen)
+            first_run_of_source[ev.source_platform] = min(i, first_run_of_source.get(ev.source_platform, i))
+    last = len(runs) - 1
+    fresh = {
+        ev.uid for ev in events
+        if ev.first_seen and datetime.fromisoformat(ev.first_seen) >= latest
+        and first_run_of_source[ev.source_platform] < last
+    }
+    return fresh, latest.isoformat()
+
+
 def export_events() -> dict:
     store = EventStore()
     store.refresh_status()           # 只改記憶體裡的狀態，不寫回 events.jsonl
+    fresh, latest_crawl = new_in_latest_run(store.all())
     events = []
     dropped = {"outside": 0, "standing": 0}
     for ev in store.all():
@@ -82,10 +132,13 @@ def export_events() -> dict:
         d["tags"] = site_tags(ev)
         # 舊資料是 clean_venue 出現前抓的；新抓的已經整理過，再整理一次也不會變
         d["venue"] = clean_venue(ev.venue)
+        d["is_new"] = ev.uid in fresh
         events.append(d)
     events.sort(key=lambda e: (e["starts_at"] or "9999", e["uid"]))
     print(f"  活動：不放上網站 —— 雙北以外 {dropped['outside']} 筆、常駐刊登 {dropped['standing']} 筆")
-    return {"generated_at": now_iso(), "types": [t.value for t in EventType], "events": events}
+    print(f"  活動：最近一次抓取 {latest_crawl} 新增 {sum(e['is_new'] for e in events)} 筆（標 New）")
+    return {"generated_at": now_iso(), "latest_crawl": latest_crawl,
+            "types": [t.value for t in EventType], "events": events}
 
 
 def _strings(obj):

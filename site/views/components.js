@@ -8,7 +8,7 @@ import { h, icon, icons } from "../lib/dom.js";
 import { taipeiParts, addDays } from "../lib/time.js";
 import {
   formatWhen, formatPrice, isEnglishFriendly, isOnline, isNew, placeName, areaName,
-  typeMeta, sourceLabel, dateParts, money, pct, publisherEn, shortDate,
+  typeMeta, sourceLabel, dateParts, money, pct, publisherEn, shortDate, NEW_HINT,
 } from "../lib/format.js";
 import { isSaved, toggleSaved } from "../lib/saved.js";
 import { factTitle, inline } from "../lib/guides.js";
@@ -37,7 +37,7 @@ export function saveButton(kind, id, label) {
 }
 
 /** 價格、語言、線上、新增 —— 每張卡固定這幾種標籤，固定這個順序 */
-export function tags(ev, { now = Date.now() } = {}) {
+export function tags(ev) {
   const out = [];
   const p = formatPrice(ev);
   if (p.cls === "free") out.push(h("span", { class: "tag free" }, "Free"));
@@ -47,7 +47,7 @@ export function tags(ev, { now = Date.now() } = {}) {
   if (isOnline(ev)) out.push(h("span", { class: "tag online" }, "Online"));
   if (ev.status === "expired") out.push(h("span", { class: "tag unknown" }, "Ended"));
   else if (ev.status === "cancelled") out.push(h("span", { class: "tag unknown" }, "Cancelled"));
-  else if (isNew(ev, now)) out.push(h("span", { class: "tag new", title: "Found by this week's crawl" }, "New"));
+  else if (isNew(ev)) out.push(h("span", { class: "tag new", title: NEW_HINT }, "New"));
   return h("div", { class: "tags" }, out);
 }
 
@@ -104,10 +104,10 @@ export function eventCard(ev, opts = {}) {
         dateFigure(ev, "card-date"),
         s && ev.status !== "ongoing" ? h("span", { class: "card-time" }, s.time || "All day") : null),
       h("div", { class: "card-body" },
-        h("p", { class: "card-type" }, typeMeta(ev.type).en),
+        h("p", { class: "card-type" }, icon(typeMeta(ev.type).icon), typeMeta(ev.type).en),
         h("h3", { class: "card-title" }, displayTitle(ev)),
         metaLines(ev, { when: false }),
-        tags(ev, opts))),
+        tags(ev))),
     saveButton("events", ev.uid, displayTitle(ev)));
 }
 
@@ -117,10 +117,10 @@ export function eventRow(ev, opts = {}) {
     h("a", { class: "row-link", href: eventHref(ev) },
       opts.timeOnly ? timeFigure(ev) : dateFigure(ev, "row-date"),
       h("div", { class: "row-main" },
-        h("p", { class: "row-type" }, t.en, " · ", sourceLabel(ev.source_platform)),
+        h("p", { class: "row-type" }, icon(t.icon), t.en, " · ", sourceLabel(ev.source_platform)),
         h("h3", { class: "row-title" }, displayTitle(ev)),
         metaLines(ev, { when: !opts.timeOnly }),
-        tags(ev, opts))),
+        tags(ev))),
     saveButton("events", ev.uid, displayTitle(ev)));
 }
 

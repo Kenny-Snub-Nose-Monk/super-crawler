@@ -11,7 +11,7 @@ from crawler.normalize import clean_venue, outside_target_area, script_language_
 from crawler.tax.collect import SnapshotStore, load_sources
 from crawler.tax.facts import load_facts
 from crawler.schema import Event
-from scripts.export_site_data import build_tax, load_guides, site_tags, standing_listing, validate
+from scripts.export_site_data import build_tax, load_guides, new_in_latest_run, site_tags, standing_listing, validate
 
 
 def main():
@@ -125,6 +125,22 @@ def main():
     check("2021 → 2036 → 常駐", standing_listing(mk("2021-05-24T15:00:00+08:00", "2036-12-31T16:00:00+08:00")))
     check("一年半的博物館特展 → 照常顯示", not standing_listing(mk("2025-10-18T09:00:00+08:00", "2027-04-30T17:00:00+08:00")))
     check("沒有結束時間 → 照常顯示", not standing_listing(mk("2026-11-01T19:00:00+08:00", None)))
+
+    print("\n8. New = 最近一次抓取才第一次出現；來源第一次被抓的那批不算")
+    def seen(src, sid, first, last=None):
+        return Event(source_platform=src, source_id=sid, source_url="https://s", title="t", first_seen=first, last_seen=last or first)
+    run1, run2a, run2b = "2026-11-06T05:16:00+08:00", "2026-11-13T05:30:00+08:00", "2026-11-13T05:46:00+08:00"
+    evs = [
+        seen("accupass", "old", run1, run2b),     # 上一次就有了
+        seen("accupass", "fresh", run2a),         # 這次才出現（同一次抓取裡較早的來源）
+        seen("meetup", "fresh2", run2b),          # 這次才出現
+        seen("meetup", "older", run1, run2b),
+        seen("talent_taiwan", "backfill", run2b), # 新接上的來源：第一次就是這次 → 不算新
+    ]
+    fresh, latest = new_in_latest_run(evs)
+    check("最近一次抓取新出現的 → New", fresh == {"accupass:fresh", "meetup:fresh2"}, fresh)
+    check("同一次抓取裡差幾分鐘的時間戳算同一批", latest == run2a, latest)
+    check("沒有任何時間戳 → 沒有 New", new_in_latest_run([]) == (set(), None))
 
     print(f"\n{len(failures)} 個失敗" if failures else "\n全部通過")
     sys.exit(1 if failures else 0)

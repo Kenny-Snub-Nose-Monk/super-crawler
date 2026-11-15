@@ -322,7 +322,8 @@ a:hover > .i, .fig.link:hover .arrow > .i { transform: translateX(3px); }
 .card-date.on .d { font-size: 20px; font-stretch: 90%; margin: 6px 0 2px; letter-spacing: -.01em; }
 .card-time { padding-bottom: 4px; font-size: 17px; font-weight: 700; font-stretch: 88%; font-variant-numeric: tabular-nums; }
 .card-body { display: flex; flex-direction: column; gap: 7px; padding: 14px 0 4px; margin-top: 12px; border-top: 1px solid var(--rule); flex: 1; }
-.card-type { margin: 0; font-size: 13px; font-weight: 650; color: var(--ink-3); }
+.card-type { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 13px; font-weight: 650; color: var(--ink-3); }
+.card-type .i { width: 15px; height: 15px; flex: none; }
 .card-title { margin: 0; font-size: 18px; font-weight: 650; line-height: 1.3; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .card .save-btn { top: 12px; right: 0; }
 
@@ -396,14 +397,41 @@ a:hover > .i, .fig.link:hover .arrow > .i { transform: translateX(3px); }
   height: 44px; padding: 0 12px; border: 1.5px solid var(--ink-3); border-radius: 0; background: var(--sheet);
   font: inherit; font-size: 15.5px; color: var(--ink); width: 100%; font-variant-numeric: tabular-nums;
 }
+/* 下拉選單不用原生外觀：原生的內距跟輸入框不一樣，文字會比旁邊的欄位內縮一截 */
+.sort select, .field select {
+  -webkit-appearance: none; appearance: none; padding-right: 36px; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235c5c56' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; background-size: 16px;
+}
 .sort select { height: 40px; width: auto; }
-.field input:focus, .field select:focus, .sort select:focus { outline: 2px solid var(--red); outline-offset: 1px; border-color: var(--ink); }
+/* 焦點框畫在欄位裡面（蓋住原本的邊框）：左欄是捲動容器，畫在外面的框左右兩邊會被裁掉，只剩上下兩條紅線 */
+.field input:focus, .field select:focus, .sort select:focus { outline: 2px solid var(--red); outline-offset: -2px; }
 .field input::placeholder { color: var(--ink-3); }
+.field input[type="date"] { cursor: pointer; }
+.field input[type="date"].is-empty::-webkit-datetime-edit { color: var(--ink-3); }
+.field input[type="date"]::-webkit-calendar-picker-indicator { opacity: .55; cursor: pointer; }
 .field input[aria-invalid="true"] { border-color: var(--red); }
 .field-error { margin: 0; font-size: 14px; font-weight: 650; color: var(--red-ink); }
-.date-range { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+/* 原生日期欄連日曆圖示要 ~140px；左欄窄的時候 From / To 自動改成上下排，不會把日期截掉 */
+.date-range { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field > span { font-size: 14px; font-weight: 650; color: var(--ink-2); }
+/* 三選一的分段按鈕（City）：只有兩個城市，用下拉選單要多點一下，也看不到其他選項 */
+.segmented { margin: 0; padding: 0; border: 0; min-width: 0; }
+.segmented legend { float: left; width: 100%; padding: 0 0 6px; font-size: 14px; font-weight: 650; color: var(--ink-2); }
+.segmented legend + * { clear: both; }
+.seg-track { display: flex; }
+.segmented label { position: relative; flex: 1 1 auto; display: flex; }
+.segmented label + label { margin-left: -1.5px; }
+.segmented input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.segmented span {
+  flex: 1; display: flex; align-items: center; justify-content: center; height: 40px; padding: 0 6px;
+  border: 1.5px solid var(--ink-3); background: var(--sheet); font-size: 14.5px; font-weight: 600; color: var(--ink-2);
+  white-space: nowrap; cursor: pointer; transition: background-color .15s var(--ease), color .15s var(--ease);
+}
+.segmented label:hover span { color: var(--ink); }
+.segmented input:checked + span { position: relative; z-index: 1; background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.segmented input:focus-visible + span { position: relative; z-index: 2; outline: 2px solid var(--red); outline-offset: -2px; }
 .toggles { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; }
 .toggle { display: inline-flex; gap: 10px; align-items: flex-start; font-size: 15.5px; color: var(--ink); cursor: pointer; }
 .toggle input { width: 18px; height: 18px; margin: 3px 0 0; accent-color: var(--red); flex: none; }
