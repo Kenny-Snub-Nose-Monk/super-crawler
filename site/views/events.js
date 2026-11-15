@@ -7,7 +7,7 @@
 import { h, dateInput } from "../lib/dom.js";
 import { queryEvents, normalizeParams } from "../query.js";
 import { windows } from "../lib/time.js";
-import { TYPE_META } from "../lib/format.js";
+import { TYPE_META, isNew, NEW_LABEL, shortDate } from "../lib/format.js";
 import { agenda, emptyState } from "./components.js";
 
 const FLAGS = ["free_only", "signup_open", "exclude_online", "english", "new"];
@@ -30,7 +30,7 @@ export function runQuery(events, { params, english, fresh, sort }, now = Date.no
   const p = { ...params };
   if (english) p.tags = [...(p.tags || []), "lang:en"];
   let rows = queryEvents(events, p, now);
-  if (fresh) rows = rows.filter((e) => e.first_seen && now - Date.parse(e.first_seen) < 7 * 86400000);
+  if (fresh) rows = rows.filter(isNew);
   if (sort === "newest") rows = [...rows].sort((a, b) => (b.first_seen || "").localeCompare(a.first_seen || ""));
   return rows;
 }
@@ -62,11 +62,15 @@ export function render({ params: sp, state, fromAgent }) {
     if (k === "") { after.value = ""; before.value = ""; }
     else if (w[k]) { after.value = day(w[k].start); before.value = day(w[k].end); }
   });
-  const city = h("select", { name: "city" },
-    h("option", { value: "" }, "Taipei & New Taipei"),
-    h("option", { value: "臺北市" }, "Taipei City"),
-    h("option", { value: "新北市" }, "New Taipei City"));
-  city.value = q.params.city || "";
+  // 只有兩個城市：三選一的按鈕比下拉選單少點一下，也一眼看得到現在選哪個。
+  // 「All」也包含沒寫城市的活動（線上、Meetup 沒填地址的），所以不叫「Taipei & New Taipei」
+  const CITIES = [["", "All"], ["臺北市", "Taipei"], ["新北市", "New Taipei"]];
+  const cityRadios = CITIES.map(([v, label]) => {
+    const r = h("input", { type: "radio", name: "city", value: v });
+    r.checked = (q.params.city || "") === v;
+    return h("label", null, r, h("span", null, label));
+  });
+  const city = h("fieldset", { class: "segmented" }, h("legend", null, "City"), h("div", { class: "seg-track" }, cityRadios));
   const types = new Set(q.params.types || []);
   const typeChips = h("fieldset", { class: "check-list" },
     h("legend", null, "Type"),
@@ -82,14 +86,14 @@ export function render({ params: sp, state, fromAgent }) {
   };
   const sort = h("select", { name: "sort", "aria-label": "Sort" },
     h("option", { value: "soonest" }, "Soonest first"),
-    h("option", { value: "newest" }, "Newest found first"));
+    h("option", { value: "newest" }, "Recently added first"));
   sort.value = q.sort;
   const reset = h("button", { type: "button", class: "linkish" }, "Clear filters");
 
   const form = h("form", { class: "filter-rail", autocomplete: "off" },
     field("keyword", "Keyword", kw), h("label", { class: "field" }, h("span", null, "When"), when),
     range,
-    field("city", "City", city),
+    city,
     h("fieldset", { class: "check-list" },
       h("legend", null, "Show only"),
       flag("english", "English-friendly", q.english),
@@ -98,7 +102,7 @@ export function render({ params: sp, state, fromAgent }) {
       // 實際上一律退回用開始時間判斷 —— 標籤照它真正做的事寫，不承諾「還能報名」
       flag("signup_open", "Hasn't started yet", Boolean(q.params.signup_open)),
       flag("exclude_online", "In person", Boolean(q.params.exclude_online)),
-      flag("new", "Found this week", q.fresh)),
+      flag("new", NEW_LABEL, q.fresh)),
     typeChips,
     reset);
   // 手機上過濾條件收進一個可展開的區塊，桌面版一直打開在左欄
@@ -137,14 +141,17 @@ export function render({ params: sp, state, fromAgent }) {
   reset.addEventListener("click", () => {
     form.reset();
     for (const b of form.querySelectorAll("input[type=checkbox]")) b.checked = false;
-    kw.value = ""; after.value = ""; before.value = ""; city.value = ""; when.value = ""; range.hidden = true;
+    kw.value = ""; after.value = ""; before.value = ""; when.value = ""; range.hidden = true;
+    cityRadios[0].querySelector("input").checked = true;
     paint(read());
   });
   paint(q, { sync: false });
 
   const head = h("header", { class: "wrap page-head" },
     h("h1", null, "Events in Taipei"),
-    h("p", { class: "lede" }, "Taipei and New Taipei, collected every week from public listings. Your filters stay in the address bar, so you can share exactly this view."));
+    h("p", { class: "lede" }, "Taipei and New Taipei, collected every week from public listings",
+      state.latestCrawl ? ` — last update ${shortDate(state.latestCrawl)}` : "",
+      ". Your filters stay in the address bar, so you can share exactly this view."));
 
   return {
     title: "Events",

@@ -97,7 +97,7 @@ export function render({ args, params, state }) {
   };
   const sortSel = h("select", { "aria-label": "Sort" },
     h("option", { value: "soonest" }, "Soonest first"),
-    h("option", { value: "newest" }, "Newest found first"));
+    h("option", { value: "newest" }, "Recently added first"));
   sortSel.value = sort;
   sortSel.addEventListener("change", () => { sort = sortSel.value; sync(); paint(); });
 

@@ -41,13 +41,21 @@ export function frag(...children) {
  *  介面就中英夾雜了 —— 所以空的時候是一般文字欄、顯示英文的 YYYY-MM-DD，
  *  一點下去才換成原生日期欄並打開選擇器；離開時如果還是空的就換回來。 */
 export function dateInput(attrs = {}) {
-  const el = h("input", { ...attrs, type: attrs.value ? "date" : "text", placeholder: "YYYY-MM-DD", autocomplete: "off" });
-  el.addEventListener("focus", () => {
-    if (el.type === "date") return;
-    el.type = "date";
-    try { el.showPicker(); } catch { /* 沒有使用者手勢（例如用 Tab 進來）時不能自動打開，照樣可以打字 */ }
+  // 一直是原生日期欄：以前空的時候用文字欄假裝 placeholder、聚焦才換成 date，
+  // 一點下去格式就從「YYYY-MM-DD」跳成瀏覽器的「yyyy/mm/dd」，看起來像壞掉。
+  const el = h("input", { ...attrs, type: "date", autocomplete: "off" });
+  // 空的時候整段格式字（yyyy/mm/dd）淡一點，才不會像已經填了值。
+  // 程式直接設 .value 不會觸發事件，所以連 setter 一起包。
+  const mark = () => el.classList.toggle("is-empty", !el.value);
+  const native = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
+  Object.defineProperty(el, "value", { get: () => native.get.call(el), set: (v) => { native.set.call(el, v); mark(); } });
+  el.addEventListener("input", mark);
+  el.addEventListener("change", mark);
+  // 點欄位任何地方都打開日曆（原生只有點右邊的小圖示才會開）
+  el.addEventListener("click", () => {
+    try { el.showPicker(); } catch { /* 不支援或已經打開：照樣可以直接打字 */ }
   });
-  el.addEventListener("blur", () => { if (!el.value) el.type = "text"; });
+  mark();
   return el;
 }
 

@@ -48,7 +48,8 @@ export const state = {
   guidesBySlug: {},
   guideIndex: [],
   generatedAt: null,
-  agent: null,          // 最近一次 AI 助理的工具呼叫：{tool, label, at}
+  latestCrawl: null,    // 最近一次抓取的時間：「New」指的就是這一批
+  agent: null,         // 最近一次 AI 助理的工具呼叫：{tool, label, at}
 };
 
 // --- 路由 ---
@@ -167,8 +168,11 @@ async function load() {
     fetch("data/events.json").then((r) => r.json()),
     fetch("data/content.json").then((r) => r.json()),
   ]);
-  state.events = refreshStatus(ev.events);
+  // New 是「最近一次抓取新增的」；超過兩週沒有新的抓取（排程壞了），那批就不再是新的
+  const stale = !ev.latest_crawl || Date.now() - Date.parse(ev.latest_crawl) > 14 * 86400000;
+  state.events = refreshStatus(stale ? ev.events.map((e) => ({ ...e, is_new: false })) : ev.events);
   state.generatedAt = ev.generated_at;
+  state.latestCrawl = ev.latest_crawl || null;
   state.content = content;
   state.facts = content.tax.facts;
   state.guides = content.guides;
