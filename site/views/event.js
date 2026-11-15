@@ -1,7 +1,7 @@
 // 活動詳細頁。資料只有來源給的那些 —— 沒有的就照實說「來源沒有提供」，不補、不猜。
 
 import { h, icon } from "../lib/dom.js";
-import { queryEvents } from "../query.js";
+import { queryEvents, findEvent } from "../query.js";
 import {
   formatWhen, formatWhere, formatPrice, placeName, areaName, languages, isOnline,
   typeMeta, sourceLabel, shortDate, isEnglishFriendly, safeUrl, dateParts,
@@ -44,7 +44,7 @@ function icsFor(ev) {
 }
 
 export function render({ args, state, fromAgent }) {
-  const ev = state.events.find((e) => e.uid === args[0]);
+  const ev = findEvent(state, args[0]);
   if (!ev) {
     return notFound("Event not found", "This event is no longer listed. It may have ended or been removed by its source.",
       [["#/events", "Browse all events"], ["#/topics", "Explore by topic"], ["#/saved", "Your saved events"]]);
@@ -77,13 +77,23 @@ export function render({ args, state, fromAgent }) {
   const facts = h("dl", { class: "facts-list" },
     fact("Where",
       isOnline(ev) ? "Online" : place || "Location not listed",
+      ev.venue_conflict?.length ? h("span", { class: "sub" },
+        `The listings for this event disagree: ${ev.venue_conflict.join(" / ")}. Check with the organiser before you go.`) : null,
       !isOnline(ev) && ev.address && ev.address !== place ? h("span", { class: "sub" }, ev.address) : null,
       !isOnline(ev) && area ? h("span", { class: "sub" }, area) : null,
       !isOnline(ev) && mapQuery ? h("span", { class: "sub" }, h("a", { href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`, target: "_blank", rel: "noopener" }, "Open in Google Maps", icon("external"))) : null),
     fact("Cost", price.text, !price.known ? h("span", { class: "sub" }, "Not stated, which isn't the same as free") : null),
     fact("Language", langs.length ? langs.join(", ") : "Not stated", isEnglishFriendly(ev) ? h("span", { class: "sub" }, "English-friendly") : null),
     ev.organizer ? fact("Organiser", ev.organizer) : null,
-    fact("Listed on", sourceName, ev.first_seen ? h("span", { class: "sub" }, `First found ${shortDate(ev.first_seen)}`) : null));
+    fact("Listed on", sourceName,
+      // 同一個來源刊了兩次就說「另一頁」，不然會讀成「Listed on ANNCR / Also listed on ANNCR」
+      ...(ev.also_listed || []).map((a) => {
+        const same = a.source_platform === ev.source_platform;
+        const label = same ? `another ${sourceLabel(a.source_platform)} page` : sourceLabel(a.source_platform);
+        return h("span", { class: "sub" }, same ? "Also on " : "Also listed on ",
+          safeUrl(a.source_url) ? h("a", { href: safeUrl(a.source_url), target: "_blank", rel: "noopener" }, label, icon("external")) : label);
+      }),
+      ev.first_seen ? h("span", { class: "sub" }, `First found ${shortDate(ev.first_seen)}`) : null));
 
   const about = ev.description ? (() => {
     // 來源的說明常帶著 Markdown 記號（**粗體**、\~、* 清單）：拿掉記號、字照原樣

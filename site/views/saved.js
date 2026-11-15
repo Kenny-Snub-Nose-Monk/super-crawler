@@ -1,13 +1,14 @@
 // 收藏：這個瀏覽器裡存的活動與指南。
 
 import { h } from "../lib/dom.js";
+import { findEvent } from "../query.js";
 import { savedIds } from "../lib/saved.js";
 import { agenda, eventRow, guideRow, emptyState } from "./components.js";
 import { chapter } from "./report.js";
 
 export function render({ state }) {
   const ids = savedIds();
-  const events = ids.events.map((uid) => state.events.find((e) => e.uid === uid)).filter(Boolean);
+  const events = ids.events.map((uid) => findEvent(state, uid)).filter(Boolean);
   // 照時間排：行事曆分組要同一天的排在一起
   const upcoming = events.filter((e) => e.status !== "expired").sort((a, b) => (a.status === "ongoing") - (b.status === "ongoing") || (a.starts_at || "").localeCompare(b.starts_at || ""));
   const past = events.filter((e) => e.status === "expired");

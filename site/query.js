@@ -70,6 +70,14 @@ export function queryEvents(events, params = {}, now = Date.now()) {
   return out.sort((a, b) => rank(a) - rank(b) || (key(a) < key(b) ? -1 : key(a) > key(b) ? 1 : 0));
 }
 
+// 用 uid 找活動。同一場的重複刊登在匯出時收成一筆（scripts/export_site_data.py 的
+// merge_duplicates），被收起來的 uid 記在 aliases 裡 —— 舊連結、已收藏的、AI 助理
+// 記得的 uid 都還找得到那一場。
+export function findEvent(state, uid) {
+  const byUid = (u) => state.events.find((e) => e.uid === u);
+  return byUid(uid) || (state.aliases && state.aliases[uid] ? byUid(state.aliases[uid]) : undefined);
+}
+
 // 依現在時間重算 upcoming / ongoing / expired —— crawler/store.py 的 refresh_status 的同語意實作。
 // 匯出時已經算過一次；但靜態頁可能在匯出幾天後才被打開，昨天的活動不該還掛著「即將開始」。
 // 手動標成 cancelled 的不動。

@@ -9,6 +9,7 @@
 
 import { refreshStatus } from "./query.js";
 import { buildGuideIndex } from "./lib/search.js";
+import { remapSaved } from "./lib/saved.js";
 import { plain } from "./lib/guides.js";
 import { shortDate, plural } from "./lib/format.js";
 import * as home from "./views/home.js";
@@ -42,6 +43,7 @@ const toastText = document.getElementById("agent-toast-text");
 
 export const state = {
   events: [],
+  aliases: {},         // 被收成重複刊登的 uid → 代表那筆的 uid
   content: null,
   facts: {},
   guides: [],
@@ -171,6 +173,8 @@ async function load() {
   // New 是「最近一次抓取新增的」；超過兩週沒有新的抓取（排程壞了），那批就不再是新的
   const stale = !ev.latest_crawl || Date.now() - Date.parse(ev.latest_crawl) > 14 * 86400000;
   state.events = refreshStatus(stale ? ev.events.map((e) => ({ ...e, is_new: false })) : ev.events);
+  state.aliases = ev.aliases || {};
+  remapSaved(state.aliases);
   state.generatedAt = ev.generated_at;
   state.latestCrawl = ev.latest_crawl || null;
   state.content = content;

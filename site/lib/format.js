@@ -113,6 +113,8 @@ export function isOnline(ev) {
 }
 
 export function placeName(ev) {
+  // 同一場的幾筆刊登地點對不上（scripts/export_site_data.py 的 merge_duplicates）：不挑邊
+  if (ev.venue_conflict && ev.venue_conflict.length) return "Venue unconfirmed";
   return ev.venue || ev.address || null;
 }
 
