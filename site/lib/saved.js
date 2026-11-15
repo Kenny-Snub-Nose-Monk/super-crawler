@@ -30,6 +30,14 @@ export function toggleSaved(kind, id) {
   return i === -1;
 }
 
+/** 收藏的是後來被收成重複刊登的 uid：換成代表那筆的 uid，收藏頁與書籤按鈕才對得上 */
+export function remapSaved(aliases) {
+  const data = read();
+  if (!aliases || !data.events.some((id) => aliases[id])) return;
+  data.events = [...new Set(data.events.map((id) => aliases[id] || id))];
+  write(data);
+}
+
 export function savedIds() {
   return read();
 }

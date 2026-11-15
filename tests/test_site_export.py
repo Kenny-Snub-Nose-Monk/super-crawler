@@ -11,7 +11,8 @@ from crawler.normalize import clean_venue, outside_target_area, script_language_
 from crawler.tax.collect import SnapshotStore, load_sources
 from crawler.tax.facts import load_facts
 from crawler.schema import Event
-from scripts.export_site_data import build_tax, load_guides, new_in_latest_run, site_tags, standing_listing, validate
+from scripts.export_site_data import (build_tax, load_guides, merge_duplicates, new_in_latest_run, site_tags,
+                                      standing_listing, validate)
 
 
 def main():
@@ -141,6 +142,45 @@ def main():
     check("最近一次抓取新出現的 → New", fresh == {"accupass:fresh", "meetup:fresh2"}, fresh)
     check("同一次抓取裡差幾分鐘的時間戳算同一批", latest == run2a, latest)
     check("沒有任何時間戳 → 沒有 New", new_in_latest_run([]) == (set(), None))
+
+    print("\n9. 重複刊登在網站上只出現一次（Issue：Duplicated events —— THE CUT 被 anncr 刊了兩次）")
+
+    def row(uid, title="Ellery 呈獻 THE CUT｜Fall Edition 秋季場", starts="2026-11-06T20:00:00+08:00", **kw):
+        base = {"uid": uid, "source_platform": uid.split(":")[0], "source_url": f"https://x/{uid}", "title": title,
+                "starts_at": starts, "organizer": "卡米地 Live Comedy Club Taipei", "venue": None, "address": None,
+                "city": "臺北市", "district": None, "lat": None, "lon": None, "tags": ["src:calendar"],
+                "is_new": False, "first_seen": "2026-10-01T00:00:00+08:00"}
+        return base | kw
+
+    cut = [row("anncr:EWAIAK90450", venue="卡米地喜劇俱樂部", district="中正區"),
+           row("anncr:EWAIAQ19117", venue="臺北流行音樂中心", district="南港區", first_seen="2026-11-06T00:00:00+08:00")]
+    out, aliases = merge_duplicates([dict(r) for r in cut])
+    check("同主辦、同標題、同時間 → 一筆", len(out) == 1, [e["uid"] for e in out])
+    check("收起來的 uid 指到代表那筆", aliases == {"anncr:EWAIAQ19117": "anncr:EWAIAK90450"}, aliases)
+    check("地點對不上 → 不挑邊，兩個都列出來", out[0]["venue"] is None and out[0]["district"] is None
+          and out[0]["venue_conflict"] == ["卡米地喜劇俱樂部", "臺北流行音樂中心"], out[0].get("venue_conflict"))
+    check("縣市一致就留著（雙北篩選還找得到）", out[0]["city"] == "臺北市")
+    check("其他刊登掛在 also_listed", [a["uid"] for a in out[0]["also_listed"]] == ["anncr:EWAIAQ19117"])
+
+    xpost = [row("meetup:a", title="Language Exchange Taipei", starts="2026-11-15T09:15:00+08:00", organizer="Group A",
+                 venue="Keelung Rd", district="信義區", address="No. 155, Keelung Rd", is_new=True),
+             row("meetup:b", title="Language  Exchange Taipei!", starts="2026-11-15T09:15:00+08:00", organizer="Group B",
+                 city=None, price_text="NT$200", is_new=False, first_seen="2026-09-01T00:00:00+08:00")]
+    out, aliases = merge_duplicates([dict(r) for r in xpost])
+    check("不同主辦交叉刊登、地點不衝突 → 一筆，代表是資料完整的那筆", [e["uid"] for e in out] == ["meetup:a"], aliases)
+    check("代表沒有的欄位從其他刊登補", out[0]["price_text"] == "NT$200")
+    check("沒有地點衝突就不標", "venue_conflict" not in out[0])
+    check("有一筆早就抓過 → 不算 New，First found 取最早", out[0]["is_new"] is False
+          and out[0]["first_seen"] == "2026-09-01T00:00:00+08:00", out[0]["first_seen"])
+
+    generic = [row("meetup:x", title="Language Exchange", organizer="Group A", district="信義區"),
+               row("meetup:y", title="Language Exchange", organizer="Group B", district="大安區")]
+    out, aliases = merge_duplicates([dict(r) for r in generic])
+    check("通用標題、不同主辦、不同區 → 是兩場，不合併", len(out) == 2 and not aliases, aliases)
+
+    series = [row("anncr:s1", starts="2026-11-06T14:00:00+08:00"), row("anncr:s2", starts="2026-11-06T19:30:00+08:00")]
+    out, aliases = merge_duplicates([dict(r) for r in series])
+    check("同一天不同時間 → 是兩場（「其他場次」要列得出來）", len(out) == 2 and not aliases)
 
     print(f"\n{len(failures)} 個失敗" if failures else "\n全部通過")
     sys.exit(1 if failures else 0)

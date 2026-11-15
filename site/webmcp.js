@@ -7,7 +7,7 @@
 // 稅務工具回傳的每個數字都附 fact id、官方出處與核對狀態（verified / drifted / unchecked）。
 // 未知 ≠ 否：活動欄位沒有值時寫成 "unknown"，不要讓助理把 null 讀成「沒有」或「免費」。
 
-import { normalizeParams } from "./query.js";
+import { normalizeParams, findEvent } from "./query.js";
 import { runQuery } from "./views/events.js";
 import { parseQuery, searchGuides } from "./lib/search.js";
 import { guideToText, plain } from "./lib/guides.js";
@@ -175,9 +175,9 @@ async function register() {
       additionalProperties: false,
     },
     async execute({ uid }) {
-      const ev = state.events.find((e) => e.uid === uid);
+      const ev = findEvent(state, uid);
       if (!ev) return err(`No event with uid ${uid}`);
-      go(`/event/${encodeURIComponent(uid)}`, null, "Claude opened an event");
+      go(`/event/${encodeURIComponent(ev.uid)}`, null, "Claude opened an event");
       return text(detailEvent(ev, state.events));
     },
   });

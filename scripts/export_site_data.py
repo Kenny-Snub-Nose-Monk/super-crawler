@@ -10,7 +10,8 @@
   1. 活動狀態以「匯出當下」重算一次，標題整句英文或有英文標題的補上 lang:en；
      場地欄整理成一個地名，而且有兩種活動不放上網站（events.jsonl 照留）：
      地址明講在雙北以外的實體活動、以及期間長達兩年以上的「常駐刊登」
-     （場地出租、一直掛著的線上課程 —— 2021 年開始到 2036 年的那種，掛著「On now」）
+     （場地出租、一直掛著的線上課程 —— 2021 年開始到 2036 年的那種，掛著「On now」）。
+     同一場活動的重複刊登（同標題、同開始時間）收成一筆，見 merge_duplicates
   2. 稅務 facts 對快照核對一次，把結果（已核對／待複核／未核對）一起帶過去
   3. 檢查指南裡的每一個引用都存在 —— {{fact:x}}、[[guide:y]]、來源 id。
      引用壞掉就失敗退出：網站上出現一個字面的 {{fact:x}} 比整頁沒更新更糟。
@@ -115,6 +116,97 @@ def new_in_latest_run(events) -> tuple[set[str], str | None]:
     return fresh, latest.isoformat()
 
 
+# --- 重複刊登：同一場活動被刊了不只一次 ---
+#
+# IMPLEMENTATION.md §2：資料表裡跨平台、同平台換 id 的重複都照留（合錯救不回來），
+# 「在查詢時分組」。網站的查詢就是讀這份匯出，所以分組做在這裡：events.jsonl 一筆不刪，
+# 網站上一場只出現一次，其他刊登掛在代表那筆的 also_listed 底下。
+#
+# 「同一場」= 標題正規化後相同 + 開始時間精確到分鐘相同。只比日期不行：
+# 同一系列一天兩場（14:00、19:30）是兩場，網站要列成「其他場次」。
+# 另外地點要對得上 —— 「Language Exchange」這種通用標題，不同主辦同一時間
+# 在不同區辦是真的兩場。地點對不上但主辦相同，就是來源有一筆填錯了（同一個主辦
+# 不會同時在兩個地方辦同一場）：照樣合併，但不挑邊，標 venue_conflict。
+
+_LOCATION_FIELDS = ("venue", "address", "city", "district", "lat", "lon")
+# 代表那筆沒有、其他刊登有的欄位就補上 —— 兩邊常常互補（一邊有票價、一邊有地址）
+_FILL_FIELDS = ("title_en", "description", "organizer", "price_text", "is_free",
+                "ends_at", "signup_deadline")
+
+
+def _title_key(title) -> str:
+    return re.sub(r"[\W_]+", "", (title or "").lower())   # Python 的 \W 認得中文
+
+
+def _places_conflict(a: dict, b: dict) -> bool:
+    """兩筆的地點明確對不上：行政區都有但不同，或縣市都有但不同。場地名不比 ——
+    同一個地方各家寫法差很多（「SOMEWHERE 那裡」vs 一串英文地址）。"""
+    for f in ("city", "district"):
+        if a.get(f) and b.get(f) and a[f] != b[f]:
+            return True
+    return False
+
+
+def _completeness(d: dict) -> tuple:
+    """挑代表：資料最完整的；一樣完整就挑最早被抓到的。"""
+    filled = sum(bool(d.get(f)) for f in ("address", "venue", "district", "lat", "price_text",
+                                          "description", "signup_deadline", "organizer"))
+    filled += d.get("is_free") is not None
+    return (-filled, d.get("first_seen") or "9999", d["uid"])
+
+
+def merge_duplicates(events: list[dict]) -> tuple[list[dict], dict[str, str]]:
+    """把同一場活動的多筆刊登合成一筆。回傳 (合併後的活動, {被收起來的 uid: 代表的 uid})。
+
+    第二個回傳值讓舊連結與已收藏的 uid 還找得到活動。"""
+    buckets: dict[tuple, list[dict]] = {}
+    for d in events:
+        if d.get("starts_at") and _title_key(d.get("title")):
+            buckets.setdefault((_title_key(d["title"]), d["starts_at"][:16]), []).append(d)
+
+    aliases: dict[str, str] = {}
+    hidden: set[str] = set()
+    for bucket in buckets.values():
+        if len(bucket) < 2:
+            continue
+        # 一個 bucket 裡可能是好幾場（通用標題、不同地點）：逐筆放進第一個對得上的群
+        groups: list[list[dict]] = []
+        for d in sorted(bucket, key=_completeness):
+            for g in groups:
+                if all(not _places_conflict(d, m) or (d.get("organizer") and d.get("organizer") == m.get("organizer"))
+                       for m in g):
+                    g.append(d)
+                    break
+            else:
+                groups.append([d])
+
+        for g in groups:
+            if len(g) < 2:
+                continue
+            rep, others = g[0], g[1:]
+            conflict = any(_places_conflict(a, b) for a in g for b in g if a is not b)
+            if conflict:
+                rep["venue_conflict"] = list(dict.fromkeys(m.get("venue") or m.get("address") for m in g
+                                                           if m.get("venue") or m.get("address")))
+                cities = {m.get("city") for m in g}
+                for f in _LOCATION_FIELDS:
+                    rep[f] = None
+                rep["city"] = cities.pop() if len(cities) == 1 else None
+            for m in others:
+                for f in _FILL_FIELDS + (() if conflict else _LOCATION_FIELDS):
+                    if rep.get(f) is None and m.get(f) is not None:
+                        rep[f] = m[f]
+                rep["tags"] = list(dict.fromkeys(rep["tags"] + m["tags"]))
+                aliases[m["uid"]] = rep["uid"]
+                hidden.add(m["uid"])
+            # 有一筆早就抓過，這場就不算新的
+            rep["is_new"] = all(m["is_new"] for m in g)
+            rep["first_seen"] = min((m["first_seen"] for m in g if m.get("first_seen")), default=rep.get("first_seen"))
+            rep["also_listed"] = [{"uid": m["uid"], "source_platform": m["source_platform"],
+                                   "source_url": m["source_url"]} for m in others]
+    return [d for d in events if d["uid"] not in hidden], aliases
+
+
 def export_events() -> dict:
     store = EventStore()
     store.refresh_status()           # 只改記憶體裡的狀態，不寫回 events.jsonl
@@ -134,11 +226,14 @@ def export_events() -> dict:
         d["venue"] = clean_venue(ev.venue)
         d["is_new"] = ev.uid in fresh
         events.append(d)
+    events, aliases = merge_duplicates(events)
     events.sort(key=lambda e: (e["starts_at"] or "9999", e["uid"]))
     print(f"  活動：不放上網站 —— 雙北以外 {dropped['outside']} 筆、常駐刊登 {dropped['standing']} 筆")
+    conflicts = sum(1 for e in events if e.get("venue_conflict"))
+    print(f"  活動：重複刊登收起 {len(aliases)} 筆（其中 {conflicts} 場各刊登的地點對不上）")
     print(f"  活動：最近一次抓取 {latest_crawl} 新增 {sum(e['is_new'] for e in events)} 筆（標 New）")
     return {"generated_at": now_iso(), "latest_crawl": latest_crawl,
-            "types": [t.value for t in EventType], "events": events}
+            "types": [t.value for t in EventType], "events": events, "aliases": aliases}
 
 
 def _strings(obj):
