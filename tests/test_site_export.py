@@ -11,8 +11,8 @@ from crawler.normalize import clean_venue, outside_target_area, script_language_
 from crawler.tax.collect import SnapshotStore, load_sources
 from crawler.tax.facts import load_facts
 from crawler.schema import Event
-from scripts.export_site_data import (build_tax, load_guides, merge_duplicates, new_in_latest_run, site_tags,
-                                      standing_listing, validate)
+from scripts.export_site_data import (build_tax, delisted, load_guides, merge_duplicates, new_in_latest_run,
+                                      site_tags, standing_listing, validate)
 
 
 def main():
@@ -181,6 +181,29 @@ def main():
     series = [row("anncr:s1", starts="2026-11-06T14:00:00+08:00"), row("anncr:s2", starts="2026-11-06T19:30:00+08:00")]
     out, aliases = merge_duplicates([dict(r) for r in series])
     check("同一天不同時間 → 是兩場（「其他場次」要列得出來）", len(out) == 2 and not aliases)
+
+
+    print("\n10. 整批重抓的來源最近一次沒再列出的未來活動不放上網站（anncr 看了詳情頁才發現在高雄的舊資料）")
+    run0 = "2026-10-30T03:57:00+08:00"
+
+    def listed(src, sid, last, status="upcoming"):
+        ev = seen(src, sid, run0, last)
+        ev.status = status
+        return ev
+    evs = [
+        listed("anncr", "still", run2b),                  # 這次還列著
+        listed("anncr", "gone", run1),                    # 上次有、這次沒有 → 下架或被濾掉
+        listed("anncr", "past", run1, status="expired"),  # 過期的本來就不顯示，不必判
+        listed("anncr", "ongoing", run1, status="ongoing"),  # 跨月的演出，下個月的月曆不一定列著
+        listed("meetup", "dropped_off", run1),            # 只抓主題頁前幾頁：沒搜到不代表沒了
+        listed("accupass", "dropped_off", run0),          # 關鍵字搜尋，同上
+    ]
+    gone = delisted(evs)
+    check("anncr 這次沒再列出的未來活動 → 不放", gone == {"anncr:gone"}, gone)
+    check("同一次抓取裡差幾分鐘也算有列出", "anncr:still" not in delisted([listed("anncr", "still", run2a), listed("anncr", "x", run2b)]))
+    failed = [listed("anncr", "a", run1), listed("anncr", "b", run1), listed("meetup", "m", run2b)]
+    check("anncr 這次整個抓失敗（全部停在上一次）→ 一筆都不藏", delisted(failed) == set(), delisted(failed))
+    check("沒有時間戳 → 什麼都不藏", delisted([]) == set())
 
     print(f"\n{len(failures)} 個失敗" if failures else "\n全部通過")
     sys.exit(1 if failures else 0)
