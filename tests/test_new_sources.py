@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from crawler.collectors.anncr import AnncrCollector
+from crawler.collectors.anncr import OTHER_CITY, AnncrCollector, locate_from_detail, parse_detail
 from crawler.collectors.trendy_taipei import TrendyTaipeiCollector
 from crawler.jsonld import find_events_in_itemlist
 from crawler.schema import validate
@@ -73,6 +73,68 @@ def main():
     check("沒有 offers → is_free 是 None", nthc.is_free is None, repr(nthc.is_free))
     for e in kept:
         check(f"schema 驗證 {e.source_id}", validate(e) == [], validate(e))
+
+    print("\n嚷嚷社 —— 詳情頁確認地點（Issue：Duplicated events，樣本是 2026-11-15 的真實頁面）")
+    tour = parse_detail((FIX / "anncr_event_tour.html").read_text(encoding="utf-8"))
+    wrong = parse_detail((FIX / "anncr_event_wrong_venue.html").read_text(encoding="utf-8"))
+    tpe = parse_detail((FIX / "anncr_event_taipei.html").read_text(encoding="utf-8"))
+    check("拆出演出資訊的欄位", {"場次時間", "演出地點", "內容簡介"} <= set(tour), list(tour))
+
+    nov6 = "2026-11-06T20:00:00+08:00"
+    check("巡演頁 11/06 那場：介紹文字寫高雄 → 不是雙北",
+          locate_from_detail(tour, nov6)[::2] == (OTHER_CITY, "介紹文字的場次"), locate_from_detail(tour, nov6))
+    check("同一頁 9/19 那場：介紹文字寫台北 → 臺北市（巡演的台北場不能一起丟掉）",
+          locate_from_detail(tour, "2026-09-19T22:00:00+08:00")[0] == "臺北市")
+    check("場地欄填錯成北流、介紹文字的地址是高雄 → 以介紹文字為準",
+          locate_from_detail(wrong, nov6)[::2] == (OTHER_CITY, "介紹文字的地址"), locate_from_detail(wrong, nov6))
+    city, addr, _ = locate_from_detail(tpe, "2026-11-07T20:00:00+08:00")
+    check("一般的台北場：留下，帶回完整地址", city == "臺北市" and addr and "復興北路480號" in addr, (city, addr))
+
+    multi = {"演出地點": "A廳 臺北市中正區中山南路21-1號、B廳 台中市西屯區惠來路二段101號", "內容簡介": "巡演開跑！"}
+    check("好幾個場地分在不同縣市、介紹文字沒講 → 不知道在哪",
+          locate_from_detail(multi, nov6)[0] is None, locate_from_detail(multi, nov6))
+    check("詳情頁什麼都沒有 → 交回月曆判斷", locate_from_detail({}, nov6) == (None, None, "詳情頁沒有地點"))
+    check("11/6 不會命中 11/16 那一行",
+          locate_from_detail({"內容簡介": "高雄 11/16 加場\n台北 11/6 首演"}, nov6)[0] == "臺北市")
+    check("「新北投」不會被讀成新北市（沒寫縣市 → 交回月曆判斷）",
+          locate_from_detail({"內容簡介": "11/06 新北投溫泉博物館前廣場"}, nov6)[0] is None,
+          locate_from_detail({"內容簡介": "11/06 新北投溫泉博物館前廣場"}, nov6))
+
+    print("\n嚷嚷社 —— fetch() 整段：月曆說台北的，詳情頁改判")
+    cal = ('<script type="application/ld+json">{"@context":"https://schema.org","@type":"ItemList","itemListElement":['
+           + ",".join(json.dumps({"@type": "ListItem", "item": {"@type": "Event", "name": n, "startDate": s,
+                                                                 "url": f"http://anncr.co/Event/{i}",
+                                                                 "location": {"@type": "Place", "name": v}}}, ensure_ascii=False)
+                      for i, n, s, v in [
+                          ("EWAIAK90450", "Ellery 呈獻 THE CUT｜Fall Edition 秋季場", "2026-11-06T20:00:00", "卡米地喜劇俱樂部"),
+                          ("EWAIAQ19117", "Ellery 呈獻 THE CUT｜Fall Edition 秋季場", "2026-11-06T20:00:00", "臺北流行音樂中心"),
+                          ("EWABBA87269", "菜冠雙Talk", "2026-11-07T20:00:00", "卡米地喜劇俱樂部")])
+           + "]}</script>")
+    pages = {"https://anncr.co/calendar": cal,
+             "https://anncr.co/Event/EWAIAK90450": (FIX / "anncr_event_tour.html").read_text(encoding="utf-8"),
+             "https://anncr.co/Event/EWAIAQ19117": (FIX / "anncr_event_wrong_venue.html").read_text(encoding="utf-8"),
+             "https://anncr.co/Event/EWABBA87269": (FIX / "anncr_event_taipei.html").read_text(encoding="utf-8")}
+    ac = AnncrCollector()
+    ac.delay_between_pages = 0
+    ac.get_text = lambda url, **kw: pages[url]
+    got = {e.source_id: e for e in ac.fetch()}
+    check("兩筆 THE CUT 都不算雙北 → 不留", set(got) == {"EWABBA87269"}, sorted(got))
+    tk = got.get("EWABBA87269")
+    check("台北場的行政區改用詳情頁的地址（卡米地＋在中山區，不是場地表的中正區）",
+          tk is not None and tk.district == "中山區" and tk.city == "臺北市", tk and (tk.city, tk.district))
+
+    def boom(url, **kw):
+        if "/Event/" in url:
+            raise ConnectionError("down")
+        return pages[url]
+    ac2 = AnncrCollector()
+    ac2.delay_between_pages = 0
+    ac2.get_text = boom
+    got2 = {e.source_id for e in ac2.fetch()}
+    check("詳情頁抓不到 → 沿用月曆的判斷，不讓整個來源失敗", got2 == {"EWAIAK90450", "EWAIAQ19117", "EWABBA87269"}, got2)
+    ac3 = AnncrCollector(check_detail=False)
+    ac3.get_text = lambda url, **kw: pages[url] if url.endswith("/calendar") else (_ for _ in ()).throw(AssertionError(url))
+    check("check_detail=False → 不打詳情頁", len(list(ac3.fetch())) == 3)
 
     print()
     if failures:
