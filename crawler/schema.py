@@ -110,10 +110,17 @@ class Event:
         return f"{norm[:40]}|{day}"
 
     def compute_content_hash(self) -> str:
-        """只 hash 會實質改變活動的欄位，避免來源加個追蹤參數就判定成『有更新』。"""
+        """只 hash 會實質改變活動的欄位，避免來源加個追蹤參數就判定成『有更新』。
+
+        地點三欄（address／city／district）也要算：hash 沒變，upsert 就保留舊紀錄、
+        只更新 last_seen。以前沒算，anncr 改用詳情頁地址校正行政區後，已經存著的
+        活動全被當成「沒變」，卡米地＋的 17 場一直停在場地表的中正區。
+        加欄位會讓既有紀錄的 hash 全部變掉，下一次抓取每筆都會算一次「更新」，無害。
+        """
         parts = [
             self.title, self.type, self.starts_at, self.ends_at,
-            self.signup_deadline, self.venue, self.price_text, self.status,
+            self.signup_deadline, self.venue, self.address, self.city, self.district,
+            self.price_text, self.status,
         ]
         blob = "|".join(p if p is not None else "" for p in parts)
         return hashlib.sha1(blob.encode("utf-8")).hexdigest()[:16]
