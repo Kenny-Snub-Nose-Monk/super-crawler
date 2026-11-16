@@ -62,6 +62,17 @@ def main():
     check("feedback 保住", store3._events["travel_taipei:activity-12345"].feedback == "went")
     check("first_seen 保住", store3._events["travel_taipei:activity-12345"].first_seen is not None)
 
+    print("3b. 只有地點變了也要更新（anncr 用詳情頁地址校正行政區）")
+    loc = EventStore(Path(tempfile.mkdtemp()) / "loc.jsonl")
+    mk = lambda **kw: Event(source_platform="anncr", source_id="EWAKAL42985", source_url="https://anncr.co/Event/EWAKAL42985",
+                            title="搶救！女僕咖啡廳存亡大作戰！", starts_at="2026-11-28T20:00:00+08:00",
+                            venue="卡米地喜劇俱樂部", city="臺北市", **kw)
+    loc.upsert_many([mk(district="中正區")])
+    s = loc.upsert_many([mk(district="中山區", address="臺北市中山區復興北路480號")])
+    ev = loc._events["anncr:EWAKAL42985"]
+    check("行政區與地址被更新", s.updated == 1 and ev.district == "中山區" and ev.address, (str(s), ev.district))
+    check("一模一樣重抓仍算沒變", loc.upsert_many([mk(district="中山區", address="臺北市中山區復興北路480號")]).unchanged == 1)
+
     print("4. 三個情境的查詢")
     now = datetime.now(TAIPEI)
     # 把樣本時間搬到未來，才測得到 upcoming 過濾
