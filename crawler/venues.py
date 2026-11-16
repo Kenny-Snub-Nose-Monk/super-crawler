@@ -90,6 +90,11 @@ def lookup(venue: Optional[str]) -> tuple[Optional[str], Optional[str]]:
     # 比對前兩邊都正規化：拿掉大小寫、空白、句點與引號。中文鍵不受影響，
     # 英文地標則不用為了 "Da An Park" / "DaAn Park" / "DA AN PARK" 各寫一行。
     # 用 normalize 那支而不是自己寫一個，否則兩邊的規則會慢慢長歪。
+    # 場地名明講是雙北以外的縣市，就不查表 —— 表裡的鍵是子字串比對，
+    # 「臺中市中山堂」會命中台北的「中山堂」（2026-11 anncr 一個月 4 場被當成台北）
+    for hint in _CITY_HINTS:
+        if hint in venue and hint not in ("臺北市", "台北市", "新北市"):
+            return hint.replace("台", "臺"), None
     norm = _norm_en(venue)
     for key, (city, district) in VENUE_CITY.items():
         if _norm_en(key) in norm:
