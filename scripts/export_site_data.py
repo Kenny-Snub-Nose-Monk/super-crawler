@@ -8,9 +8,10 @@
 所以這裡不計算稅 —— 只做三件事：
 
   1. 活動狀態以「匯出當下」重算一次，標題整句英文或有英文標題的補上 lang:en；
-     場地欄整理成一個地名，而且有兩種活動不放上網站（events.jsonl 照留）：
-     地址明講在雙北以外的實體活動、以及期間長達兩年以上的「常駐刊登」
-     （場地出租、一直掛著的線上課程 —— 2021 年開始到 2036 年的那種，掛著「On now」）。
+     場地欄整理成一個地名，而且有三種活動不放上網站（events.jsonl 照留）：
+     地址明講在雙北以外的實體活動、期間長達兩年以上的「常駐刊登」
+     （場地出租、一直掛著的線上課程 —— 2021 年開始到 2036 年的那種，掛著「On now」）、
+     以及整批重抓的來源最近一次沒再列出的未來活動（見 delisted）。
      同一場活動的重複刊登（同標題、同開始時間）收成一筆，見 merge_duplicates
   2. 稅務 facts 對快照核對一次，把結果（已核對／待複核／未核對）一起帶過去
   3. 檢查指南裡的每一個引用都存在 —— {{fact:x}}、[[guide:y]]、來源 id。
@@ -81,6 +82,41 @@ def crawl_runs(stamps) -> list[datetime]:
             starts.append(t)
         prev = t
     return starts
+
+
+# 每次抓取都把「現在還列著的」整批重抓一遍的來源。這種來源的最近一次抓取沒再出現的活動，
+# 就是來源下架了、或我們的 collector 現在會把它濾掉（例如 anncr 看了詳情頁才發現在高雄）。
+#
+# 只列抓法確實是「整批」的：Accupass 是關鍵字搜尋、Meetup 只看主題頁前幾頁，
+# 這週沒搜到不代表活動沒了（2026-11 實測：Meetup 3 場 12 月的活動只是掉出主題頁）。
+# 新增來源前先確認它的抓法是整批的。
+RELISTS_EVERYTHING = {"anncr"}   # /calendar 一次給當月全部
+
+
+def delisted(events) -> set[str]:
+    """RELISTS_EVERYTHING 的來源裡，還沒開始、但該來源最近一次抓取沒再回傳的活動 uid。
+
+    只看還沒開始的：進行中的跨月活動，下個月的月曆不一定還列著；過期的本來就預設不顯示。
+    比的是「同一個來源」的最近一次抓取 —— 某個來源這次抓失敗，它的活動不能因此全部消失。
+    """
+    events = list(events)
+    runs = crawl_runs([s for ev in events for s in (ev.first_seen, ev.last_seen)])
+    if not runs:
+        return set()
+
+    def run_of(stamp: str) -> int:
+        t = datetime.fromisoformat(stamp)
+        return max(i for i, start in enumerate(runs) if start <= t)
+
+    latest: dict[str, int] = {}
+    for ev in events:
+        if ev.source_platform in RELISTS_EVERYTHING and ev.last_seen:
+            latest[ev.source_platform] = max(latest.get(ev.source_platform, 0), run_of(ev.last_seen))
+    return {
+        ev.uid for ev in events
+        if ev.source_platform in RELISTS_EVERYTHING and ev.status == "upcoming"
+        and ev.last_seen and run_of(ev.last_seen) < latest[ev.source_platform]
+    }
 
 
 def new_in_latest_run(events) -> tuple[set[str], str | None]:
@@ -211,9 +247,13 @@ def export_events() -> dict:
     store = EventStore()
     store.refresh_status()           # 只改記憶體裡的狀態，不寫回 events.jsonl
     fresh, latest_crawl = new_in_latest_run(store.all())
+    gone = delisted(store.all())
     events = []
-    dropped = {"outside": 0, "standing": 0}
+    dropped = {"outside": 0, "standing": 0, "delisted": 0}
     for ev in store.all():
+        if ev.uid in gone:
+            dropped["delisted"] += 1
+            continue
         if "online" not in ev.tags and outside_target_area(ev.city, ev.address):
             dropped["outside"] += 1
             continue
@@ -228,7 +268,8 @@ def export_events() -> dict:
         events.append(d)
     events, aliases = merge_duplicates(events)
     events.sort(key=lambda e: (e["starts_at"] or "9999", e["uid"]))
-    print(f"  活動：不放上網站 —— 雙北以外 {dropped['outside']} 筆、常駐刊登 {dropped['standing']} 筆")
+    print(f"  活動：不放上網站 —— 雙北以外 {dropped['outside']} 筆、常駐刊登 {dropped['standing']} 筆、"
+          f"來源已不再列出 {dropped['delisted']} 筆")
     conflicts = sum(1 for e in events if e.get("venue_conflict"))
     print(f"  活動：重複刊登收起 {len(aliases)} 筆（其中 {conflicts} 場各刊登的地點對不上）")
     print(f"  活動：最近一次抓取 {latest_crawl} 新增 {sum(e['is_new'] for e in events)} 筆（標 New）")
