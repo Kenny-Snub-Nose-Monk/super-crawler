@@ -34,12 +34,18 @@ export function render({ params, state, fromAgent }) {
     window.site.navigate("/search", { q: input.value.trim() });
   });
 
+  // 「我們怎麼理解這句話」每次都顯示，不管有沒有解析出條件 —— 不然「hiking」有一列、
+  // 「tax」沒有，看起來像兩種不同的頁面。稅務問題本身也是一種理解（會把指南排前面），
+  // 所以給一個不能移除的標籤；剩下拿去比對的字用引號列在後面。
+  const interpreted = q ? h("div", { class: "interpreted" }, "Searching for",
+    parsed.tax ? h("span", { class: "chip on", title: "Tax questions show guide answers first" }, "Tax question") : null,
+    parsed.chips.map((c) => h("a", { class: "chip on", href: `#/search?q=${encodeURIComponent(withoutChip(parsed, c.key))}`, title: "Remove" }, c.label, h("span", { class: "x", "aria-hidden": "true" }, " ×"))),
+    parsed.text ? h("span", null, `${parsed.tax || parsed.chips.length ? "+ " : ""}“${parsed.text}”`) : null) : null;
+
   const head = h("header", { class: "wrap search-head" },
     h("h1", null, q ? h("span", null, "Results for ", h("span", { class: "q-term" }, `“${q}”`)) : "Search events and guides"),
     form,
-    parsed.chips.length ? h("div", { class: "interpreted" }, "Searching for",
-      parsed.chips.map((c) => h("a", { class: "chip on", href: `#/search?q=${encodeURIComponent(withoutChip(parsed, c.key))}`, title: "Remove" }, c.label, h("span", { class: "x", "aria-hidden": "true" }, " ×"))),
-      parsed.text ? h("span", null, `+ “${parsed.text}”`) : null) : null);
+    interpreted);
 
   if (!q) {
     return {
@@ -53,24 +59,34 @@ export function render({ params, state, fromAgent }) {
     };
   }
 
-  // 一眼看完
+  // 一眼看完：有結果就一定有一行標題，依下面區塊的順序數出找到什麼
+  // （之前只有找到活動才有標題，稅務問題只剩一個孤零零的項目符號）
   const g = glance(events);
-  const summaryBits = [];
+  const eventBits = [];
   if (g) {
-    summaryBits.push(`${plural(g.total, "event")}${parsed.when ? ` ${parsed.when.label.toLowerCase()}` : ""}`);
-    if (g.english) summaryBits.push(`${g.english} English-friendly`);
-    if (g.free) summaryBits.push(`${g.free} free`);
-    if (g.online) summaryBits.push(`${g.online} online`);
+    eventBits.push(`${plural(g.total, "event")}${parsed.when ? ` ${parsed.when.label.toLowerCase()}` : ""}`);
+    if (g.english) eventBits.push(`${g.english} English-friendly`);
+    if (g.free) eventBits.push(`${g.free} free`);
+    if (g.online) eventBits.push(`${g.online} online`);
+  } else {
+    eventBits.push("no events");
   }
+  const guideBit = answers.length ? plural(answers.length, "guide answer") : null;
+  const summaryBits = (parsed.tax ? [guideBit || "no guide answers", ...eventBits] : [...eventBits, guideBit]).filter(Boolean);
+  const summaryLine = summaryBits.join(" · ").replace(/^n/, "N") + ".";
   const top = answers[0];
-  const glanceBox = (g || (top && parsed.tax)) ? h("section", { class: "summary" },
+  const glanceItems = [
+    g && g.first ? h("li", null, "Soonest: ", h("a", { href: `#/event/${encodeURIComponent(g.first.uid)}` }, g.first.title_en || g.first.title), ` — ${formatWhen(g.first).line}`) : null,
+    g && g.topDistrict && g.topDistrict.n >= 2 ? h("li", null, `Most are in ${DISTRICT_EN[g.topDistrict.name] || g.topDistrict.name} (${g.topDistrict.n}).`) : null,
+    g && g.unknownPrice ? h("li", null, `${g.unknownPrice} don't list a price — that isn't the same as free.`) : null,
+    top ? h("li", null, "Best guide match: ", h("a", { href: `#/guide/${top.slug}?s=${top.sectionId}` }, `${top.guideTitle} — ${top.heading}`)) : null,
+  ].filter(Boolean);
+  // 稅務問題指南排前面，「最佳指南」也放第一個
+  if (parsed.tax && top) glanceItems.unshift(glanceItems.pop());
+  const glanceBox = (g || answers.length) ? h("section", { class: "summary" },
     h("div", null,
-      g ? h("h2", { class: "summary-line" }, `${summaryBits.join(" · ")}.`) : h("h2", { class: "sr-only" }, "Best match"),
-      h("ul", null,
-        g && g.first ? h("li", null, "Soonest: ", h("a", { href: `#/event/${encodeURIComponent(g.first.uid)}` }, g.first.title_en || g.first.title), ` — ${formatWhen(g.first).line}`) : null,
-        g && g.topDistrict && g.topDistrict.n >= 2 ? h("li", null, `Most are in ${DISTRICT_EN[g.topDistrict.name] || g.topDistrict.name} (${g.topDistrict.n}).`) : null,
-        g && g.unknownPrice ? h("li", null, `${g.unknownPrice} don't list a price — that isn't the same as free.`) : null,
-        top && parsed.tax ? h("li", null, "Best guide match: ", h("a", { href: `#/guide/${top.slug}?s=${top.sectionId}` }, `${top.guideTitle} — ${top.heading}`)) : null))) : null;
+      h("h2", { class: "summary-line" }, summaryLine),
+      glanceItems.length ? h("ul", null, glanceItems) : null)) : null;
 
   const tabs = h("nav", { class: "tabs", "aria-label": "Result type" },
     [["all", "All", events.length + answers.length], ["events", "Events", events.length], ["guides", "Guides", answers.length]].map(([id, label, n]) =>
